@@ -1,0 +1,25 @@
+<!--
+  El overlay se muestra u oculta cambiando la opacidad y la visibilidad,
+  lo que permite una transición suave.
+-->
+<div
+  class="fixed inset-0 bg-dark-bg/90 backdrop-blur-lg z-[100] flex flex-col items-center p-8 transition-opacity duration-300"
+  [ngClass]="{
+    'opacity-100 visible': uiService.isSearchOverlayOpen(),
+    'opacity-0 invisible': !uiService.isSearchOverlayOpen()
+  }">
+
+  <!-- Botón de Cierre -->
+  <button (click)="uiService.closeAllPanels()" class="absolute top-8 right-8 text-4xl text-text-secondary transition-transform hover:text-white hover:rotate-90">&times;</button>
+
+  <!-- Contenedor del Input -->
+  <div class="w-full max-w-2xl mt-24">
+    <input
+      type="text"
+      placeholder="Busca tu próximo gadget..."
+      class="w-full bg-transparent border-b-2 border-primary-accent text-white text-center text-3xl md:text-5xl font-headings py-4 outline-none">
+
+    <!-- Las sugerencias de búsqueda se pueden implementar aquí en el futuro -->
+    <ul class="mt-8"></ul>
+  </div>
+</div>

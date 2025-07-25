@@ -1,0 +1,26 @@
+<!-- La sección principal es relativa para contener el fondo y el contenido -->
+<section class="relative h-[450px] text-white text-center overflow-hidden">
+
+  <!-- Div para el fondo con la directiva parallax -->
+  <div
+    class="absolute inset-0 bg-cover bg-center -z-10"
+    style="background-image: url('https://placehold.co/1920x800/000000/FFFFFF?text=Audio+Inmersivo');"
+    appParallax
+    [ratio]="-0.1">
+  </div>
+
+  <!-- Capa oscura para mejorar el contraste del texto -->
+  <div class="absolute inset-0 bg-black/60"></div>
+
+  <!-- Contenedor del contenido, centrado con flexbox y con la animación de aparición -->
+  <div class="relative z-10 max-w-2xl mx-auto h-full flex flex-col justify-center items-center p-6 fade-in-up" appScrollFadeIn>
+    <h2 class="font-headings text-4xl md:text-6xl font-bold mb-4">La Inmersión es Total</h2>
+    <p class="text-lg text-text-on-dark mb-8">
+      Sumérgete en un sonido sin precedentes con cancelación de ruido activa y audio espacial. Diseñados para gamers y audiófilos.
+    </p>
+    <!-- Botón con el efecto de brillo neón al pasar el ratón -->
+    <a href="#" class="bg-secondary-accent text-dark-bg font-bold py-3 px-8 rounded-lg transition-all hover:scale-105 inline-block hover:shadow-neon-secondary">
+      Descubre los Audio Inmersivo X-1
+    </a>
+  </div>
+</section>

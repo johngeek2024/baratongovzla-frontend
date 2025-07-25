@@ -1,0 +1,54 @@
+<section class="relative h-screen w-full overflow-hidden">
+  <!-- Video de fundo -->
+  <video
+    class="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover transform -translate-x-1/2 -translate-y-1/2 -z-10 filter brightness-50"
+    autoplay muted loop playsinline>
+    <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-video-of-a-dark-sphere-with-flashes-of-light-39904-large.mp4" type="video/mp4">
+  </video>
+
+  <!-- Conteúdo de Swiper -->
+  <div #swiperContainer class="swiper-container h-full">
+    <div class="swiper-wrapper">
+      <!-- Slide 1: Smartwatch -->
+      <div class="swiper-slide">
+        <div class="h-full w-full flex flex-col justify-end items-center text-center text-white p-6 md:p-8 pb-24 bg-cover bg-center" style="background-image: url('https://placehold.co/800x1200/1a4a2f/FFFFFF?text=Aura+Watch');">
+          <div class="absolute bottom-0 left-0 w-full h-2/3 bg-gradient-to-t from-black/80 to-transparent"></div>
+          <div class="relative z-10 max-w-lg">
+            <span class="inline-block bg-primary-accent text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4">Smartwatch</span>
+            <h2 class="font-headings text-4xl md:text-5xl font-bold mb-3">Aura Watch Series 8</h2>
+            <p class="text-text-on-dark mb-6">A sua vida, conectada. Monitore a sua saúde e mantenha-se ativo com um design impecável.</p>
+            <a href="#" class="inline-block bg-secondary-accent text-dark-bg font-bold py-3 px-8 rounded-lg transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-neon-secondary">Descubra</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 2: Gaming -->
+      <div class="swiper-slide">
+        <div class="h-full w-full flex flex-col justify-end items-center text-center text-white p-6 md:p-8 pb-24 bg-cover bg-center" style="background-image: url('https://placehold.co/800x1200/4a1a3c/FFFFFF?text=Void-Dasher');">
+          <div class="absolute bottom-0 left-0 w-full h-2/3 bg-gradient-to-t from-black/80 to-transparent"></div>
+          <div class="relative z-10 max-w-lg">
+            <span class="inline-block bg-primary-accent text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4">Gaming</span>
+            <h2 class="font-headings text-4xl md:text-5xl font-bold mb-3">Teclado Void-Dasher</h2>
+            <p class="text-text-on-dark mb-6">Precisão mecânica e um espetáculo de luzes RGB nas suas mãos. Domine cada partida.</p>
+            <a href="#" class="inline-block bg-secondary-accent text-dark-bg font-bold py-3 px-8 rounded-lg transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-neon-secondary">Ver Oferta</a>
+          </div>
+        </div>
+      </div>
+
+       <!-- Slide 3: Projetores -->
+       <div class="swiper-slide">
+        <div class="h-full w-full flex flex-col justify-end items-center text-center text-white p-6 md:p-8 pb-24 bg-cover bg-center" style="background-image: url('https://placehold.co/800x1200/1a1d4a/FFFFFF?text=Hyperion+X1');">
+          <div class="absolute bottom-0 left-0 w-full h-2/3 bg-gradient-to-t from-black/80 to-transparent"></div>
+          <div class="relative z-10 max-w-lg">
+            <span class="inline-block bg-primary-accent text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4">Cinema em Casa</span>
+            <h2 class="font-headings text-4xl md:text-5xl font-bold mb-3">Projetor Hyperion X1</h2>
+            <p class="text-text-on-dark mb-6">Noites de cinema inesquecíveis com qualidade 4K e até 200 polegadas de pura emoção.</p>
+            <a href="#" class="inline-block bg-secondary-accent text-dark-bg font-bold py-3 px-8 rounded-lg transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-neon-secondary">Comprar Agora</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Paginação do carrossel -->
+    <div class="swiper-pagination"></div>
+  </div>
+</section>

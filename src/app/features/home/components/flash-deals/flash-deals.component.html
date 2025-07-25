@@ -1,0 +1,74 @@
+<!-- Se mantiene 'overflow-hidden' en la sección principal para garantizar que no haya desbordamientos. -->
+<section class="py-20 fade-in-up overflow-hidden" appScrollFadeIn>
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-headings font-bold text-white inline-block border-b-4 border-flash-accent pb-2">
+        Ofertas por Tiempo Limitado
+      </h2>
+    </div>
+
+    <!--
+      CORRECCIÓN: Se han eliminado las clases de margen negativo ('!mx-[-1rem] px-4').
+      En su lugar, se añade un padding simple ('p-4') al contenedor de Swiper.
+      Esto proporciona el espaciado necesario sin interferir con la lógica del carrusel.
+    -->
+    <div #swiperContainer class="swiper-container p-4">
+      <div class="swiper-wrapper">
+
+        <!-- Usamos @for para crear un slide por cada oferta en nuestra lista -->
+        @for (deal of deals; track deal.id; let i = $index) {
+          <div class="swiper-slide h-auto pb-8">
+            <div class="flex flex-col bg-surface-dark rounded-2xl overflow-hidden h-full border border-transparent hover:border-primary-accent transition-colors">
+              <div class="relative h-56 bg-black">
+                <img [src]="deal.imageUrl" [alt]="'[Imagen de ' + deal.title + ']'" class="w-full h-full object-contain p-4">
+                <span class="absolute top-4 left-4 bg-flash-accent text-white px-3 py-1 rounded-full text-xs font-bold">-{{ deal.discount }}%</span>
+              </div>
+              <div class="p-6 flex flex-col flex-grow">
+                <h3 class="font-headings text-lg text-white flex-grow min-h-[50px]">{{ deal.title }}</h3>
+                <div class="flex items-baseline gap-3 my-4">
+                  <span class="text-3xl font-bold text-secondary-accent">${{ deal.price }}</span>
+                  <span class="text-lg text-text-secondary line-through">${{ deal.oldPrice }}</span>
+                </div>
+
+                <!-- Contenedor del Temporizador -->
+                <div class="flex gap-2 justify-center bg-dark-bg/50 p-3 rounded-lg mb-4">
+                  @if (timers()[i]!.hasEnded) {
+                    <span class="text-text-secondary font-bold">¡Oferta Terminada!</span>
+                  } @else {
+                    <!-- Día -->
+                    <div class="flex flex-col items-center bg-dark-bg p-2 rounded-md min-w-[50px]">
+                      <span class="text-2xl font-bold text-white">{{ timers()[i]!.d || '00' }}</span>
+                      <span class="text-xs text-text-secondary">DÍAS</span>
+                    </div>
+                    <span class="text-2xl font-bold text-text-secondary self-center">:</span>
+                    <!-- Hora -->
+                    <div class="flex flex-col items-center bg-dark-bg p-2 rounded-md min-w-[50px]">
+                      <span class="text-2xl font-bold text-white">{{ timers()[i]!.h || '00' }}</span>
+                      <span class="text-xs text-text-secondary">HRS</span>
+                    </div>
+                    <span class="text-2xl font-bold text-text-secondary self-center">:</span>
+                    <!-- Minuto -->
+                    <div class="flex flex-col items-center bg-dark-bg p-2 rounded-md min-w-[50px]">
+                      <span class="text-2xl font-bold text-white">{{ timers()[i]!.m || '00' }}</span>
+                      <span class="text-xs text-text-secondary">MIN</span>
+                    </div>
+                    <span class="text-2xl font-bold text-text-secondary self-center">:</span>
+                    <!-- Segundo -->
+                    <div class="flex flex-col items-center bg-dark-bg p-2 rounded-md min-w-[50px]">
+                      <span class="text-2xl font-bold text-white">{{ timers()[i]!.s || '00' }}</span>
+                      <span class="text-xs text-text-secondary">SEG</span>
+                    </div>
+                  }
+                </div>
+
+                <button class="w-full bg-primary-accent text-white font-bold py-3 rounded-lg transition-transform hover:scale-105">Añadir al Carrito</button>
+              </div>
+            </div>
+          </div>
+        }
+
+      </div>
+      <div class="swiper-pagination mt-8 relative"></div>
+    </div>
+  </div>
+</section>
