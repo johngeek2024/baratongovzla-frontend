@@ -1,5 +1,5 @@
 <!-- El overlay oscuro que aparece detrás de los paneles -->
-@if(uiService.isMenuPanelOpen() || uiService.isCartPanelOpen()){
+@if(uiService.isMenuPanelOpen() || uiService.isCartPanelOpen() || uiService.isFilterSidebarOpen()){
   <div (click)="uiService.closeAllPanels()" class="fixed inset-0 bg-black/50 z-[90]"></div>
 }
 
@@ -17,7 +17,8 @@
   title="Menú"
   position="left"
   [isOpen]="uiService.isMenuPanelOpen()"
-  (close)="uiService.closeAllPanels()">
+  (close)="uiService.closeAllPanels()"
+  class="z-[120]">
   <nav>
     <ul class="flex flex-col">
       <li>
@@ -59,7 +60,8 @@
   title="Tu Carrito"
   position="left"
   [isOpen]="uiService.isCartPanelOpen()"
-  (close)="uiService.closeAllPanels()">
+  (close)="uiService.closeAllPanels()"
+  class="z-[120]">
 
   @if (cartService.cartCount() > 0) {
     <div class="flex flex-col h-full">
@@ -72,13 +74,10 @@
               <p class="text-primary-accent font-bold mt-1">${{ item.product.price }}</p>
               <div class="flex justify-between items-center mt-2">
                 <div class="flex items-center gap-2">
-                  <!-- CORRECCIÓN: Se añade el evento (click) para disminuir la cantidad -->
                   <button (click)="cartService.updateQuantity(item.product.id, -1)" class="w-6 h-6 rounded-full bg-surface-dark text-white">-</button>
                   <span>{{ item.quantity }}</span>
-                  <!-- CORRECCIÓN: Se añade el evento (click) para aumentar la cantidad -->
                   <button (click)="cartService.updateQuantity(item.product.id, 1)" class="w-6 h-6 rounded-full bg-surface-dark text-white">+</button>
                 </div>
-                <!-- CORRECCIÓN: Se añade el evento (click) para eliminar el producto -->
                 <button (click)="cartService.removeFromCart(item.product.id)" class="text-text-secondary hover:text-flash-accent"><i class="fas fa-trash"></i></button>
               </div>
             </div>
@@ -90,7 +89,7 @@
           <span>Subtotal</span>
           <span class="font-bold">${{ cartService.totalPrice() }}</span>
         </div>
-        <button class="w-full mt-4 bg-primary-accent text-white font-bold py-3 rounded-lg hover:bg-primary-accent-darker">Finalizar Compra</button>
+        <button class="w-full mt-4 bg-primary-accent text-white font-bold py-3 rounded-lg hover:bg-white hover:text-dark-bg transition-colors">Finalizar Compra</button>
       </div>
     </div>
   } @else {
@@ -100,6 +99,9 @@
 
 <!-- Componente de Notificación de Logros -->
 <app-achievement-toast></app-achievement-toast>
+
+<!-- Componente de Notificación del Carrito -->
+<app-cart-toast></app-cart-toast>
 
 <!-- Componente del Overlay de Búsqueda -->
 <app-search-overlay></app-search-overlay>

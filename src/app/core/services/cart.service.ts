@@ -2,6 +2,7 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { Product } from '../../components/ui/product-card/product-card.component';
 import { UiService } from './ui.service';
 
+// Define cómo se ve un ítem dentro del carrito (un producto + la cantidad)
 export interface CartItem {
   product: Product;
   quantity: number;
@@ -12,12 +13,27 @@ export interface CartItem {
 })
 export class CartService {
   private uiService = inject(UiService);
+
+  // Señal privada para almacenar los ítems del carrito
   private cartItems = signal<CartItem[]>([]);
 
+  // Señal pública (solo lectura) para que los componentes accedan a los ítems
   public readonly items = this.cartItems.asReadonly();
-  public cartCount = computed(() => this.cartItems().reduce((total, item) => total + item.quantity, 0));
-  public totalPrice = computed(() => this.cartItems().reduce((total, item) => total + (item.product.price * item.quantity), 0));
 
+  // Señal computada para el número total de ítems
+  public cartCount = computed(() => {
+    return this.cartItems().reduce((total, item) => total + item.quantity, 0);
+  });
+
+  // Señal computada para el precio total
+  public totalPrice = computed(() => {
+    return this.cartItems().reduce((total, item) => total + (item.product.price * item.quantity), 0);
+  });
+
+  /**
+   * Añade un producto al carrito o incrementa su cantidad si ya existe.
+   * @param product El producto a añadir.
+   */
   addToCart(product: Product) {
     this.cartItems.update(items => {
       const itemInCart = items.find(item => item.product.id === product.id);
@@ -28,12 +44,13 @@ export class CartService {
         return [...items, { product, quantity: 1 }];
       }
     });
-    this.uiService.showAchievement(`${product.name} añadido al carrito!`);
+    // Muestra una notificación y abre el panel del carrito
+    this.uiService.showCartToast(`${product.name} añadido al carrito!`);
     this.uiService.openCartPanel();
   }
 
   /**
-   * NUEVO: Actualiza la cantidad de un ítem en el carrito.
+   * Actualiza la cantidad de un ítem en el carrito.
    * @param productId El ID del producto a actualizar.
    * @param change El cambio a aplicar (ej. 1 para aumentar, -1 para disminuir).
    */
@@ -52,7 +69,7 @@ export class CartService {
   }
 
   /**
-   * NUEVO: Elimina un producto completamente del carrito.
+   * Elimina un producto completamente del carrito.
    * @param productId El ID del producto a eliminar.
    */
   removeFromCart(productId: string) {

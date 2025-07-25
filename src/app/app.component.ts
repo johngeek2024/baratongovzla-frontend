@@ -6,6 +6,7 @@ import { FooterComponent } from './components/layout/footer/footer.component';
 import { BottomNavComponent } from './components/layout/bottom-nav/bottom-nav.component';
 import { SidePanelComponent } from './components/ui/side-panel/side-panel.component';
 import { AchievementToastComponent } from './components/ui/achievement-toast/achievement-toast.component';
+import { CartToastComponent } from './components/ui/cart-toast/cart-toast.component';
 import { SearchOverlayComponent } from './components/ui/search-overlay/search-overlay.component';
 import { UiService } from './core/services/ui.service';
 import { CartService } from './core/services/cart.service';
@@ -21,7 +22,8 @@ import { CartService } from './core/services/cart.service';
     BottomNavComponent,
     SidePanelComponent,
     AchievementToastComponent,
-    SearchOverlayComponent
+    CartToastComponent,
+    SearchOverlayComponent,
   ],
   templateUrl: './app.component.html',
 })
