@@ -27,4 +27,7 @@
   .slider {
     @apply absolute cursor-pointer inset-0 bg-border-color rounded-full transition-colors before:absolute before:h-4 before:w-4 before:left-1 before:bottom-1 before:bg-white before:rounded-full before:transition-transform peer-checked:bg-primary-accent peer-checked:before:translate-x-5;
   }
+  .active-view {
+  @apply bg-primary-accent text-dark-bg shadow-lg shadow-primary-accent/30;
+  }
 }

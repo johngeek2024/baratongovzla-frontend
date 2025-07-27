@@ -3,21 +3,10 @@ import { CommonModule, NgClass } from '@angular/common';
 import { IconComponent } from '../icon/icon.component';
 import { UiService } from '../../../core/services/ui.service';
 import { CartService } from '../../../core/services/cart.service';
+// CORRECCIÓN: Se importa el modelo canónico desde el core.
+import { Product } from '../../../core/models/product.model';
 
-// Se define la estructura de datos del Producto aquí mismo para mantener el componente autocontenido
-export interface Product {
-  id: string;
-  name: string;
-  imageUrl: string;
-  tags: string[];
-  price: number;
-  oldPrice?: number;
-  specs: {
-    name: string;
-    delay: string;
-    iconPath: string;
-  }[];
-}
+// La interfaz local de 'Product' ha sido eliminada. Ya no es necesaria.
 
 @Component({
   selector: 'app-product-card',
@@ -26,10 +15,11 @@ export interface Product {
   templateUrl: './product-card.component.html',
 })
 export class ProductCardComponent {
+  // El tipo de 'product' ahora es el correcto, importado desde el core.
   @Input() product!: Product;
 
   private uiService = inject(UiService);
-  private cartService = inject(CartService); // <-- AÑADE ESTA LÍNEA
+  private cartService = inject(CartService);
 
   public isComparing = computed(() =>
     this.uiService.compareList().some(p => p.id === this.product.id)
@@ -39,8 +29,8 @@ export class ProductCardComponent {
     this.uiService.toggleCompare(this.product);
   }
 
-  // NUEVO: Método para añadir al carrito
   addToCart(): void {
+    // Esta llamada ahora es válida porque los tipos de 'product' coinciden.
     this.cartService.addToCart(this.product);
   }
 }

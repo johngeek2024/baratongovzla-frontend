@@ -1,5 +1,5 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { Product } from '../../components/ui/product-card/product-card.component';
+import { Product } from '../models/product.model'; // CORRECCIÓN: Importa el modelo desde la fuente canónica.
 import { UiService } from './ui.service';
 
 // Define cómo se ve un ítem dentro del carrito (un producto + la cantidad)
@@ -31,17 +31,19 @@ export class CartService {
   });
 
   /**
+   * CORRECCIÓN: El método ahora acepta un segundo argumento 'quantityToAdd'.
    * Añade un producto al carrito o incrementa su cantidad si ya existe.
    * @param product El producto a añadir.
+   * @param quantityToAdd La cantidad de productos a añadir. Por defecto es 1.
    */
-  addToCart(product: Product) {
+  addToCart(product: Product, quantityToAdd: number = 1) {
     this.cartItems.update(items => {
       const itemInCart = items.find(item => item.product.id === product.id);
       if (itemInCart) {
-        itemInCart.quantity++;
+        itemInCart.quantity += quantityToAdd;
         return [...items];
       } else {
-        return [...items, { product, quantity: 1 }];
+        return [...items, { product, quantity: quantityToAdd }];
       }
     });
     // Muestra una notificación y abre el panel del carrito

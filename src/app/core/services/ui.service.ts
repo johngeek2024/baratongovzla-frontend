@@ -1,5 +1,7 @@
+// src/app/core/services/ui.service.ts
 import { Injectable, signal } from '@angular/core';
-import { Product } from '../../components/ui/product-card/product-card.component';
+// CORRECCIÓN: Se cambia la ruta de importación del modelo 'Product'.
+import { Product } from '../models/product.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,14 +14,11 @@ export class UiService {
   isFilterSidebarOpen = signal(false);
 
   // --- ACCIONES PARA CONTROLAR LOS PANELES ---
-
-  // Cierra todos los demás paneles antes de abrir uno nuevo para evitar superposiciones
   openMenuPanel() { this.closeAllPanels(); this.isMenuPanelOpen.set(true); }
   openCartPanel() { this.closeAllPanels(); this.isCartPanelOpen.set(true); }
   openSearchOverlay() { this.closeAllPanels(); this.isSearchOverlayOpen.set(true); }
   openFilterSidebar() { this.closeAllPanels(); this.isFilterSidebarOpen.set(true); }
 
-  // Cierra todos los paneles a la vez
   closeAllPanels() {
     this.isMenuPanelOpen.set(false);
     this.isCartPanelOpen.set(false);

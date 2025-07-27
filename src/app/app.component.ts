@@ -23,7 +23,7 @@ import { CartService } from './core/services/cart.service';
     SidePanelComponent,
     AchievementToastComponent,
     CartToastComponent,
-    SearchOverlayComponent,
+    SearchOverlayComponent
   ],
   templateUrl: './app.component.html',
 })

@@ -1,0 +1,23 @@
+@if(feature(); as featureData) {
+  <section
+    class="fade-in-up grid grid-cols-1 md:grid-cols-2 items-center gap-12 py-16"
+    appScrollFadeIn>
+
+    <div
+      class="flex flex-col"
+      [ngClass]="{ 'md:order-2': featureData.imagePosition === 'right', 'md:order-1': featureData.imagePosition === 'left' }">
+
+      <span class="font-semibold text-primary-accent uppercase tracking-wider mb-4">{{ featureData.subtitle }}</span>
+
+      <h2 class="text-4xl font-bold font-headings mb-6 leading-tight text-white">{{ featureData.title }}</h2>
+
+      <p class="text-lg text-text-secondary leading-relaxed">{{ featureData.text }}</p>
+    </div>
+
+    <div
+      class="flex items-center justify-center"
+      [ngClass]="{ 'md:order-1': featureData.imagePosition === 'right', 'md:order-2': featureData.imagePosition === 'left' }">
+      <img [src]="featureData.imageUrl" [alt]="'[Imagen descriptiva de ' + featureData.title + ']'" class="rounded-2xl shadow-2xl w-full h-auto">
+    </div>
+  </section>
+}
