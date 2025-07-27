@@ -1,10 +1,11 @@
 // src/app/app.config.ts
 
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core'; // CORRECCIÓN: Se cambia el import
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import { provideServerRendering } from '@angular/platform-server';
+// AURA: La siguiente línea se elimina porque el SSR se provee en app.config.server.ts
+// import { provideServerRendering } from '@angular/platform-server';
 
 import { routes } from './app.routes';
 import { ProductService } from './core/services/product.service';
@@ -13,11 +14,7 @@ import { CartService } from './core/services/cart.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // CORRECCIÓN: Reemplazamos 'provideZonelessChangeDetection' por una configuración
-    // optimizada de 'provideZoneChangeDetection' para dar soporte a librerías externas
-    // como Swiper.js. 'eventCoalescing: true' agrupa múltiples eventos para mejorar el rendimiento.
     provideZoneChangeDetection({ eventCoalescing: true }),
-
     provideRouter(
       routes,
       withComponentInputBinding(),
@@ -25,7 +22,7 @@ export const appConfig: ApplicationConfig = {
     ),
     provideClientHydration(),
     provideHttpClient(withFetch()),
-    provideServerRendering(),
+    // provideServerRendering(), // <-- LÍNEA ELIMINADA
     ProductService,
     UiService,
     CartService,
