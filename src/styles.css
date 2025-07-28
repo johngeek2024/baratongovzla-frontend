@@ -4,7 +4,35 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Estilos para la animación de aparición en scroll */
+/* =============================================================== */
+/* DEFINICIÓN DE PALETAS DE COLORES (TEMAS)                       */
+/* =============================================================== */
+
+/* --- TEMA POR DEFECTO (Para el Home y resto de la web) --- */
+:root {
+  --color-dark-bg: 225 27% 8%;
+  --color-dark-bg-secondary: 222 47% 11%;
+  --color-primary-accent: 223 100% 50%; /* Azul Eléctrico del Home */
+  --color-primary-accent-darker: 223 100% 45%;
+  --color-secondary-accent: 45 100% 57%;
+  --color-text-primary: 220 13% 91%;
+  --color-text-secondary: 215 9% 65%;
+  --color-border: 215 16% 27%;
+}
+
+/* --- TEMA PARA PÁGINAS DE PRODUCTOS --- */
+.products-theme {
+  --color-dark-bg: 225 27% 8%;
+  --color-dark-bg-secondary: 222 47% 11%;
+  --color-primary-accent: 200 100% 50%; /* Azul Cian para productos */
+  --color-primary-accent-darker: 200 100% 45%;
+  --color-secondary-accent: 45 100% 57%;
+  --color-text-primary: 220 13% 91%;
+  --color-text-secondary: 215 9% 65%;
+  --color-border: 215 16% 27%;
+}
+
+/* --- Estilos para la animación de aparición en scroll --- */
 .fade-in-up {
   opacity: 0;
   transform: translateY(20px);
@@ -16,20 +44,23 @@
   transform: translateY(0);
 }
 
-/* ESTILOS PARA LA BARRA LATERAL DE FILTROS */
+/* --- ESTILOS PARA COMPONENTES (CAPA @layer) --- */
 @layer components {
+  /* Estilos para los enlaces de categoría en el sidebar */
   .category-link {
-    /* CORRECCIÓN: Se cambia el color a uno claro para fondos oscuros */
     @apply flex items-center gap-3 px-3 py-2 rounded-lg text-text-on-dark font-medium hover:bg-primary-accent/10 hover:text-primary-accent transition-colors;
   }
   .category-link.active {
-    /* CORRECCIÓN: Estilo para el enlace activo, como en la imagen */
     @apply bg-primary-accent text-white font-bold;
   }
+
+  /* Estilos para el interruptor (toggle) */
   .slider {
     @apply absolute cursor-pointer inset-0 bg-border-color rounded-full transition-colors before:absolute before:h-4 before:w-4 before:left-1 before:bottom-1 before:bg-white before:rounded-full before:transition-transform peer-checked:bg-primary-accent peer-checked:before:translate-x-5;
   }
+
+  /* Estilos para los botones de vista activa (Grid/List, 2D/3D) */
   .active-view {
-    @apply bg-primary-accent text-dark-bg shadow-lg shadow-primary-accent/30;
+    @apply bg-primary-accent text-white;
   }
 }
