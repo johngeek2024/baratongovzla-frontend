@@ -12,7 +12,6 @@ export class ProductService {
 
   // --- LISTA COMPLETA DE PRODUCTOS (PRIVADA) ---
   private allProducts = signal<Product[]>([
-    // ... (la lista completa de tus productos va aquí, no la modificamos)
     {
       id: 'hyperion-x1',
       category: 'proyectores',
@@ -129,6 +128,11 @@ export class ProductService {
       return saleCondition && priceCondition && categoryCondition;
     });
   });
+
+  // --- MÉTODO PARA OBTENER TODOS LOS PRODUCTOS SIN FILTRAR ---
+  public getProducts(): Product[] {
+    return this.allProducts();
+  }
 
   // --- MÉTODO PARA OBTENER PRODUCTO POR ID ---
   public getProductById(id: string): Product | undefined {

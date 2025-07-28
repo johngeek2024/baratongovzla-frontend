@@ -3,6 +3,8 @@ import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../../../../core/services/cart.service';
+// CORRECCIÓN: Se importa el ProductService para acceder a los productos
+import { ProductService } from '../../../../core/services/product.service';
 
 @Component({
   selector: 'app-cart-page',
@@ -12,19 +14,26 @@ import { CartService } from '../../../../core/services/cart.service';
 })
 export class CartPageComponent {
   public cartService = inject(CartService);
+  // CORRECCIÓN: Se inyecta el ProductService
+  public productService = inject(ProductService);
 
-  // --- LÓGICA PARA ENVÍO GRATIS ---
+  // --- LÓGICA PARA PRODUCTOS SUGERIDOS (CROSS-SELL) ---
+  crossSellProducts = computed(() => {
+    // Obtiene los IDs de los productos que ya están en el carrito
+    const cartProductIds = this.cartService.items().map(item => item.product.id);
+
+    // Filtra la lista completa para mostrar solo productos que NO están en el carrito
+    return this.productService.getProducts()
+      .filter(product => !cartProductIds.includes(product.id))
+      .slice(0, 3); // Muestra solo los primeros 3 como sugerencia
+  });
+
+  // --- Lógica para Envío Gratis (se mantiene igual) ---
   readonly FREE_SHIPPING_THRESHOLD = 10;
-
-  // Señal que nos dice si el usuario ya calificó para el envío gratis
   isFreeShippingQualified = computed(() => this.cartService.totalPrice() >= this.FREE_SHIPPING_THRESHOLD);
-
-  // Señal que calcula cuánto le falta al usuario
   amountNeededForFreeShipping = computed(() => this.FREE_SHIPPING_THRESHOLD - this.cartService.totalPrice());
-
-  // Señal que calcula el porcentaje de la barra de progreso
   shippingProgressPercentage = computed(() => {
     const progress = (this.cartService.totalPrice() / this.FREE_SHIPPING_THRESHOLD) * 100;
-    return Math.min(progress, 100); // Se asegura de que no pase del 100%
+    return Math.min(progress, 100);
   });
 }

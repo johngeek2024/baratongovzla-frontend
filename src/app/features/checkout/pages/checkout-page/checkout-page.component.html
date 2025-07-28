@@ -1,0 +1,141 @@
+<div class="products-theme">
+  <div class="max-w-[1400px] mx-auto px-4 md:px-8 pt-28 pb-16">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-12 items-start">
+      <main class="flex flex-col gap-8">
+        <section class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="flex items-center justify-center w-8 h-8 rounded-full bg-primary-accent text-dark-bg font-bold">1</div>
+            <h2 class="text-2xl font-headings font-bold text-text-on-dark">Método de Entrega</h2>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div (click)="selectDeliveryMethod('pickup')" class="option-card" [class.active]="deliveryMethod() === 'pickup'">
+              <i class="fas fa-store"></i><h4>Retirar en Puntos Gratuitos</h4><p>Gratis</p>
+            </div>
+            <div (click)="selectDeliveryMethod('delivery')" class="option-card" [class.active]="deliveryMethod() === 'delivery'">
+              <i class="fas fa-motorcycle"></i><h4>Delivery Local</h4><p>Costo Adicional</p>
+            </div>
+            <div (click)="selectDeliveryMethod('shipping')" class="option-card" [class.active]="deliveryMethod() === 'shipping'">
+              <i class="fas fa-truck"></i><h4>Envío Nacional</h4><p>Cobro a Destino</p>
+            </div>
+          </div>
+
+          @if(deliveryMethod() === 'pickup') {
+            <div class="mt-6 pt-6 border-t border-border-color">
+              <label for="pickup-location" class="block font-medium mb-2 text-text-on-dark">Selecciona el punto de retiro:</label>
+              <select (change)="onPickupPointChange($event)" id="pickup-location" class="form-input">
+                <option value="" disabled selected>-- Elige un punto --</option>
+                <option value="colegio_luz">Colegio Luz de Carabobo</option>
+                @if(cartService.totalPrice() >= 10) {
+                  <option value="metro_lara">Metro Lara - salida sur</option>
+                  <option value="metro_cedeno">Metro Cedeño - salida sur</option>
+                  <option value="torre_banaven">Torre Banaven - Av. Bolivar</option>
+                }
+              </select>
+            </div>
+          }
+
+          @if(deliveryMethod() === 'delivery') {
+            <div class="mt-6 pt-6 border-t border-border-color space-y-6">
+              <div class="option-card-group grid-cols-2">
+                <div (click)="selectDeliveryVehicle('moto')" class="option-card" [class.active]="selectedDeliveryVehicle() === 'moto'">
+                  <h4><i class="fas fa-motorcycle"></i> Moto</h4>
+                </div>
+                <div (click)="selectDeliveryVehicle('carro')" class="option-card" [class.active]="selectedDeliveryVehicle() === 'carro'">
+                  <h4><i class="fas fa-car"></i> Carro</h4>
+                </div>
+              </div>
+              @if(selectedDeliveryVehicle()) {
+                <div>
+                  <label for="delivery-zone" class="block font-medium mb-2 text-text-on-dark">Selecciona tu zona para calcular la tarifa:</label>
+                  <select (change)="onZoneChange($event)" id="delivery-zone" class="form-input">
+                    <option value="" disabled selected>-- Elige una zona --</option>
+                    <option value="valencia_norte">Valencia Norte</option>
+                    <option value="valencia_sur">Valencia Sur</option>
+                    <option value="naguanagua">Naguanagua</option>
+                    <option value="san_diego">San Diego</option>
+                    <option value="guacara">Guacara</option>
+                  </select>
+                </div>
+              }
+            </div>
+          }
+
+          @if(deliveryMethod() === 'shipping') {
+            <div class="mt-6 pt-6 border-t border-border-color">
+              <p class="text-text-secondary text-center">La información para el envío nacional se solicitará por WhatsApp después de confirmar el pedido.</p>
+            </div>
+          }
+        </section>
+
+        <section class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8 transition-opacity duration-300" [class.opacity-50]="!isDeliveryStepComplete()" [class.pointer-events-none]="!isDeliveryStepComplete()">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="flex items-center justify-center w-8 h-8 rounded-full bg-primary-accent text-dark-bg font-bold">2</div>
+            <h2 class="text-2xl font-headings font-bold text-text-on-dark">Método de Pago</h2>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            @for (method of availablePaymentMethods(); track method.id) {
+              <div (click)="selectPaymentMethod(method.id)" class="option-card" [class.active]="paymentMethod() === method.id">
+                <i [class]="method.icon"></i>
+                <h4>{{ method.name }}</h4>
+              </div>
+            }
+          </div>
+
+          @if(paymentMethod() === 'pago_movil') {
+            <div class="mt-6 p-4 bg-dark-bg rounded-lg border border-border-color">
+              <p><strong>Datos para Pago Móvil:</strong><br>Bancamiga (0172)<br>CI: V-18.781.028<br>Cel: 0412-8433922</p>
+            </div>
+          }
+          @if(paymentMethod() === 'binance') {
+            <div class="mt-6 p-4 bg-dark-bg rounded-lg border border-border-color">
+              <p><strong>Binance Pay ID:</strong> BaratongoVzla</p>
+            </div>
+          }
+        </section>
+      </main>
+
+      <aside class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8 sticky top-24">
+        <h3 class="text-2xl font-headings font-bold text-text-on-dark pb-4 border-b border-border-color mb-6">Resumen del Pedido</h3>
+        <div class="flex flex-col gap-4 mb-6 border-b border-border-color pb-6">
+            @for(item of cartService.items(); track item.product.id) {
+                <div class="flex items-center gap-4">
+                    <img [src]="item.product.imageUrl" [alt]="item.product.name" class="w-16 h-16 rounded-lg bg-dark-bg object-contain">
+                    <div class="flex-grow">
+                        <p class="font-semibold text-text-on-dark leading-tight">{{item.product.name}}</p>
+                        <p class="text-sm text-text-secondary">Cant: {{item.quantity}}</p>
+                    </div>
+                    <p class="font-semibold text-text-on-dark">${{item.product.price * item.quantity}}</p>
+                </div>
+            }
+        </div>
+        <div class="space-y-2 text-text-on-dark/80">
+          <div class="flex justify-between">
+            <span>Subtotal</span>
+            <span class="font-semibold text-text-on-dark">${{ cartService.totalPrice() }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span>Envío</span>
+            <span class="font-semibold text-text-on-dark">${{ shippingCost() }}</span>
+          </div>
+        </div>
+        <div class="flex justify-between text-xl font-bold text-text-on-dark mt-4 pt-4 border-t border-border-color">
+          <span>Total</span>
+          <span>${{ totalPrice() }}</span>
+        </div>
+        <button class="w-full mt-8 bg-primary-accent text-white font-bold py-3 rounded-lg transition-opacity" [disabled]="!isPaymentStepComplete()" [class.opacity-50]="!isPaymentStepComplete()">
+          Confirmar Pedido
+        </button>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<style>
+  .option-card { @apply bg-dark-bg border-2 border-transparent rounded-xl p-6 text-center cursor-pointer transition-all duration-300; }
+  .option-card:hover { @apply border-primary-accent -translate-y-1; }
+  .option-card.active { @apply border-primary-accent bg-primary-accent/10 shadow-lg shadow-primary-accent/20; }
+  .option-card i { @apply text-3xl text-primary-accent mb-3 block; }
+  .option-card h4 { @apply font-semibold text-text-on-dark; }
+  .option-card p { @apply text-xs text-text-secondary; }
+  .form-input { @apply w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark; }
+</style>

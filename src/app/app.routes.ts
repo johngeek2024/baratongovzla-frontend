@@ -7,10 +7,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/home/pages/home-page/home-page.component').then(c => c.HomePageComponent),
     pathMatch: 'full'
   },
-  // --- NUEVA RUTA PARA EL CARRITO ---
   {
     path: 'cart',
     loadComponent: () => import('./features/cart/pages/cart-page/cart-page.component').then(c => c.CartPageComponent)
+  },
+  // --- NUEVA RUTA PARA EL CHECKOUT ---
+  {
+    path: 'checkout',
+    loadComponent: () => import('./features/checkout/pages/checkout-page/checkout-page.component').then(c => c.CheckoutPageComponent)
   },
   {
     path: 'products/:category',
