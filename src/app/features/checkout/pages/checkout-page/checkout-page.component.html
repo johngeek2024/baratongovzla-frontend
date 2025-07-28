@@ -12,7 +12,7 @@
               <i class="fas fa-store"></i><h4>Retirar en Puntos Gratuitos</h4><p>Gratis</p>
             </div>
             <div (click)="selectDeliveryMethod('delivery')" class="option-card" [class.active]="deliveryMethod() === 'delivery'">
-              <i class="fas fa-motorcycle"></i><h4>Delivery Local</h4><p>Costo Adicional</p>
+              <i class="fas fa-motorcycle"></i><h4>Delivery Local en Valencia</h4><p>Costo Adicional</p>
             </div>
             <div (click)="selectDeliveryMethod('shipping')" class="option-card" [class.active]="deliveryMethod() === 'shipping'">
               <i class="fas fa-truck"></i><h4>Envío Nacional</h4><p>Cobro a Destino</p>
@@ -36,12 +36,17 @@
 
           @if(deliveryMethod() === 'delivery') {
             <div class="mt-6 pt-6 border-t border-border-color space-y-6">
+              <div class="bg-dark-bg border border-border-color rounded-lg p-4">
+                <p class="text-text-on-dark font-semibold">Dirección Registrada:</p>
+                <p class="text-text-secondary">Urb. Prebo, Calle 123, Edificio Tech, Valencia, Carabobo</p>
+                <button class="text-primary-accent font-semibold mt-2 text-sm">Cambiar / Añadir otra</button>
+              </div>
               <div class="option-card-group grid-cols-2">
                 <div (click)="selectDeliveryVehicle('moto')" class="option-card" [class.active]="selectedDeliveryVehicle() === 'moto'">
-                  <h4><i class="fas fa-motorcycle"></i> Moto</h4>
+                  <h4><i class="fas fa-motorcycle"></i> Moto (Ridery/Yummy)</h4>
                 </div>
                 <div (click)="selectDeliveryVehicle('carro')" class="option-card" [class.active]="selectedDeliveryVehicle() === 'carro'">
-                  <h4><i class="fas fa-car"></i> Carro</h4>
+                  <h4><i class="fas fa-car"></i> Carro (Entrega Personal)</h4>
                 </div>
               </div>
               @if(selectedDeliveryVehicle()) {
@@ -61,8 +66,18 @@
           }
 
           @if(deliveryMethod() === 'shipping') {
-            <div class="mt-6 pt-6 border-t border-border-color">
-              <p class="text-text-secondary text-center">La información para el envío nacional se solicitará por WhatsApp después de confirmar el pedido.</p>
+            <div class="mt-6 pt-6 border-t border-border-color space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label for="shipping-name" class="block text-sm font-medium text-text-on-dark mb-1">Nombre y Apellido</label><input type="text" id="shipping-name" class="form-input" placeholder="Ej: Aura Pérez"></div>
+                    <div><label for="shipping-ci" class="block text-sm font-medium text-text-on-dark mb-1">Cédula</label><input type="text" id="shipping-ci" class="form-input" placeholder="Ej: V-12345678"></div>
+                </div>
+                <div><label for="shipping-phone" class="block text-sm font-medium text-text-on-dark mb-1">Celular</label><input type="tel" id="shipping-phone" class="form-input" placeholder="Ej: 0412-1234567"></div>
+                <div><label for="shipping-agency" class="block text-sm font-medium text-text-on-dark mb-1">Agencia de Envío</label><select id="shipping-agency" class="form-input"><option value="">-- Seleccionar Agencia --</option><option value="mrw">MRW</option><option value="zoom">Zoom</option></select></div>
+                <div><label for="shipping-agency-address" class="block text-sm font-medium text-text-on-dark mb-1">Dirección de la Agencia</label><input type="text" id="shipping-agency-address" class="form-input" placeholder="Ej: Av. Bolívar, C.C. Global"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label for="shipping-state" class="block text-sm font-medium text-text-on-dark mb-1">Estado</label><input type="text" id="shipping-state" class="form-input" placeholder="Ej: Carabobo"></div>
+                    <div><label for="shipping-city" class="block text-sm font-medium text-text-on-dark mb-1">Ciudad</label><input type="text" id="shipping-city" class="form-input" placeholder="Ej: Valencia"></div>
+                </div>
             </div>
           }
         </section>
@@ -83,12 +98,12 @@
 
           @if(paymentMethod() === 'pago_movil') {
             <div class="mt-6 p-4 bg-dark-bg rounded-lg border border-border-color">
-              <p><strong>Datos para Pago Móvil:</strong><br>Bancamiga (0172)<br>CI: V-18.781.028<br>Cel: 0412-8433922</p>
+              <p class="text-sm leading-relaxed">Realiza tu pago a:<br><strong class="text-secondary-accent">Nombre:</strong> Jonathan Moreno<br><strong class="text-secondary-accent">CI:</strong> V-18.781.028<br><strong class="text-secondary-accent">Celular:</strong> 0412-8433922<br><strong class="text-secondary-accent">Banco:</strong> Bancamiga (0172)</p>
             </div>
           }
           @if(paymentMethod() === 'binance') {
             <div class="mt-6 p-4 bg-dark-bg rounded-lg border border-border-color">
-              <p><strong>Binance Pay ID:</strong> BaratongoVzla</p>
+              <p class="text-sm leading-relaxed">Escanea el QR o usa nuestro <strong class="text-secondary-accent">Pay ID: BaratongoVzla</strong></p>
             </div>
           }
         </section>

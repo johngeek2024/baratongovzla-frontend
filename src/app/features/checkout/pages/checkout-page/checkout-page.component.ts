@@ -70,7 +70,7 @@ export class CheckoutPageComponent {
     this.resetSubOptions();
   }
 
-  // CORRECCIÓN DEFINITIVA: La función ahora acepta un string y hace la conversión internamente.
+  // CORRECCIÓN DEFINITIVA: La función ahora acepta un string simple y hace la conversión internamente.
   selectPaymentMethod(methodId: string) {
     this.paymentMethod.set(methodId as PaymentMethod);
   }
