@@ -1,64 +1,124 @@
 <div class="products-theme">
-  <div class="max-w-[1400px] mx-auto px-4 md:px-8 pt-28 pb-8">
+  <div class="max-w-[1400px] mx-auto px-4 md:px-8 pt-28 pb-16">
     @if(cartService.cartCount() > 0) {
-      <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12 items-start">
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-12 items-start">
 
-        <main class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8">
-          <header class="pb-4 border-b border-border-color mb-4">
-            <h1 class="text-4xl font-headings font-bold text-text-on-dark">Tu Carrito</h1>
-          </header>
+        <div class="flex flex-col gap-12">
+          <main class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8">
+            <header class="pb-4 border-b border-border-color mb-4">
+              <h1 class="text-4xl font-headings font-bold text-text-on-dark">Tu Carrito</h1>
+            </header>
 
-          <div class="flex flex-col divide-y divide-border-color">
-            @for(item of cartService.items(); track item.product.id) {
-              <div class="flex flex-col sm:flex-row gap-6 py-6">
-                <img [src]="item.product.imageUrl" [alt]="item.product.name" class="w-24 h-24 sm:w-28 sm:h-28 rounded-lg object-contain bg-dark-bg flex-shrink-0">
+            <div class="flex flex-col divide-y divide-border-color">
+              @for(item of cartService.items(); track item.product.id) {
+                <div class="grid grid-cols-[auto_1fr_auto] items-center gap-x-6 py-6">
+                  <img [src]="item.product.imageUrl" [alt]="item.product.name" class="w-24 h-24 rounded-lg object-contain bg-dark-bg">
 
-                <div class="flex-grow flex flex-col">
-                  <h3 class="text-lg font-bold text-text-on-dark">{{ item.product.name }}</h3>
-                  <p class="text-sm text-text-secondary capitalize">{{ item.product.category }}</p>
-
-                  <div class="flex items-center justify-between mt-auto pt-4">
-                    <div class="flex items-center gap-2">
-                      <button (click)="cartService.updateQuantity(item.product.id, -1)" class="w-8 h-8 rounded-full bg-border-color text-white">-</button>
-                      <span class="font-bold text-lg w-8 text-center text-text-on-dark">{{ item.quantity }}</span>
-                      <button (click)="cartService.updateQuantity(item.product.id, 1)" class="w-8 h-8 rounded-full bg-border-color text-white">+</button>
+                  <div class="flex flex-col">
+                    <h3 class="text-lg font-bold text-text-on-dark">{{ item.product.name }}</h3>
+                    <p class="text-sm text-text-secondary capitalize mb-auto">{{ item.product.category }}</p>
+                    <div class="flex items-center gap-2 mt-2">
+                      <div class="flex items-center gap-3">
+                        <button (click)="cartService.updateQuantity(item.product.id, -1)" class="w-7 h-7 rounded-full bg-border-color text-white">-</button>
+                        <span class="font-bold text-lg w-5 text-center text-text-on-dark">{{ item.quantity }}</span>
+                        <button (click)="cartService.updateQuantity(item.product.id, 1)" class="w-7 h-7 rounded-full bg-border-color text-white">+</button>
+                      </div>
+                      <button class="text-text-secondary hover:text-secondary-accent ml-4">Guardar</button>
+                      <button (click)="cartService.removeFromCart(item.product.id)" class="text-text-secondary hover:text-flash-accent">Eliminar</button>
                     </div>
-                    <p class="text-lg font-bold text-text-on-dark">${{ item.product.price * item.quantity }}</p>
                   </div>
+
+                  <p class="text-lg font-bold text-text-on-dark justify-self-end">${{ item.product.price * item.quantity }}</p>
                 </div>
-                 <button (click)="cartService.removeFromCart(item.product.id)" class="text-text-secondary hover:text-flash-accent self-start sm:self-center text-xl"><i class="fas fa-trash"></i></button>
+              }
+            </div>
+          </main>
+
+          <section class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8">
+              <h2 class="text-2xl font-headings font-bold text-text-on-dark text-center mb-6">Completa tu Arsenal</h2>
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                <div class="text-center bg-dark-bg p-4 rounded-lg">
+                  <img src="https://placehold.co/200x120/0D1017/FFFFFF?text=Soporte" alt="Soporte de Pared" class="h-24 object-contain mx-auto mb-2">
+                  <h4 class="text-sm font-semibold text-text-on-dark">Soporte de Pared</h4>
+                  <p class="text-secondary-accent font-bold mb-2">$25.00</p>
+                  <button class="w-full bg-border-color text-text-on-dark text-sm font-bold py-2 rounded-md hover:bg-primary-accent">Añadir</button>
+                </div>
+                <div class="text-center bg-dark-bg p-4 rounded-lg">
+                  <img src="https://placehold.co/200x120/0D1017/FFFFFF?text=Limpiador" alt="Kit de Limpieza" class="h-24 object-contain mx-auto mb-2">
+                  <h4 class="text-sm font-semibold text-text-on-dark">Kit de Limpieza</h4>
+                  <p class="text-secondary-accent font-bold mb-2">$12.00</p>
+                  <button class="w-full bg-border-color text-text-on-dark text-sm font-bold py-2 rounded-md hover:bg-primary-accent">Añadir</button>
+                </div>
+                <div class="text-center bg-dark-bg p-4 rounded-lg">
+                  <img src="https://placehold.co/200x120/0D1017/FFFFFF?text=Control" alt="Control Remoto" class="h-24 object-contain mx-auto mb-2">
+                  <h4 class="text-sm font-semibold text-text-on-dark">Control Remoto</h4>
+                  <p class="text-secondary-accent font-bold mb-2">$18.00</p>
+                  <button class="w-full bg-border-color text-text-on-dark text-sm font-bold py-2 rounded-md hover:bg-primary-accent">Añadir</button>
+                </div>
               </div>
-            }
-          </div>
-        </main>
+          </section>
+        </div>
 
         <aside class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8 sticky top-24">
-          <h2 class="text-2xl font-headings font-bold text-text-on-dark pb-4 border-b border-border-color mb-6">Resumen de Compra</h2>
-          <div class="space-y-3 text-text-on-dark/80">
+          <h2 class="text-2xl font-headings font-bold text-text-on-dark pb-4 border-b border-border-color mb-6">Resumen de la Misión</h2>
+
+          <div class="mb-6 text-center">
+            @if (isFreeShippingQualified()) {
+              <p class="text-sm text-green-400 font-semibold">¡Felicidades! Has calificado para entrega gratuita.</p>
+            } @else {
+              <p class="text-sm text-text-on-dark">
+                ¡Estás a solo
+                <span class="font-bold text-primary-accent">{{ amountNeededForFreeShipping() | currency }}</span>
+                de obtener tu entrega gratis!
+              </p>
+            }
+            <div class="w-full h-2 bg-dark-bg rounded-full overflow-hidden mt-2 border border-border-color">
+              <div
+                class="h-full rounded-full transition-all duration-500"
+                [class.bg-primary-accent]="!isFreeShippingQualified()"
+                [class.bg-gradient-to-r]="isFreeShippingQualified()"
+                [class.from-primary-accent]="isFreeShippingQualified()"
+                [class.to-green-500]="isFreeShippingQualified()"
+                [style.width.%]="shippingProgressPercentage()">
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-text-on-dark mb-2">Código de Descuento</label>
+            <div class="flex gap-2">
+              <input type="text" placeholder="Ingresa tu código" class="flex-grow bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark">
+              <button class="bg-border-color text-text-on-dark font-bold py-2 px-4 rounded-md hover:bg-primary-accent">Aplicar</button>
+            </div>
+          </div>
+
+          <div class="space-y-2 text-text-secondary border-t border-border-color pt-6">
             <div class="flex justify-between">
               <span>Subtotal</span>
-              <span class="font-semibold">${{ cartService.totalPrice() }}</span>
+              <span class="font-semibold text-text-on-dark">${{ cartService.totalPrice() }}</span>
             </div>
             <div class="flex justify-between">
               <span>Envío</span>
-              <span>Gratis</span>
+              <span [class.text-green-400]="isFreeShippingQualified()">{{ isFreeShippingQualified() ? 'Gratis' : 'Calculado después' }}</span>
             </div>
           </div>
-          <div class="flex justify-between text-xl font-bold text-text-on-dark mt-6 pt-6 border-t border-border-color">
+          <div class="flex justify-between text-xl font-bold text-text-on-dark mt-4 pt-4 border-t border-border-color">
             <span>Total</span>
             <span>${{ cartService.totalPrice() }}</span>
           </div>
-          <button class="w-full mt-8 bg-primary-accent text-white font-bold py-3 rounded-lg hover:bg-white hover:text-dark-bg transition-colors">
-            Finalizar Compra
+          <button class="w-full mt-8 bg-primary-accent text-white font-bold py-3 rounded-lg hover:bg-white hover:text-dark-bg transition-colors flex items-center justify-center gap-2">
+            Proceder al Pago <i class="fas fa-arrow-right"></i>
           </button>
         </aside>
       </div>
     } @else {
-      <div class="text-center py-20 bg-dark-bg-secondary rounded-2xl">
+      <div class="text-center py-20 bg-dark-bg-secondary rounded-2xl border border-border-color">
         <i class="fas fa-shopping-cart text-6xl text-border-color"></i>
         <h2 class="text-3xl font-headings font-bold text-text-on-dark mt-8">Tu carrito está vacío</h2>
         <p class="text-text-secondary mt-2">Parece que aún no has añadido ningún producto.</p>
-        <a routerLink="/" class="inline-block mt-8 bg-primary-accent text-white font-bold py-3 px-8 rounded-lg">Explorar productos</a>
+        <a routerLink="/" class="inline-block mt-8 bg-primary-accent text-white font-bold py-3 px-8 rounded-lg hover:bg-white hover:text-dark-bg transition-colors">
+          Explorar productos
+        </a>
       </div>
     }
   </div>
