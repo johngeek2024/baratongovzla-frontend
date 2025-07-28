@@ -1,6 +1,9 @@
+// src/app/app.component.ts
+
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+// CORRECCIÓN: Importa RouterModule junto con RouterOutlet
+import { RouterOutlet, RouterModule } from '@angular/router';
 import { HeaderComponent } from './components/layout/header/header.component';
 import { FooterComponent } from './components/layout/footer/footer.component';
 import { BottomNavComponent } from './components/layout/bottom-nav/bottom-nav.component';
@@ -17,6 +20,8 @@ import { CartService } from './core/services/cart.service';
   imports: [
     CommonModule,
     RouterOutlet,
+    // CORRECCIÓN: Añade RouterModule aquí
+    RouterModule,
     HeaderComponent,
     FooterComponent,
     BottomNavComponent,
