@@ -58,7 +58,7 @@
 <!-- Panel del Carrito de Compras -->
 <app-side-panel
   title="Tu Carrito"
-  position="right"
+  position="left"
   [isOpen]="uiService.isCartPanelOpen()"
   (close)="uiService.closeAllPanels()"
   class="z-[120]">
@@ -84,16 +84,23 @@
           </div>
         }
       </div>
+
       <div class="flex-shrink-0 pt-6 border-t border-white/10">
         <div class="flex justify-between text-lg text-text-on-dark">
           <span>Subtotal</span>
           <span class="font-bold">${{ cartService.totalPrice() }}</span>
         </div>
-        <button class="w-full mt-4 bg-primary-accent text-white font-bold py-3 rounded-lg hover:bg-white hover:text-dark-bg transition-colors">Finalizar Compra</button>
+
+        <a routerLink="/cart" (click)="uiService.closeAllPanels()" class="block text-center w-full mt-4 bg-primary-accent text-white font-bold py-3 rounded-lg hover:bg-white hover:text-dark-bg transition-colors">
+          Ir al Carrito y Pagar
+        </a>
       </div>
     </div>
   } @else {
-    <p class="text-text-secondary">Tu carrito está vacío.</p>
+    <div class="flex flex-col items-center justify-center h-full text-center">
+        <i class="fas fa-shopping-cart text-6xl text-border-color"></i>
+        <p class="text-text-secondary mt-4">Tu carrito está vacío.</p>
+    </div>
   }
 </app-side-panel>
 

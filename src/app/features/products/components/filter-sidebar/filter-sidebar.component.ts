@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ProductService } from '../../../../core/services/product.service';
 import { UiService } from '../../../../core/services/ui.service';
 
@@ -14,18 +14,33 @@ export class FilterSidebarComponent implements OnInit {
   public productService = inject(ProductService);
   public uiService = inject(UiService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
-  // Señal para la categoría activa, que usaremos para mostrar/ocultar filtros
   public activeCategory = this.productService.activeCategory;
 
   ngOnInit(): void {
-    // Cuando la página carga, leemos la categoría de la URL y se la pasamos al servicio
     this.route.paramMap.subscribe(params => {
       const category = params.get('category');
       this.productService.setActiveCategory(category);
     });
   }
 
-  onSaleChange(event: Event) { /* ... */ }
-  onPriceChange(event: Event) { /* ... */ }
+  // --- MÉTODO NUEVO PARA MOSTRAR TODOS LOS PRODUCTOS ---
+  selectAllProducts(): void {
+    // Navega a la ruta base de productos para limpiar la URL
+    this.router.navigate(['/products']);
+    // Limpia el filtro de categoría en el servicio
+    this.productService.setActiveCategory(null);
+    this.uiService.closeAllPanels();
+  }
+
+  onSaleChange(event: Event): void {
+    const isChecked = (event.target as HTMLInputElement).checked;
+    this.productService.setOnSaleFilter(isChecked);
+  }
+
+  onPriceChange(event: Event): void {
+    const price = (event.target as HTMLInputElement).valueAsNumber;
+    this.productService.setMaxPriceFilter(price);
+  }
 }

@@ -5,6 +5,10 @@
   <div class="mb-8">
     <h3 class="text-lg font-semibold text-text-on-dark pb-3 mb-4 border-b border-border-color">Categorías</h3>
     <nav class="flex flex-col gap-2">
+      <a (click)="selectAllProducts()" [class.active]="activeCategory() === null" class="category-link" href="javascript:void(0);">
+        <i class="fas fa-th-large w-5 text-center"></i> Todos
+      </a>
+
       <a (click)="uiService.closeAllPanels()" routerLink="/products/proyectores" [class.active]="activeCategory() === 'proyectores'" class="category-link">
         <i class="fas fa-satellite-dish w-5 text-center"></i> Proyectores
       </a>

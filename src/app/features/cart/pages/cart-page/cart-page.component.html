@@ -1,0 +1,65 @@
+<div class="products-theme">
+  <div class="max-w-[1400px] mx-auto px-4 md:px-8 pt-28 pb-8">
+    @if(cartService.cartCount() > 0) {
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12 items-start">
+
+        <main class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8">
+          <header class="pb-4 border-b border-border-color mb-4">
+            <h1 class="text-4xl font-headings font-bold text-text-on-dark">Tu Carrito</h1>
+          </header>
+
+          <div class="flex flex-col divide-y divide-border-color">
+            @for(item of cartService.items(); track item.product.id) {
+              <div class="flex flex-col sm:flex-row gap-6 py-6">
+                <img [src]="item.product.imageUrl" [alt]="item.product.name" class="w-24 h-24 sm:w-28 sm:h-28 rounded-lg object-contain bg-dark-bg flex-shrink-0">
+
+                <div class="flex-grow flex flex-col">
+                  <h3 class="text-lg font-bold text-text-on-dark">{{ item.product.name }}</h3>
+                  <p class="text-sm text-text-secondary capitalize">{{ item.product.category }}</p>
+
+                  <div class="flex items-center justify-between mt-auto pt-4">
+                    <div class="flex items-center gap-2">
+                      <button (click)="cartService.updateQuantity(item.product.id, -1)" class="w-8 h-8 rounded-full bg-border-color text-white">-</button>
+                      <span class="font-bold text-lg w-8 text-center text-text-on-dark">{{ item.quantity }}</span>
+                      <button (click)="cartService.updateQuantity(item.product.id, 1)" class="w-8 h-8 rounded-full bg-border-color text-white">+</button>
+                    </div>
+                    <p class="text-lg font-bold text-text-on-dark">${{ item.product.price * item.quantity }}</p>
+                  </div>
+                </div>
+                 <button (click)="cartService.removeFromCart(item.product.id)" class="text-text-secondary hover:text-flash-accent self-start sm:self-center text-xl"><i class="fas fa-trash"></i></button>
+              </div>
+            }
+          </div>
+        </main>
+
+        <aside class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8 sticky top-24">
+          <h2 class="text-2xl font-headings font-bold text-text-on-dark pb-4 border-b border-border-color mb-6">Resumen de Compra</h2>
+          <div class="space-y-3 text-text-on-dark/80">
+            <div class="flex justify-between">
+              <span>Subtotal</span>
+              <span class="font-semibold">${{ cartService.totalPrice() }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Envío</span>
+              <span>Gratis</span>
+            </div>
+          </div>
+          <div class="flex justify-between text-xl font-bold text-text-on-dark mt-6 pt-6 border-t border-border-color">
+            <span>Total</span>
+            <span>${{ cartService.totalPrice() }}</span>
+          </div>
+          <button class="w-full mt-8 bg-primary-accent text-white font-bold py-3 rounded-lg hover:bg-white hover:text-dark-bg transition-colors">
+            Finalizar Compra
+          </button>
+        </aside>
+      </div>
+    } @else {
+      <div class="text-center py-20 bg-dark-bg-secondary rounded-2xl">
+        <i class="fas fa-shopping-cart text-6xl text-border-color"></i>
+        <h2 class="text-3xl font-headings font-bold text-text-on-dark mt-8">Tu carrito está vacío</h2>
+        <p class="text-text-secondary mt-2">Parece que aún no has añadido ningún producto.</p>
+        <a routerLink="/" class="inline-block mt-8 bg-primary-accent text-white font-bold py-3 px-8 rounded-lg">Explorar productos</a>
+      </div>
+    }
+  </div>
+</div>
