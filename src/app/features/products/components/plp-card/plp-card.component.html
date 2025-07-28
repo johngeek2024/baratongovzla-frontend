@@ -26,7 +26,7 @@
   }">
 
     <div [ngClass]="{'flex-grow': viewMode === 'grid', 'col-start-1': viewMode === 'list'}">
-      <h3 class="font-semibold text-white group-hover:text-primary-accent transition-colors" [ngClass]="{'text-lg': viewMode === 'grid', 'text-xl': viewMode === 'list'}">
+      <h3 class="font-semibold text-white transition-colors" [ngClass]="{'text-lg': viewMode === 'grid', 'text-xl': viewMode === 'list'}">
         {{ product.name }}
       </h3>
       @if(viewMode === 'list') {

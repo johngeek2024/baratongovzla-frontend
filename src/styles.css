@@ -1,9 +1,9 @@
-/* ... las 3 líneas de @tailwind que ya tenías ... */
+/* src/styles.css */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* --- AÑADIR ESTO --- */
 /* Estilos para la animación de aparición en scroll */
 .fade-in-up {
   opacity: 0;
@@ -19,15 +19,17 @@
 /* ESTILOS PARA LA BARRA LATERAL DE FILTROS */
 @layer components {
   .category-link {
-    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary font-medium hover:bg-primary-accent/10 hover:text-primary-accent transition-colors;
+    /* CORRECCIÓN: Se cambia el color a uno claro para fondos oscuros */
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-text-on-dark font-medium hover:bg-primary-accent/10 hover:text-primary-accent transition-colors;
   }
   .category-link.active {
-    @apply bg-primary-accent/10 text-primary-accent;
+    /* CORRECCIÓN: Estilo para el enlace activo, como en la imagen */
+    @apply bg-primary-accent text-white font-bold;
   }
   .slider {
     @apply absolute cursor-pointer inset-0 bg-border-color rounded-full transition-colors before:absolute before:h-4 before:w-4 before:left-1 before:bottom-1 before:bg-white before:rounded-full before:transition-transform peer-checked:bg-primary-accent peer-checked:before:translate-x-5;
   }
   .active-view {
-  @apply bg-primary-accent text-dark-bg shadow-lg shadow-primary-accent/30;
+    @apply bg-primary-accent text-dark-bg shadow-lg shadow-primary-accent/30;
   }
 }
