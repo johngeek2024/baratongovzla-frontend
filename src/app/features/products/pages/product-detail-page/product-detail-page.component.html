@@ -1,0 +1,70 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Layout Principal (Grid para Desktop) -->
+  <div class="lg:grid lg:grid-cols-2 lg:gap-12 lg:items-start">
+
+    <!-- Columna Izquierda: Galería de Producto -->
+    <main class="product-main-content lg:sticky lg:top-24">
+      <app-product-gallery></app-product-gallery>
+    </main>
+
+    <!-- Columna Derecha: Panel de Compra y Detalles -->
+    <aside class="product-purchase-panel mt-8 lg:mt-0">
+      <!-- Panel de compra visible solo en Desktop -->
+      <div class="hidden lg:block">
+        <app-purchase-panel></app-purchase-panel>
+      </div>
+
+      <!-- Panel de compra visible solo en Mobile -->
+      <div class="lg:hidden">
+        <app-purchase-panel></app-purchase-panel>
+      </div>
+
+      <!-- Secciones de Características (Features) -->
+      <div class="mt-12 space-y-12">
+        <section class="feature-showcase flex flex-col md:flex-row items-center gap-8">
+          <div class="feature-content md:w-1/2">
+            <span class="text-primary-accent font-semibold uppercase tracking-wider text-sm">Calidad de Imagen</span>
+            <h2 class="font-sora text-3xl font-bold text-white mt-2 mb-4">Tu propio cine en 4K nativo.</h2>
+            <p class="text-gray-400 leading-relaxed">Sumérgete en un nivel de detalle asombroso. Con una resolución 4K real y compatibilidad con HDR10+, el Hyperion X1 proyecta colores vibrantes y negros profundos que transforman tu sala en una experiencia cinematográfica.</p>
+          </div>
+          <div class="feature-image md:w-1/2">
+            <img src="https://placehold.co/600x450/111827/9CA3AF?text=Escena+de+Película+4K" alt="[Imagen de una escena de película proyectada en alta calidad]" class="rounded-2xl shadow-2xl">
+          </div>
+        </section>
+
+        <section class="feature-showcase flex flex-col md:flex-row-reverse items-center gap-8">
+          <div class="feature-content md:w-1/2">
+            <span class="text-primary-accent font-semibold uppercase tracking-wider text-sm">Sonido Envolvente</span>
+            <h2 class="font-sora text-3xl font-bold text-white mt-2 mb-4">Escucha cada detalle, sin altavoces extra.</h2>
+            <p class="text-gray-400 leading-relaxed">Equipado con dos altavoces de 15W calibrados por audiófilos y compatibles con Dolby Atmos, el Hyperion X1 crea un campo de sonido tridimensional que te pone en el centro de la acción.</p>
+          </div>
+          <div class="feature-image md:w-1/2">
+            <img src="https://placehold.co/600x450/111827/9CA3AF?text=Ondas+de+Sonido" alt="[Imagen abstracta representando ondas de sonido envolvente]" class="rounded-2xl shadow-2xl">
+          </div>
+        </section>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Sección de Productos Relacionados -->
+  <section class="related-products-section mt-16 lg:mt-24 pt-12 border-t border-gray-800">
+    <div class="text-center mb-10">
+      <h2 class="text-3xl font-bold font-sora text-white">También te puede interesar</h2>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
+      @for (product of relatedProducts; track product.id) {
+        <app-product-card [product]="product"></app-product-card>
+      }
+    </div>
+  </section>
+</div>
+
+<!-- Barra CTA Fija para Móviles (Lógica a implementar si se necesita) -->
+<!--
+<div class="lg:hidden fixed bottom-0 left-0 right-0 bg-gray-900/80 backdrop-blur-sm p-4 border-t border-gray-700">
+  <button class="w-full bg-primary-accent text-gray-900 rounded-xl py-3 px-5 text-base font-bold flex items-center justify-center gap-3">
+    <app-icon name="cart" class="w-5 h-5"></app-icon>
+    <span>Añadir al Carrito</span>
+  </button>
+</div>
+-->

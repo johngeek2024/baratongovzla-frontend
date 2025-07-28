@@ -1,0 +1,60 @@
+<!--
+  Este panel muestra los detalles de compra del producto.
+  Utiliza señales para gestionar la cantidad y el color seleccionado.
+  Está diseñado para ser reutilizado tanto en la vista de escritorio como en la móvil.
+-->
+<div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 lg:p-8">
+  <!-- Título y Categoría -->
+  <div class="product-title">
+    <p class="text-gray-400 text-sm mb-2">Proyectores</p>
+    <h1 class="text-2xl lg:text-3xl font-bold font-sora text-white mb-4">Hyperion X1 - Proyector 4K Inteligente</h1>
+  </div>
+
+  <!-- Precio -->
+  <div class="product-price text-4xl lg:text-5xl font-bold text-white mb-6">
+    $499 <span class="text-2xl text-gray-500 line-through ml-2">$650</span>
+  </div>
+
+  <!-- Opciones del Producto -->
+  <div class="product-options space-y-6">
+    <!-- Selector de Color -->
+    <div>
+      <!-- CORRECCIÓN: Se accede a la propiedad 'name' del objeto en la señal -->
+      <label class="font-semibold text-white mb-2 block">Color: {{ selectedColor().name }}</label>
+      <div class="flex items-center gap-3">
+        <!-- CORRECCIÓN: La lógica de [ngClass] ahora es una comparación directa y correcta de objetos. -->
+        <button
+          *ngFor="let color of colors"
+          (click)="selectColor(color)"
+          class="w-8 h-8 rounded-full border-2 transition-transform duration-200 ease-in-out"
+          [style.backgroundColor]="color.hex"
+          [ngClass]="{
+            'border-primary-accent scale-110': selectedColor() === color,
+            'border-gray-600 hover:scale-110': selectedColor() !== color
+          }"
+          [attr.aria-label]="'Seleccionar color ' + color.name">
+        </button>
+      </div>
+    </div>
+
+    <!-- Selector de Cantidad -->
+    <div>
+      <label class="font-semibold text-white mb-2 block">Cantidad</label>
+      <div class="flex items-center gap-4">
+        <button (click)="decrementQuantity()" class="flex items-center justify-center bg-gray-700 text-white w-9 h-9 rounded-full text-xl hover:bg-gray-600 transition-colors duration-200" aria-label="Disminuir cantidad">
+          -
+        </button>
+        <span class="text-xl font-semibold text-white min-w-[20px] text-center">{{ quantity() }}</span>
+        <button (click)="incrementQuantity()" class="flex items-center justify-center bg-gray-700 text-white w-9 h-9 rounded-full text-xl hover:bg-gray-600 transition-colors duration-200" aria-label="Aumentar cantidad">
+          +
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botón de Añadir al Carrito -->
+  <button (click)="addToCart()" class="w-full bg-primary-accent text-gray-900 rounded-xl py-4 px-6 text-lg font-bold flex items-center justify-center gap-3 hover:bg-white hover:shadow-lg hover:shadow-primary-accent/30 transition-all duration-300 mt-8">
+    <app-icon name="cart" class="w-6 h-6"></app-icon>
+    <span>Añadir al Carrito</span>
+  </button>
+</div>

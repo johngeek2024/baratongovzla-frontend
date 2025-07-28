@@ -1,0 +1,55 @@
+<!--
+  Este componente maneja la visualización del producto, permitiendo cambiar entre una vista 2D con hotspots
+  y una vista 3D interactiva renderizada con Three.js.
+  El estado de la vista se controla con una señal para una reactividad óptima.
+-->
+<div class="relative flex justify-center items-center min-h-[50vh] lg:min-h-0 lg:h-full">
+  <!-- Contenedor de la Imagen/Canvas -->
+  <div class="relative w-full max-w-2xl aspect-[4/3]">
+
+    <!-- Vista 2D con Hotspots -->
+    @if (activeView() === '2d') {
+      <div id="2d-view" class="w-full h-full">
+        <img src="https://placehold.co/1200x800/111827/FFFFFF?text=Proyector+Hyperion+X1" alt="[Imagen principal de un Proyector Hyperion X1]" class="w-full h-auto block drop-shadow-2xl">
+
+        <!-- Hotspots -->
+        <div class="absolute top-[45%] left-[48%] group" tabindex="0">
+          <div class="w-6 h-6 bg-primary-accent rounded-full cursor-pointer transition-transform duration-300 group-hover:scale-125 animate-pulse"></div>
+          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-56 bg-gray-800/80 backdrop-blur-md border border-gray-700 rounded-xl p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none shadow-lg">
+            <h4 class="font-sora font-bold text-primary-accent mb-1">Lente Óptico de Zafiro</h4>
+            <p class="text-sm text-gray-400 leading-tight">Claridad y resistencia a rayones para una imagen perfecta siempre.</p>
+          </div>
+        </div>
+
+        <div class="absolute top-[65%] left-[20%] group" tabindex="0">
+          <div class="w-6 h-6 bg-primary-accent rounded-full cursor-pointer transition-transform duration-300 group-hover:scale-125 animate-pulse"></div>
+           <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-56 bg-gray-800/80 backdrop-blur-md border border-gray-700 rounded-xl p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none shadow-lg">
+            <h4 class="font-sora font-bold text-primary-accent mb-1">Conectividad Total</h4>
+            <p class="text-sm text-gray-400 leading-tight">Puertos HDMI 2.1, USB-C y Bluetooth 5.2 para todos tus dispositivos.</p>
+          </div>
+        </div>
+
+        <div class="absolute top-[15%] left-[60%] group" tabindex="0">
+          <div class="w-6 h-6 bg-primary-accent rounded-full cursor-pointer transition-transform duration-300 group-hover:scale-125 animate-pulse"></div>
+           <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-56 bg-gray-800/80 backdrop-blur-md border border-gray-700 rounded-xl p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none shadow-lg">
+            <h4 class="font-sora font-bold text-primary-accent mb-1">Enfoque Automático Láser</h4>
+            <p class="text-sm text-gray-400 leading-tight">Imagen nítida al instante, sin importar dónde lo coloques.</p>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Vista 3D (Canvas) -->
+    <canvas #threeCanvas [class.hidden]="activeView() !== '3d'" class="absolute top-0 left-0 w-full h-full cursor-grab active:cursor-grabbing"></canvas>
+  </div>
+
+  <!-- Toggle de Vistas -->
+  <div class="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 bg-gray-900/70 backdrop-blur-sm border border-gray-700 rounded-full p-1.5 flex gap-2">
+    <button (click)="setView('2d')" class="px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-300" [ngClass]="{'bg-primary-accent text-gray-900 shadow-md shadow-primary-accent/20': activeView() === '2d', 'text-gray-300': activeView() !== '2d'}">
+      2D
+    </button>
+    <button (click)="setView('3d')" class="px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-300" [ngClass]="{'bg-primary-accent text-gray-900 shadow-md shadow-primary-accent/20': activeView() === '3d', 'text-gray-300': activeView() !== '3d'}">
+      3D
+    </button>
+  </div>
+</div>
