@@ -1,6 +1,5 @@
-<!-- El overlay oscuro que aparece detrás de los paneles -->
-@if(uiService.isMenuPanelOpen() || uiService.isCartPanelOpen() || uiService.isFilterSidebarOpen()){
-  <div (click)="uiService.closeAllPanels()" class="fixed inset-0 bg-black/50 z-[90]"></div>
+@if(uiService.isMenuPanelOpen() || uiService.isCartPanelOpen() || uiService.isFilterSidebarOpen() || uiService.isAddressModalOpen()){
+  <div (click)="uiService.closeAllPanels()" class="fixed inset-0 bg-black/50 z-[90] backdrop-blur-sm"></div>
 }
 
 <app-header></app-header>
@@ -12,7 +11,6 @@
 <app-footer></app-footer>
 <app-bottom-nav></app-bottom-nav>
 
-<!-- Panel del Menú Principal -->
 <app-side-panel
   title="Menú"
   position="left"
@@ -22,31 +20,31 @@
   <nav>
     <ul class="flex flex-col">
       <li>
-        <a href="#" class="flex items-center gap-4 p-4 my-1 rounded-xl text-lg font-semibold text-text-on-dark transition-colors hover:bg-primary-accent hover:text-white">
+        <a routerLink="/" (click)="uiService.closeAllPanels()" class="flex items-center gap-4 p-4 my-1 rounded-xl text-lg font-semibold text-text-on-dark transition-colors hover:bg-primary-accent hover:text-white">
           <i class="fas fa-home text-[1.2rem] w-[25px] text-center"></i>
           <span>Inicio</span>
         </a>
       </li>
       <li>
-        <a href="#" class="flex items-center gap-4 p-4 my-1 rounded-xl text-lg font-semibold text-text-on-dark transition-colors hover:bg-primary-accent hover:text-white">
+        <a routerLink="/products" (click)="uiService.closeAllPanels()" class="flex items-center gap-4 p-4 my-1 rounded-xl text-lg font-semibold text-text-on-dark transition-colors hover:bg-primary-accent hover:text-white">
           <i class="fas fa-box-open text-[1.2rem] w-[25px] text-center"></i>
           <span>Productos</span>
         </a>
       </li>
       <li>
-        <a href="#" class="flex items-center gap-4 p-4 my-1 rounded-xl text-lg font-semibold text-text-on-dark transition-colors hover:bg-primary-accent hover:text-white">
+        <a routerLink="/flash-offers" (click)="uiService.closeAllPanels()" class="flex items-center gap-4 p-4 my-1 rounded-xl text-lg font-semibold text-text-on-dark transition-colors hover:bg-primary-accent hover:text-white">
           <i class="fas fa-tags text-[1.2rem] w-[25px] text-center"></i>
           <span>Ofertas Flash</span>
         </a>
       </li>
       <li>
-        <a href="#" class="flex items-center gap-4 p-4 my-1 rounded-xl text-lg font-semibold text-text-on-dark transition-colors hover:bg-primary-accent hover:text-white">
+        <a routerLink="/account" (click)="uiService.closeAllPanels()" class="flex items-center gap-4 p-4 my-1 rounded-xl text-lg font-semibold text-text-on-dark transition-colors hover:bg-primary-accent hover:text-white">
           <i class="fas fa-user text-[1.2rem] w-[25px] text-center"></i>
           <span>Mi Cuenta</span>
         </a>
       </li>
       <li>
-        <a href="#" class="flex items-center gap-4 p-4 my-1 rounded-xl text-lg font-semibold text-text-on-dark transition-colors hover:bg-primary-accent hover:text-white">
+        <a routerLink="/about" (click)="uiService.closeAllPanels()" class="flex items-center gap-4 p-4 my-1 rounded-xl text-lg font-semibold text-text-on-dark transition-colors hover:bg-primary-accent hover:text-white">
           <i class="fas fa-info-circle text-[1.2rem] w-[25px] text-center"></i>
           <span>Sobre Nosotros</span>
         </a>
@@ -55,7 +53,6 @@
   </nav>
 </app-side-panel>
 
-<!-- Panel del Carrito de Compras -->
 <app-side-panel
   title="Tu Carrito"
   position="left"
@@ -108,11 +105,46 @@
   }
 </app-side-panel>
 
-<!-- Componente de Notificación de Logros -->
+@if(uiService.isAddressModalOpen()) {
+  <div (click)="uiService.closeAllPanels()" class="fixed inset-0 bg-dark-bg/90 backdrop-blur-lg z-[110] flex items-center justify-center p-4">
+    <div (click)="$event.stopPropagation()" class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 w-full max-w-lg animate-fade-in-scale">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="font-headings text-2xl text-white">Gestionar Dirección</h3>
+            <button (click)="uiService.closeAllPanels()" class="text-text-secondary text-3xl transition-transform hover:text-white hover:rotate-90">&times;</button>
+        </div>
+        <div>
+          <h4 class="font-semibold text-text-on-dark mb-4">Añadir Nueva Dirección</h4>
+          <form class="space-y-4">
+            <div class="form-group"><label class="form-label">Dirección</label><input type="text" class="form-input" placeholder="Urb, Calle, Casa/Apto"></div>
+            <div class="form-group"><label class="form-label">Ciudad</label><input type="text" class="form-input" value="Valencia" placeholder="Valencia"></div>
+            <div class="form-group"><label class="form-label">Estado</label><input type="text" class="form-input" value="Carabobo" placeholder="Carabobo"></div>
+            <div class="flex justify-end gap-4 mt-6">
+              <button type="button" (click)="uiService.closeAllPanels()" class="btn-secondary">Cancelar</button>
+              <button type="submit" (click)="uiService.closeAllPanels()" class="btn-primary">Guardar Dirección</button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
+}
+
 <app-achievement-toast></app-achievement-toast>
 
-<!-- Componente de Notificación del Carrito -->
 <app-cart-toast></app-cart-toast>
 
-<!-- Componente del Overlay de Búsqueda -->
 <app-search-overlay></app-search-overlay>
+
+<style>
+  .form-label { @apply block text-sm font-medium text-text-on-dark mb-2; }
+  .form-input { @apply w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark focus:border-primary-accent focus:ring-0; }
+  .btn-primary { @apply bg-primary-accent text-white font-bold py-2 px-6 rounded-md hover:bg-opacity-80 transition-colors; }
+  .btn-secondary { @apply bg-border-color text-text-on-dark font-bold py-2 px-4 rounded-md hover:bg-text-secondary transition-colors; }
+
+  @keyframes fade-in-scale {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .animate-fade-in-scale {
+    animation: fade-in-scale 0.3s ease forwards;
+  }
+</style>

@@ -1,6 +1,5 @@
 // src/app/core/services/ui.service.ts
 import { Injectable, signal } from '@angular/core';
-// CORRECCIÓN: Se cambia la ruta de importación del modelo 'Product'.
 import { Product } from '../models/product.model';
 
 @Injectable({
@@ -12,18 +11,24 @@ export class UiService {
   isCartPanelOpen = signal(false);
   isSearchOverlayOpen = signal(false);
   isFilterSidebarOpen = signal(false);
+  // ✅ AÑADIDO: Señal para el nuevo modal de direcciones.
+  isAddressModalOpen = signal(false);
 
   // --- ACCIONES PARA CONTROLAR LOS PANELES ---
   openMenuPanel() { this.closeAllPanels(); this.isMenuPanelOpen.set(true); }
   openCartPanel() { this.closeAllPanels(); this.isCartPanelOpen.set(true); }
   openSearchOverlay() { this.closeAllPanels(); this.isSearchOverlayOpen.set(true); }
   openFilterSidebar() { this.closeAllPanels(); this.isFilterSidebarOpen.set(true); }
+  // ✅ AÑADIDO: Método para controlar el modal de direcciones.
+  openAddressModal() { this.closeAllPanels(); this.isAddressModalOpen.set(true); }
 
   closeAllPanels() {
     this.isMenuPanelOpen.set(false);
     this.isCartPanelOpen.set(false);
     this.isSearchOverlayOpen.set(false);
     this.isFilterSidebarOpen.set(false);
+    // ✅ AÑADIDO: Asegurarse de que el nuevo modal también se cierre.
+    this.isAddressModalOpen.set(false);
   }
 
   // --- LÓGICA DE NOTIFICACIONES DE LOGROS ---
