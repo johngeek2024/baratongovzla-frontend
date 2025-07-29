@@ -3,7 +3,6 @@
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12 items-start">
       <main class="flex flex-col gap-8">
 
-        <!-- Paso 1: Método de Entrega -->
         <section class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8">
           <div class="flex items-center gap-4 mb-6">
             <div class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-primary-accent text-dark-bg font-bold">1</div>
@@ -12,22 +11,22 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div (click)="selectDeliveryMethod('pickup')"
-                class="option-card"
-                [ngClass]="{'active-card': deliveryMethod() === 'pickup'}">
+                 class="option-card"
+                 [ngClass]="{'active-card': deliveryMethod() === 'pickup'}">
               <i class="fas fa-store"></i>
               <h4>Retirar en Puntos Gratuitos</h4>
               <p>Gratis</p>
             </div>
             <div (click)="selectDeliveryMethod('delivery')"
-                class="option-card"
-                [ngClass]="{'active-card': deliveryMethod() === 'delivery'}">
+                 class="option-card"
+                 [ngClass]="{'active-card': deliveryMethod() === 'delivery'}">
               <i class="fas fa-motorcycle"></i>
               <h4>Delivery Local en Valencia</h4>
               <p>Costo Adicional</p>
             </div>
             <div (click)="selectDeliveryMethod('shipping')"
-                class="option-card"
-                [ngClass]="{'active-card': deliveryMethod() === 'shipping'}">
+                 class="option-card"
+                 [ngClass]="{'active-card': deliveryMethod() === 'shipping'}">
               <i class="fas fa-truck"></i>
               <h4>Envío Nacional</h4>
               <p>Cobro a Destino</p>
@@ -103,12 +102,10 @@
                     <div><label class="form-label">Celular</label><input type="tel" class="form-input" placeholder="Ej: 0412-1234567"></div>
                     <div><label class="form-label">Agencia de Envío</label><select class="form-input"><option value="mrw">MRW</option><option value="zoom">Zoom</option><option value="tealca">Tealca</option></select></div>
                     <div><label class="form-label">Dirección de la Agencia</label><input type="text" class="form-input" placeholder="Ej: Av. Bolívar, C.C. Global"></div>
-                    <!-- ✅ CÓDIGO AÑADIDO -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div><label class="form-label">Estado</label><input type="text" class="form-input" placeholder="Ej: Carabobo"></div>
                       <div><label class="form-label">Ciudad</label><input type="text" class="form-input" placeholder="Ej: Valencia"></div>
                     </div>
-                    <!-- ✅ FIN DEL CÓDIGO AÑADIDO -->
                   </div>
                 }
               }
@@ -116,9 +113,8 @@
           }
         </section>
 
-        <!-- Paso 2: Método de Pago -->
         <section class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8 transition-opacity duration-300"
-                [class.opacity-50]="!isDeliveryStepComplete()" [class.pointer-events-none]="!isDeliveryStepComplete()">
+                 [class.opacity-50]="!isDeliveryStepComplete()" [class.pointer-events-none]="!isDeliveryStepComplete()">
           <div class="flex items-center gap-4 mb-6">
             <div class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-primary-accent text-dark-bg font-bold">2</div>
             <h2 class="text-2xl font-headings font-bold text-text-on-dark m-0">Método de Pago</h2>
@@ -126,8 +122,8 @@
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             @for (method of availablePaymentMethods(); track method.id) {
               <div (click)="selectPaymentMethod(method.id)"
-                  class="option-card"
-                  [ngClass]="{'active-card': paymentMethod() === method.id}">
+                   class="option-card"
+                   [ngClass]="{'active-card': paymentMethod() === method.id}">
                 <i [class]="method.icon"></i>
                 <h4 class="font-semibold text-text-on-dark">{{ method.name }}</h4>
               </div>
@@ -197,25 +193,22 @@
         </section>
       </main>
 
-      <!-- Columna de Resumen -->
       <aside class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8 sticky top-24">
         <h3 class="text-2xl font-headings font-bold text-text-on-dark m-0 pb-4 border-b border-border-color mb-6">Resumen del Pedido</h3>
 
-        <!-- Lista de Productos -->
         <div class="flex flex-col gap-4 mb-6 border-b border-border-color pb-6">
             @for(item of cartService.items(); track item.product.id) {
-                <div class="flex items-center gap-4">
-                    <img [src]="item.product.imageUrl" [alt]="item.product.name" class="w-16 h-16 rounded-lg bg-dark-bg object-contain flex-shrink-0">
-                    <div class="flex-grow">
-                        <p class="font-semibold text-text-on-dark leading-tight">{{item.product.name}}</p>
-                        <p class="text-sm text-text-secondary">Cant: {{item.quantity}}</p>
-                    </div>
-                    <p class="font-semibold text-text-on-dark">${{item.product.price * item.quantity}}</p>
+              <div class="flex items-center gap-4">
+                <img [src]="item.product.imageUrl" [alt]="item.product.name" class="w-16 h-16 rounded-lg bg-dark-bg object-contain flex-shrink-0">
+                <div class="flex-grow">
+                  <p class="font-semibold text-text-on-dark leading-tight">{{item.product.name}}</p>
+                  <p class="text-sm text-text-secondary">Cant: {{item.quantity}}</p>
                 </div>
+                <p class="font-semibold text-text-on-dark">${{item.product.price * item.quantity}}</p>
+              </div>
             }
         </div>
 
-        <!-- Cálculos -->
         <div class="space-y-3 text-lg">
           <div class="flex justify-between items-center text-text-secondary">
             <span>Subtotal</span>
@@ -227,14 +220,13 @@
           </div>
         </div>
 
-        <!-- Total -->
         <div class="flex justify-between text-2xl font-bold text-text-on-dark mt-4 pt-4 border-t border-border-color">
           <span>Total</span>
           <span>${{ totalPrice() }}</span>
         </div>
 
-        <!-- Botón de Confirmación -->
-        <button class="w-full mt-8 bg-gradient-to-r from-primary-accent to-blue-500 text-white font-bold py-4 rounded-lg transition-all duration-300 hover:shadow-[0_0_20px_hsl(var(--color-primary-accent)/0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+        <button (click)="confirmOrder()"
+                class="w-full mt-8 bg-gradient-to-r from-primary-accent to-blue-500 text-white font-bold py-4 rounded-lg transition-all duration-300 hover:shadow-[0_0_20px_hsl(var(--color-primary-accent)/0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                 [disabled]="!isPaymentStepComplete()">
           Confirmar Pedido
         </button>
