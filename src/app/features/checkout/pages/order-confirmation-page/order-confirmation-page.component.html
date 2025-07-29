@@ -1,0 +1,86 @@
+<div class="products-theme text-text-primary">
+  <div class="max-w-4xl mx-auto px-4 md:px-8 pt-28 pb-16 text-center">
+
+    <header>
+      <div class="text-6xl text-green-500 mb-6 animate-pulse">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h1 class="text-5xl font-headings font-bold">Misión Aceptada</h1>
+      <p class="text-lg text-text-secondary mt-2 max-w-xl mx-auto">
+        Hemos recibido tu pedido en <strong>BaratongoVzla</strong> y nuestro equipo ya está preparando tu paquete para el despliegue.
+      </p>
+      <div class="inline-block bg-dark-bg-secondary border border-border-color px-4 py-2 rounded-lg font-semibold mt-4">
+        Número de Pedido: <strong class="text-primary-accent">#BTV-1058</strong>
+      </div>
+    </header>
+
+    <div class="my-16 relative flex justify-between items-center">
+      <div class="absolute top-1/2 left-0 w-full h-1 bg-border-color -translate-y-1/2"></div>
+      <div class="absolute top-1/2 left-0 h-1 bg-green-500 -translate-y-1/2 transition-all duration-500 ease-in-out"
+           [style.width]="progressWidth()"></div>
+
+      @for(step of statusSteps; track step) {
+        <div class="relative z-10 flex flex-col items-center">
+          <div class="w-10 h-10 rounded-full bg-dark-bg border-2 flex items-center justify-center transition-all duration-300"
+               [ngClass]="isStepActive(step) ? 'bg-green-500 border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)]' : 'border-border-color'">
+            @switch (step) {
+              @case ('Confirmado') { <i class="fas fa-check" [ngClass]="isStepActive(step) ? 'text-dark-bg' : 'text-text-secondary'"></i> }
+              @case ('Procesando') { <i class="fas fa-cogs" [ngClass]="isStepActive(step) ? 'text-dark-bg' : 'text-text-secondary'"></i> }
+              @case ('En Ruta') { <i class="fas fa-shipping-fast" [ngClass]="isStepActive(step) ? 'text-dark-bg' : 'text-text-secondary'"></i> }
+              @case ('Entregado') { <i class="fas fa-box-check" [ngClass]="isStepActive(step) ? 'text-dark-bg' : 'text-text-secondary'"></i> }
+            }
+          </div>
+          <span class="mt-2 font-semibold transition-colors duration-300" [ngClass]="isStepActive(step) ? 'text-text-primary' : 'text-text-secondary'">
+            {{ step }}
+          </span>
+        </div>
+      }
+    </div>
+
+    <div class="text-left bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8 grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-8">
+      <div class="bg-dark-bg rounded-lg p-4 h-full min-h-[300px]">
+        <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 180 L40 160 L80 190 L150 140 L220 170 L260 130 L290 150 V 195 H 10 Z" fill="#111827" />
+            <path d="M50 150 C 100 50, 200 50, 250 150" stroke="#374151" stroke-width="2" fill="none" class="animate-pulse-slow" />
+            <circle cx="50" cy="150" r="5" fill="#00A9FF" />
+            <text x="55" y="145" class="text-[8px] fill-text-primary font-sans">BaratongoVzla</text>
+            <circle cx="250" cy="150" r="5" fill="#22c55e" />
+            <text x="245" y="145" class="text-[8px] fill-text-primary font-sans" text-anchor="end">Tu Ubicación</text>
+        </svg>
+      </div>
+
+      <div class="flex flex-col">
+        <h3 class="text-xl font-headings font-bold mb-4">Manifiesto de Misión</h3>
+        <div class="space-y-2">
+          <div class="flex justify-between"><span>Subtotal:</span><span class="font-semibold">$37.00</span></div>
+          <div class="flex justify-between"><span>Envío:</span><span class="font-semibold">$2.00</span></div>
+        </div>
+        <div class="flex justify-between text-xl font-bold mt-4 pt-4 border-t border-border-color">
+          <span>Total:</span><span>$39.00</span>
+        </div>
+        <h3 class="text-xl font-headings font-bold mt-8 mb-4">Destino del Paquete</h3>
+        <div class="text-text-secondary leading-tight">
+          <p class="font-semibold text-text-primary">Aura</p>
+          <p>Urb. Prebo, Calle 123, Edificio Tech</p>
+          <p>Valencia, Carabobo, Venezuela</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-12 flex justify-center gap-4">
+        <a routerLink="/account" class="bg-primary-accent text-dark-bg font-bold py-3 px-6 rounded-lg transition-transform hover:-translate-y-1">Ir a Mi Cuenta</a>
+        <a routerLink="/" class="bg-border-color text-text-primary font-bold py-3 px-6 rounded-lg transition-transform hover:-translate-y-1">Seguir Explorando</a>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .animate-pulse-slow {
+    stroke-dasharray: 5;
+    animation: dash 1s linear infinite;
+  }
+  @keyframes dash {
+    to { stroke-dashoffset: -20; }
+  }
+</style>

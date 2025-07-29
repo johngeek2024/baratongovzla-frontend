@@ -11,10 +11,14 @@ export const routes: Routes = [
     path: 'cart',
     loadComponent: () => import('./features/cart/pages/cart-page/cart-page.component').then(c => c.CartPageComponent)
   },
-  // --- NUEVA RUTA PARA EL CHECKOUT ---
   {
     path: 'checkout',
     loadComponent: () => import('./features/checkout/pages/checkout-page/checkout-page.component').then(c => c.CheckoutPageComponent)
+  },
+  // ✅ AÑADIDO: Ruta para la página de confirmación.
+  {
+    path: 'order-confirmation',
+    loadComponent: () => import('./features/checkout/pages/order-confirmation-page/order-confirmation-page.component').then(c => c.OrderConfirmationPageComponent)
   },
   {
     path: 'products/:category',

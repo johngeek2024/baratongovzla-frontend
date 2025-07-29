@@ -103,6 +103,12 @@
                     <div><label class="form-label">Celular</label><input type="tel" class="form-input" placeholder="Ej: 0412-1234567"></div>
                     <div><label class="form-label">Agencia de Envío</label><select class="form-input"><option value="mrw">MRW</option><option value="zoom">Zoom</option><option value="tealca">Tealca</option></select></div>
                     <div><label class="form-label">Dirección de la Agencia</label><input type="text" class="form-input" placeholder="Ej: Av. Bolívar, C.C. Global"></div>
+                    <!-- ✅ CÓDIGO AÑADIDO -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div><label class="form-label">Estado</label><input type="text" class="form-input" placeholder="Ej: Carabobo"></div>
+                      <div><label class="form-label">Ciudad</label><input type="text" class="form-input" placeholder="Ej: Valencia"></div>
+                    </div>
+                    <!-- ✅ FIN DEL CÓDIGO AÑADIDO -->
                   </div>
                 }
               }
@@ -194,6 +200,8 @@
       <!-- Columna de Resumen -->
       <aside class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8 sticky top-24">
         <h3 class="text-2xl font-headings font-bold text-text-on-dark m-0 pb-4 border-b border-border-color mb-6">Resumen del Pedido</h3>
+
+        <!-- Lista de Productos -->
         <div class="flex flex-col gap-4 mb-6 border-b border-border-color pb-6">
             @for(item of cartService.items(); track item.product.id) {
                 <div class="flex items-center gap-4">
@@ -206,15 +214,27 @@
                 </div>
             }
         </div>
-        <div class="space-y-3 text-text-secondary">
-          <div class="flex justify-between items-center"><span class="text-text-secondary">Subtotal</span><span class="font-semibold text-text-on-dark">${{ cartService.totalPrice() }}</span></div>
-          <div class="flex justify-between items-center"><span>Envío</span><span class="font-semibold text-text-on-dark">${{ shippingCost() }}</span></div>
+
+        <!-- Cálculos -->
+        <div class="space-y-3 text-lg">
+          <div class="flex justify-between items-center text-text-secondary">
+            <span>Subtotal</span>
+            <span class="font-semibold text-text-on-dark">${{ cartService.totalPrice() }}</span>
+          </div>
+          <div class="flex justify-between items-center text-text-secondary">
+            <span>Envío</span>
+            <span class="font-semibold text-text-on-dark">${{ shippingCost() }}</span>
+          </div>
         </div>
+
+        <!-- Total -->
         <div class="flex justify-between text-2xl font-bold text-text-on-dark mt-4 pt-4 border-t border-border-color">
           <span>Total</span>
           <span>${{ totalPrice() }}</span>
         </div>
-        <button class="w-full mt-8 bg-primary-accent text-white font-bold py-3 rounded-lg transition-all duration-300 hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
+
+        <!-- Botón de Confirmación -->
+        <button class="w-full mt-8 bg-gradient-to-r from-primary-accent to-blue-500 text-white font-bold py-4 rounded-lg transition-all duration-300 hover:shadow-[0_0_20px_hsl(var(--color-primary-accent)/0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                 [disabled]="!isPaymentStepComplete()">
           Confirmar Pedido
         </button>
