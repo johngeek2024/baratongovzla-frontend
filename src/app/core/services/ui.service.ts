@@ -1,4 +1,3 @@
-// src/app/core/services/ui.service.ts
 import { Injectable, signal } from '@angular/core';
 import { Product } from '../models/product.model';
 
@@ -11,24 +10,29 @@ export class UiService {
   isCartPanelOpen = signal(false);
   isSearchOverlayOpen = signal(false);
   isFilterSidebarOpen = signal(false);
-  // ✅ AÑADIDO: Señal para el nuevo modal de direcciones.
   isAddressModalOpen = signal(false);
+  isMobileSidebarOpen = signal(false);
 
   // --- ACCIONES PARA CONTROLAR LOS PANELES ---
   openMenuPanel() { this.closeAllPanels(); this.isMenuPanelOpen.set(true); }
   openCartPanel() { this.closeAllPanels(); this.isCartPanelOpen.set(true); }
   openSearchOverlay() { this.closeAllPanels(); this.isSearchOverlayOpen.set(true); }
   openFilterSidebar() { this.closeAllPanels(); this.isFilterSidebarOpen.set(true); }
-  // ✅ AÑADIDO: Método para controlar el modal de direcciones.
   openAddressModal() { this.closeAllPanels(); this.isAddressModalOpen.set(true); }
+  openMobileSidebar() { this.closeAllPanels(); this.isMobileSidebarOpen.set(true); }
+
+  // ✅ MÉTODO AÑADIDO: Implementación del método faltante.
+  closeMobileSidebar(): void {
+    this.isMobileSidebarOpen.set(false);
+  }
 
   closeAllPanels() {
     this.isMenuPanelOpen.set(false);
     this.isCartPanelOpen.set(false);
     this.isSearchOverlayOpen.set(false);
     this.isFilterSidebarOpen.set(false);
-    // ✅ AÑADIDO: Asegurarse de que el nuevo modal también se cierre.
     this.isAddressModalOpen.set(false);
+    this.isMobileSidebarOpen.set(false); // Esta línea ya estaba correcta.
   }
 
   // --- LÓGICA DE NOTIFICACIONES DE LOGROS ---

@@ -1,24 +1,29 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
-// 1. Importa withInMemoryScrolling
+import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
-
 import { routes } from './app.routes';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideClientHydration } from '@angular/platform-browser';
+
+// ✅ AÑADIDO: Importar el proveedor de HttpClient.
+import { provideHttpClient, withFetch } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-
-    // 2. Modifica esta sección
     provideRouter(
       routes,
       withInMemoryScrolling({
-        scrollPositionRestoration: 'enabled', // Restaura el scroll en cada navegación
-        anchorScrolling: 'enabled', // Habilita el scroll hacia anclas (#)
+        scrollPositionRestoration: 'enabled',
+        anchorScrolling: 'enabled',
       })
     ),
+    provideClientHydration(),
 
-    provideClientHydration(withEventReplay())
+    // ✅ CORRECCIÓN: Registrar HttpClient a nivel de aplicación.
+    // Esto permite que cualquier servicio, como AuthService, lo inyecte y utilice.
+    provideHttpClient(
+      // Habilitar el uso de la API fetch nativa del navegador, que es moderna
+      // y requerida para el renderizado del lado del servidor (SSR).
+      withFetch()
+    ),
   ]
 };

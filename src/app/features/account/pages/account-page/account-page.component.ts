@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DashboardSidebarComponent } from '../../components/dashboard-sidebar/dashboard-sidebar.component';
+import { UiService } from '../../../../core/services/ui.service'; // Importar UiService
 
 @Component({
   selector: 'app-account-page',
@@ -10,5 +11,6 @@ import { DashboardSidebarComponent } from '../../components/dashboard-sidebar/da
   templateUrl: './account-page.component.html',
 })
 export class AccountPageComponent {
-  // Este componente sigue actuando como el esqueleto principal.
+  // Hacemos público el servicio para acceder a sus señales desde la plantilla.
+  public uiService = inject(UiService);
 }

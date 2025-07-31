@@ -34,6 +34,7 @@ export class CheckoutPageComponent {
   shippingAddress = signal<string>('Urb. Prebo, Calle 123, Edificio Tech, Valencia, Carabobo');
   paymentReference = signal<string>('');
   customerName = signal<string>('Aura'); // Dato del cliente (ej. desde un servicio de autenticación)
+  customerPhone = signal<string>('');
 
   // --- LÓGICA ---
   totalPrice = computed(() => this.cartService.totalPrice() + this.shippingCost());
@@ -86,6 +87,7 @@ export class CheckoutPageComponent {
       shippingCost: this.shippingCost(),
       total: this.totalPrice(),
       customerName: this.customerName(),
+      customerPhone: this.customerPhone(),
       shippingAddress: this.shippingAddress(),
       deliveryMethod: this.deliveryMethod(),
       paymentMethod: this.paymentMethod(),
