@@ -1,0 +1,63 @@
+<div class="content-panel active">
+  <div class="order-detail-header">
+    <a routerLink="/account/orders" class="back-link">
+      <i class="fas fa-arrow-left"></i> Volver a Mis Pedidos
+    </a>
+    <h2>Detalles del Pedido #{{ id() }}</h2>
+  </div>
+  <div class="order-detail-grid">
+    <div class="order-items-list">
+      <h3 class="text-xl font-bold mb-4">Artículos del Pedido</h3>
+      <div class="item-card">
+        <img src="https://placehold.co/80x80/111827/FFFFFF?text=P" alt="Producto 1" class="item-card-img">
+        <div class="item-info">
+          <h4 class="font-semibold">Hyperion X1 - Proyector 4K</h4>
+          <p class="text-text-secondary">Cantidad: 1</p>
+        </div>
+        <p class="item-price">$499.00</p>
+      </div>
+      <div class="item-card">
+        <img src="https://placehold.co/80x80/111827/FFFFFF?text=T" alt="Producto 2" class="item-card-img">
+        <div class="item-info">
+          <h4 class="font-semibold">Teclado Mecánico Void-Dasher</h4>
+          <p class="text-text-secondary">Cantidad: 1</p>
+        </div>
+        <p class="item-price">$85.00</p>
+      </div>
+    </div>
+    <div class="order-summary-card">
+      <h3 class="text-xl font-bold mb-4">Resumen</h3>
+      <div class="summary-row">
+        <span>Subtotal:</span>
+        <span>$584.00</span>
+      </div>
+      <div class="summary-row">
+        <span>Envío:</span>
+        <span>$0.00</span>
+      </div>
+      <div class="summary-row total">
+        <span>Total:</span>
+        <span>$584.00</span>
+      </div>
+      <h3 class="text-xl font-bold mt-8 mb-4">Dirección de Envío</h3>
+      <div class="shipping-address">
+        <p class="font-semibold">Aura</p>
+        <p>Urb. Prebo, Calle 123, Edificio Tech</p>
+        <p>Valencia, Carabobo, Venezuela</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .order-detail-grid { @apply grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8; }
+  .order-summary-card { @apply bg-dark-bg-secondary border border-border-color rounded-2xl p-6 h-fit sticky top-28; }
+  .item-card { @apply flex flex-col sm:flex-row items-center gap-4 py-4 border-b border-border-color; }
+  .item-card:last-child { @apply border-none; }
+  .item-card-img { @apply w-20 h-20 object-contain bg-dark-bg rounded-lg; }
+  .item-info { @apply flex-grow text-center sm:text-left; }
+  .item-price { @apply font-semibold text-lg; }
+  .summary-row { @apply flex justify-between mb-4; }
+  .total { @apply text-xl font-bold border-t border-border-color pt-4 mt-4; }
+  .back-link { @apply inline-flex items-center gap-2 text-text-secondary hover:text-primary-accent transition-colors mb-4; }
+</style>

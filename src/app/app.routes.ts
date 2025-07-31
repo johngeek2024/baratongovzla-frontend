@@ -1,4 +1,3 @@
-// src/app/app.routes.ts
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
@@ -15,7 +14,6 @@ export const routes: Routes = [
     path: 'checkout',
     loadComponent: () => import('./features/checkout/pages/checkout-page/checkout-page.component').then(c => c.CheckoutPageComponent)
   },
-  // ✅ AÑADIDO: Ruta para la página de confirmación.
   {
     path: 'order-confirmation',
     loadComponent: () => import('./features/checkout/pages/order-confirmation-page/order-confirmation-page.component').then(c => c.OrderConfirmationPageComponent)
@@ -27,5 +25,11 @@ export const routes: Routes = [
   {
     path: 'product/:id',
     loadComponent: () => import('./features/products/pages/product-detail/product-detail.component').then(c => c.ProductDetailComponent)
+  },
+  // ✅ MODIFICADO: La ruta 'account' ahora carga sus propias rutas hijas para la navegación del dashboard.
+  {
+    path: 'account',
+    loadComponent: () => import('./features/account/pages/account-page/account-page.component').then(c => c.AccountPageComponent),
+    loadChildren: () => import('./features/account/account.routes').then(r => r.ACCOUNT_ROUTES)
   }
 ];

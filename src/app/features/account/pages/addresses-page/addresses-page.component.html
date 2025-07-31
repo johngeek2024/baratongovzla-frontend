@@ -1,0 +1,95 @@
+<div class="content-panel active">
+  <div class="content-header">
+    <h2 class="text-3xl font-bold mb-6">Mis Direcciones</h2>
+    <button class="btn-primary mb-6" (click)="isModalOpen.set(true)">
+      <i class="fas fa-plus mr-2"></i> Añadir Nueva
+    </button>
+  </div>
+
+  @if (addresses().length > 0) {
+    <div class="address-grid">
+      @for (address of addresses(); track address.name) {
+        <div class="address-card">
+          <h4>{{ address.name }}</h4>
+          <p>{{ address.recipient }}</p>
+          <p>{{ address.line1 }}</p>
+          <p>{{ address.city }}, {{ address.state }}</p>
+          <div class="address-card__actions">
+            <button><i class="fas fa-edit mr-1"></i> Editar</button>
+            <button><i class="fas fa-trash mr-1"></i> Eliminar</button>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <i class="fas fa-map-signs"></i>
+      <h3 class="text-xl font-bold mt-4">No tienes direcciones guardadas</h3>
+      <p class="text-text-secondary mt-2">Añade una dirección para un proceso de compra más rápido.</p>
+    </div>
+  }
+</div>
+
+@if (isModalOpen()) {
+  <div class="modal-overlay" (click)="isModalOpen.set(false)">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="text-2xl font-bold">Añadir Nueva Dirección</h3>
+        <button class="close-btn" (click)="isModalOpen.set(false)">&times;</button>
+      </div>
+      <form>
+        <div class="input-group">
+          <label for="address-name">Nombre de la Dirección (ej. Casa, Oficina)</label>
+          <input type="text" id="address-name" class="input-field">
+        </div>
+        <div class="input-group">
+          <label for="address-line1">Dirección Línea 1</label>
+          <input type="text" id="address-line1" class="input-field">
+        </div>
+        <div class="input-group">
+          <label for="address-city">Ciudad</label>
+          <input type="text" id="address-city" class="input-field">
+        </div>
+        <div class="input-group">
+          <label for="address-state">Estado</label>
+          <input type="text" id="address-state" class="input-field">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="isModalOpen.set(false)">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Dirección</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<style>
+  .address-grid { @apply grid grid-cols-1 sm:grid-cols-2 gap-6; }
+  .address-card {
+    @apply bg-dark-bg-secondary border border-border-color rounded-2xl p-6 transition-all duration-300;
+    /* Efecto neón azul cian */
+    @apply hover:border-primary-accent hover:shadow-[0_0_25px_theme(colors.primary-accent/20)] hover:-translate-y-2;
+  }
+  .address-card h4 { @apply text-lg font-bold text-text-primary mt-0 mb-4; }
+  .address-card p { @apply text-text-secondary leading-relaxed; }
+  .address-card__actions { @apply mt-6 flex items-center gap-4; }
+  .address-card__actions button { @apply bg-transparent border-none text-text-secondary font-semibold text-sm cursor-pointer transition-colors hover:text-primary-accent; }
+
+  .empty-state { @apply text-center bg-dark-bg-secondary border border-border-color rounded-2xl p-8 sm:p-12 mt-8; }
+  .empty-state i { @apply text-5xl text-text-secondary; }
+
+  .btn-primary { @apply flex items-center bg-primary-accent text-dark-bg font-bold py-2 px-5 rounded-lg transition-transform hover:-translate-y-1; }
+  .btn-secondary { @apply bg-border-color text-text-primary font-bold py-2 px-5 rounded-lg transition-colors hover:bg-text-secondary; }
+
+  .modal-overlay { @apply fixed inset-0 bg-dark-bg/80 backdrop-blur-sm flex items-center justify-center z-50; animation: fade-in 0.3s ease; }
+  .modal-content { @apply bg-dark-bg-secondary border border-border-color rounded-2xl p-8 w-full max-w-lg; animation: slide-up 0.3s ease; }
+  .modal-header { @apply flex justify-between items-center pb-4 mb-6 border-b border-border-color; }
+  .close-btn { @apply bg-transparent border-none text-2xl text-text-secondary cursor-pointer hover:text-white; }
+  .input-group { @apply mb-6; }
+  .input-group label { @apply block text-sm font-semibold text-text-primary mb-2; }
+  .input-field { @apply w-full bg-dark-bg border border-border-color rounded-lg px-4 py-2 text-text-primary transition-colors focus:border-primary-accent focus:outline-none; }
+  .form-actions { @apply flex justify-end gap-4 mt-8; }
+
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>

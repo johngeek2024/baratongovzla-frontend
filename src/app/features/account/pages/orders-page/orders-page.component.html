@@ -1,0 +1,41 @@
+<div class="content-panel active">
+  <div class="content-header">
+    <h2 class="text-3xl font-bold mb-6">Mis Pedidos</h2>
+  </div>
+  <div class="order-list">
+    <div class="order-card">
+      <div class="order-info">
+        <div><span class="label">Pedido #</span><span class="value">BTV-1057</span></div>
+        <div><span class="label">Fecha</span><span class="value">10 Jul, 2025</span></div>
+        <div><span class="label">Total</span><span class="value">$584.00</span></div>
+      </div>
+      <div class="order-status status-shipped">Enviado</div>
+      <a [routerLink]="['/account/orders', 'BTV-1057']" class="details-btn">Ver Detalles</a>
+    </div>
+
+    <div class="order-card">
+      <div class="order-info">
+        <div><span class="label">Pedido #</span><span class="value">BTV-1052</span></div>
+        <div><span class="label">Fecha</span><span class="value">25 Jun, 2025</span></div>
+        <div><span class="label">Total</span><span class="value">$85.00</span></div>
+      </div>
+      <div class="order-status status-processing">Procesando</div>
+      <a [routerLink]="['/account/orders', 'BTV-1052']" class="details-btn">Ver Detalles</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .order-card {
+    @apply bg-dark-bg-secondary border border-border-color rounded-2xl p-4 sm:p-6 mb-6 flex flex-wrap items-center justify-between gap-4 transition-all duration-300;
+    @apply hover:border-primary-accent hover:shadow-[0_0_25px_theme(colors.primary-accent/20)] hover:-translate-y-2;
+  }
+  .order-info { @apply flex flex-wrap items-center gap-4 sm:gap-8; }
+  .order-info > div { @apply text-center sm:text-left; }
+  .label { @apply block text-xs text-text-secondary uppercase tracking-wider; }
+  .value { @apply font-semibold text-text-primary; }
+  .order-status { @apply py-1 px-3 rounded-full text-xs font-bold; }
+  .status-shipped { @apply bg-green-500/10 text-green-400; }
+  .status-processing { @apply bg-amber-500/10 text-amber-400; }
+  .details-btn { @apply bg-border-color text-text-primary font-bold py-2 px-4 rounded-lg transition-colors hover:bg-primary-accent hover:text-dark-bg; }
+</style>
