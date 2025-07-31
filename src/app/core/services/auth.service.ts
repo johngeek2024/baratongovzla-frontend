@@ -28,26 +28,23 @@ export class AuthService {
    * En una aplicación real, esto haría una llamada POST a /api/auth/login.
    * @param credentials - Objeto con email y password.
    */
-  login(credentials: { email: string; password: any }) {
-    // Simulación de una llamada HTTP
-    console.log('Enviando credenciales al backend:', credentials);
+    login(credentials: { email: string; password: any }) {
+      // 1. La contraseña se recibe pero no se valida en esta fase.
+      console.log('Enviando credenciales al backend:', credentials);
 
-    // Simulación de una respuesta exitosa del backend
-    const mockUser: User = {
-      id: 'user-123',
-      fullName: 'Aura', // En una app real, este nombre vendría de la respuesta del backend
-      email: credentials.email,
-    };
+      // 2. Se crea un usuario simulado ('mockUser').
+      const mockUser: User = {
+        id: 'user-123',
+        fullName: 'Aura',
+        email: credentials.email,
+      };
 
-    // Actualizamos la señal del usuario actual
-    this.currentUser.set(mockUser);
+      // 3. Se establece el estado de la sesión como 'autenticado'.
+      this.currentUser.set(mockUser);
 
-    // Lógica futura: Guardar el token JWT en localStorage
-    // localStorage.setItem('auth_token', 'mock_jwt_token');
-
-    // Redirigimos al dashboard del usuario
-    return this.router.navigate(['/account']);
-  }
+      // 4. Se redirige al dashboard.
+      return this.router.navigate(['/account']);
+    }
 
   /**
    * ✅ AÑADIDO: Maneja el registro de un nuevo usuario.

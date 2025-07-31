@@ -2,17 +2,17 @@ import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 
-// ✅ INTERFAZ DE DATOS CORREGIDA
 interface MissionData {
   orderNumber: string;
   subtotal: number;
   shippingCost: number;
   total: number;
-  customerName: string; // Propiedad añadida para resolver el error
+  customerName: string;
+  customerPhone: string;
   shippingAddress: string;
   deliveryMethod: 'pickup' | 'delivery' | 'shipping' | null;
   paymentMethod: 'pago_movil' | 'binance' | 'cash' | null;
-  paymentReference?: string; // Se añade la referencia de pago
+  paymentReference?: string;
   pickupPoint: string | null;
   deliveryVehicle: 'moto' | 'carro' | null;
   deliveryZone: string | null;
@@ -30,14 +30,13 @@ export class OrderConfirmationPageComponent implements OnInit, OnDestroy {
   private router = inject(Router);
 
   missionData = signal<MissionData | null>(null);
-
-  // El resto del componente permanece sin cambios...
   status = signal<OrderStatus>('Confirmado');
-  private intervalId?: number;
+  private intervalId?: any;
   statusSteps: OrderStatus[] = ['Confirmado', 'Procesando', 'En Ruta', 'Entregado'];
   progressWidth = computed(() => {
     const currentIndex = this.statusSteps.indexOf(this.status());
-    if (currentIndex <= 0) return '0%';
+    if (currentIndex < 0) return '0%';
+    // La barra avanza en tercios (hay 3 segmentos entre 4 puntos).
     return `${(currentIndex / (this.statusSteps.length - 1)) * 100}%`;
   });
 
@@ -47,24 +46,33 @@ export class OrderConfirmationPageComponent implements OnInit, OnDestroy {
     if (state?.missionData) {
       this.missionData.set(state.missionData);
     } else {
-      console.warn('No se encontraron datos de la misión. Acceso directo a la página?');
+      console.warn('No se encontraron datos de la misión.');
     }
   }
 
   ngOnInit(): void {
+    // Simula el avance del estado del pedido cada 3 segundos.
     this.intervalId = window.setInterval(() => {
       this.status.update(currentStatus => {
         const currentIndex = this.statusSteps.indexOf(currentStatus);
-        const nextIndex = (currentIndex + 1) % this.statusSteps.length;
-        if (currentIndex === nextIndex) {
-            if(this.intervalId) clearInterval(this.intervalId); // Detener cuando llegue al final
+
+        // ✅ CORRECCIÓN: Lógica para detener la animación en el último paso.
+        // Si ya estamos en el último paso ('Entregado'), detenemos el intervalo.
+        if (currentIndex >= this.statusSteps.length - 1) {
+          if (this.intervalId) {
+            clearInterval(this.intervalId);
+          }
+          return currentStatus; // Mantiene el estado en 'Entregado'.
         }
-        return this.statusSteps[nextIndex];
+
+        // Si no, avanzamos al siguiente estado.
+        return this.statusSteps[currentIndex + 1];
       });
     }, 3000);
   }
 
   ngOnDestroy(): void {
+    // Asegura la limpieza del intervalo al destruir el componente.
     if (this.intervalId) clearInterval(this.intervalId);
   }
 

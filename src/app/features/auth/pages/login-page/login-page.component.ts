@@ -3,19 +3,21 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 // ✅ AÑADIDO: Importaciones para Formularios Reactivos
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule], // ✅ Añadir ReactiveFormsModule
+  // ✅ CORRECCIÓN: Se añade ReactiveFormsModule a los imports del componente.
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './login-page.component.html',
 })
 export class LoginPageComponent implements OnInit {
   private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
   loginForm!: FormGroup;
 
   ngOnInit(): void {
-    // Definimos la estructura y las validaciones del formulario
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -24,13 +26,11 @@ export class LoginPageComponent implements OnInit {
 
   handleLogin(): void {
     if (this.loginForm.invalid) {
-      // Marcar todos los campos como "tocados" para mostrar errores de validación si es necesario
       this.loginForm.markAllAsTouched();
       return;
     }
 
-    // Lógica futura: Llamar a un servicio de autenticación
-    console.log('Datos de inicio de sesión:', this.loginForm.value);
-    // authService.login(this.loginForm.value).subscribe(...);
+    // Ahora esta llamada funcionará correctamente al hacer clic en el botón.
+    this.authService.login(this.loginForm.value);
   }
 }

@@ -9,7 +9,6 @@ type DeliveryMethod = 'pickup' | 'delivery' | 'shipping' | null;
 type PaymentMethod = 'pago_movil' | 'binance' | 'cash' | null;
 type DeliveryVehicle = 'moto' | 'carro' | null;
 type DeliveryZone = 'valencia_norte' | 'valencia_sur' | 'naguanagua' | 'san_diego' | 'guacara';
-
 interface ZoneFees { [key: string]: number; }
 interface DeliveryFees { [key: string]: ZoneFees; moto: ZoneFees; carro: ZoneFees; }
 
@@ -33,10 +32,10 @@ export class CheckoutPageComponent {
   selectedDeliveryZone = signal<string | null>(null);
   shippingAddress = signal<string>('Urb. Prebo, Calle 123, Edificio Tech, Valencia, Carabobo');
   paymentReference = signal<string>('');
-  customerName = signal<string>('Aura'); // Dato del cliente (ej. desde un servicio de autenticación)
+  customerName = signal<string>('Aura');
   customerPhone = signal<string>('');
 
-  // --- LÓGICA ---
+  // --- LÓGICA DE CÁLCULO ---
   totalPrice = computed(() => this.cartService.totalPrice() + this.shippingCost());
 
   isDeliveryStepComplete = computed(() => {
@@ -45,6 +44,16 @@ export class CheckoutPageComponent {
     if (method === 'delivery') return !!this.selectedDeliveryVehicle() && !!this.selectedDeliveryZone();
     if (method === 'shipping') return true;
     return false;
+  });
+
+  // ✅ CORRECCIÓN: Lógica de validación con Expresión Regular.
+  isContactStepComplete = computed(() => {
+    if (!this.isDeliveryStepComplete()) {
+      return false;
+    }
+    // Patrón para números de celular de Venezuela (0412, 0414, 0416, 0424, 0426)
+    const venezuelanPhoneRegex = /^04(12|14|16|24|26)\d{7}$/;
+    return venezuelanPhoneRegex.test(this.customerPhone());
   });
 
   isPaymentStepComplete = computed(() => {
@@ -76,13 +85,11 @@ export class CheckoutPageComponent {
 
   // --- MÉTODOS ---
   confirmOrder(): void {
-    if (!this.isPaymentStepComplete()) return;
+    if (!this.isContactStepComplete() || !this.isPaymentStepComplete()) return;
 
     const orderNumber = `BTV-${Date.now()}`;
-
-    // ✅ DATOS DE MISIÓN COMPLETOS
     const missionData = {
-      orderNumber: orderNumber,
+      orderNumber,
       subtotal: this.cartService.totalPrice(),
       shippingCost: this.shippingCost(),
       total: this.totalPrice(),
@@ -91,7 +98,7 @@ export class CheckoutPageComponent {
       shippingAddress: this.shippingAddress(),
       deliveryMethod: this.deliveryMethod(),
       paymentMethod: this.paymentMethod(),
-      paymentReference: this.paymentReference(), // Se añade la referencia de pago
+      paymentReference: this.paymentReference(),
       pickupPoint: this.selectedPickupPoint(),
       deliveryVehicle: this.selectedDeliveryVehicle(),
       deliveryZone: this.selectedDeliveryZone(),
@@ -102,10 +109,20 @@ export class CheckoutPageComponent {
   }
 
   onPaymentReferenceChange(event: Event): void {
-    this.paymentReference.set((event.target as HTMLInputElement).value);
+    const inputElement = event.target as HTMLInputElement;
+    if (inputElement) {
+      this.paymentReference.set(inputElement.value);
+    }
   }
 
-  selectDeliveryMethod(method: DeliveryMethod): void {
+  onCustomerPhoneInput(event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    if (inputElement) {
+      this.customerPhone.set(inputElement.value);
+    }
+  }
+
+  selectDeliveryMethod(method: DeliveryMethod) {
     this.deliveryMethod.set(method);
     this.resetSubOptions();
     if (method === 'shipping') {
@@ -113,12 +130,12 @@ export class CheckoutPageComponent {
     }
   }
 
-  selectPaymentMethod(methodId: string): void {
+  selectPaymentMethod(methodId: string) {
     this.paymentMethod.set(methodId as PaymentMethod);
     this.paymentReference.set('');
   }
 
-  selectDeliveryVehicle(vehicle: DeliveryVehicle): void {
+  selectDeliveryVehicle(vehicle: DeliveryVehicle) {
     this.selectedDeliveryVehicle.set(vehicle);
     this.selectedDeliveryZone.set(null);
     this.shippingCost.set(0);
@@ -127,7 +144,7 @@ export class CheckoutPageComponent {
     }
   }
 
-  onZoneChange(event: Event): void {
+  onZoneChange(event: Event) {
     const zone = (event.target as HTMLSelectElement).value;
     this.selectedDeliveryZone.set(zone);
     const vehicle = this.selectedDeliveryVehicle();
@@ -139,11 +156,11 @@ export class CheckoutPageComponent {
     }
   }
 
-  onPickupPointChange(event: Event): void {
+  onPickupPointChange(event: Event) {
     this.selectedPickupPoint.set((event.target as HTMLSelectElement).value);
   }
 
-  private resetSubOptions(): void {
+  private resetSubOptions() {
     this.paymentMethod.set(null);
     this.shippingCost.set(0);
     this.selectedPickupPoint.set(null);

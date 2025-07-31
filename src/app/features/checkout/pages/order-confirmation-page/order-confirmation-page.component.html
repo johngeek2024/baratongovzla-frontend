@@ -1,7 +1,6 @@
 <div class="products-theme text-text-primary">
   @if (missionData(); as data) {
     <div class="max-w-4xl mx-auto px-4 md:px-8 pt-28 pb-16 text-center">
-
       <header>
         <div class="text-6xl text-green-500 mb-6 animate-pulse">
           <i class="fas fa-check-circle"></i>
@@ -23,11 +22,7 @@
           @for(step of statusSteps; track step) {
             <div class="flex flex-col items-center">
               <div class="w-10 h-10 rounded-full bg-dark-bg border-2 flex items-center justify-center transition-all duration-500"
-                   [ngClass]="{
-                     'active-step': isStepActive(step),
-                     'border-border-color': !isStepActive(step),
-                     'delivered-animation': isStepActive(step) && step === 'Entregado'
-                   }">
+                   [ngClass]="{ 'active-step': isStepActive(step), 'border-border-color': !isStepActive(step), 'delivered-animation': isStepActive(step) && step === 'Entregado' }">
                 @switch (step) {
                   @case ('Confirmado') { <i class="fas fa-check" [ngClass]="isStepActive(step) ? 'text-dark-bg' : 'text-text-secondary'"></i> }
                   @case ('Procesando') { <i class="fas fa-cogs" [ngClass]="isStepActive(step) ? 'text-dark-bg' : 'text-text-secondary'"></i> }
@@ -53,6 +48,7 @@
             <circle id="package-dot" r="5" fill="#ffd724" class="travel-dot-glow"/>
           </svg>
         </div>
+
         <div class="flex flex-col">
           <h3 class="text-xl font-headings font-bold mb-4">Manifiesto de Misión</h3>
           <div class="space-y-2">
@@ -62,9 +58,18 @@
           <div class="flex justify-between text-xl font-bold mt-4 pt-4 border-t border-border-color">
             <span>Total:</span><span>{{ data.total | currency:'USD' }}</span>
           </div>
+
           <hr class="border-border-color my-6">
+
           <div class="space-y-4 text-sm">
             <h4 class="text-base font-headings font-bold">Resumen Logístico</h4>
+            <div class="flex items-start gap-3">
+              <i class="fab fa-whatsapp w-5 text-center text-green-400 mt-1"></i>
+              <div class="flex-grow">
+                <span class="text-text-secondary">Contacto (WhatsApp):</span>
+                <strong class="block text-text-primary">{{ data.customerPhone }}</strong>
+              </div>
+            </div>
             <div class="flex items-start gap-3">
               <i class="fas fa-wallet w-5 text-center text-primary-accent mt-1"></i>
               <div class="flex-grow">
@@ -77,7 +82,7 @@
                 }
               </div>
             </div>
-            @if(data.paymentReference) {
+             @if(data.paymentReference) {
               <div class="flex items-start gap-3">
                 @if(data.paymentMethod === 'binance') {
                   <i class="fas fa-receipt w-5 text-center text-primary-accent mt-1"></i>
@@ -116,6 +121,7 @@
           </div>
         </div>
       </div>
+
       <div class="mt-12 flex justify-center gap-4">
         <a routerLink="/account" class="bg-primary-accent text-dark-bg font-bold py-3 px-6 rounded-lg transition-transform hover:-translate-y-1">Ir a Mi Cuenta</a>
         <a routerLink="/" class="bg-border-color text-text-primary font-bold py-3 px-6 rounded-lg transition-transform hover:-translate-y-1">Seguir Explorando</a>
