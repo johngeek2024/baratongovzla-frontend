@@ -1,12 +1,13 @@
 import { Component, EventEmitter, inject, OnInit, Output, signal, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AdminProduct } from '../products-panel/products-panel.component';
+import { FormFieldErrorComponent } from '../../../../components/ui/form-field-error/form-field-error.component';
 
 @Component({
   selector: 'app-product-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormFieldErrorComponent],
   templateUrl: './product-form.component.html',
 })
 export class ProductFormComponent implements OnInit {
@@ -34,6 +35,12 @@ export class ProductFormComponent implements OnInit {
       image: [null]
     });
   }
+
+  // ✅ 3. Crea getters para un acceso más limpio desde la plantilla
+  get name(): AbstractControl | null { return this.productForm.get('name'); }
+  get sku(): AbstractControl | null { return this.productForm.get('sku'); }
+  get price(): AbstractControl | null { return this.productForm.get('price'); }
+  get stock(): AbstractControl | null { return this.productForm.get('stock'); }
 
   // ✅ Método para capturar el archivo seleccionado.
   onFileChange(event: Event): void {
