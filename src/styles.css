@@ -6,10 +6,12 @@
 @tailwind utilities;
 
 /* =============================================================== */
-/* DEFINICIÓN DE PALETAS DE COLORES (TEMAS)                       */
+/* DEFINICIÓN DE TEMAS PARA LA TIENDA PÚBLICA                      */
+/* Esta es la configuración de color para todo el sitio,           */
+/* excepto el panel de administración.                             */
 /* =============================================================== */
 
-/* --- TEMA POR DEFECTO (Para el Home y resto de la web) --- */
+/* --- TEMA POR DEFECTO (Home, etc.) --- */
 :root {
   --color-dark-bg: 225 27% 8%;
   --color-dark-bg-secondary: 222 47% 11%;
@@ -18,7 +20,12 @@
   --color-secondary-accent: 45 100% 57%;
   --color-text-primary: 220 13% 91%;
   --color-text-secondary: 215 9% 65%;
+  --color-text-on-dark: 220 14% 91%;
   --color-border: 215 16% 27%;
+  /* Colores de estado por defecto */
+  --color-success: 145 63% 49%;
+  --color-warning: 38 92% 53%;
+  --color-danger: 4 85% 61%;
 }
 
 /* --- TEMA PARA PÁGINAS DE PRODUCTOS --- */

@@ -8,10 +8,6 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // =================================================================
-        // CORRECCIÓN: Se usa la sintaxis HSL con <alpha-value> para
-        // compatibilidad con TypeScript y opacidad.
-        // =================================================================
         'primary-accent': 'hsl(var(--color-primary-accent) / <alpha-value>)',
         'primary-accent-darker': 'hsl(var(--color-primary-accent-darker) / <alpha-value>)',
         'secondary-accent': 'hsl(var(--color-secondary-accent) / <alpha-value>)',
@@ -19,15 +15,17 @@ const config: Config = {
         'dark-bg-secondary': 'hsl(var(--color-dark-bg-secondary) / <alpha-value>)',
         'text-primary': 'hsl(var(--color-text-primary) / <alpha-value>)',
         'text-secondary': 'hsl(var(--color-text-secondary) / <alpha-value>)',
-        'text-on-dark': '#E5E7EB',
+        'text-on-dark': 'hsl(var(--color-text-on-dark) / <alpha-value>)',
         'border-color': 'hsl(var(--color-border) / <alpha-value>)',
         'flash-accent': '#ff3b3b',
+        'success': 'hsl(var(--color-success) / <alpha-value>)',
+        'warning': 'hsl(var(--color-warning) / <alpha-value>)',
+        'danger': 'hsl(var(--color-danger) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         headings: ['Sora', 'sans-serif'],
       },
-      // Keyframes y Animation se mantienen igual...
       keyframes: {
         'fade-in-up': {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
@@ -57,6 +55,7 @@ const config: Config = {
     plugin(function ({ addVariant }) {
       addVariant('is-active', '&.is-active');
     }),
+    require('tailwindcss-animate'),
   ],
 };
 

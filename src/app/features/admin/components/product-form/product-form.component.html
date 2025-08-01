@@ -1,0 +1,70 @@
+<form [formGroup]="productForm" (ngSubmit)="handleSubmit()" class="space-y-6">
+  <div>
+    <label class="form-label">Imagen del Producto</label>
+    <div class="mt-1 flex items-center gap-6">
+      <div class="w-24 h-24 rounded-lg bg-dark-bg border border-dashed border-border-color flex items-center justify-center">
+        @if (imagePreview()) {
+          <img [src]="imagePreview()" alt="Previsualización" class="w-full h-full object-contain rounded-lg">
+        } @else {
+          <i class="fas fa-image text-3xl text-text-secondary"></i>
+        }
+      </div>
+      <label for="image-upload" class="cursor-pointer btn btn-secondary">
+        <i class="fas fa-upload"></i>
+        <span>Seleccionar Archivo</span>
+      </label>
+      <input id="image-upload" type="file" class="hidden" accept="image/png, image/jpeg, image/webp" (change)="onFileChange($event)">
+    </div>
+  </div>
+
+  <div>
+    <label for="name" class="form-label">Nombre del Producto</label>
+    <input type="text" id="name" formControlName="name" class="form-input" placeholder="Ej: Teclado Mecánico RGB">
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <label for="sku" class="form-label">SKU</label>
+      <input type="text" id="sku" formControlName="sku" class="form-input" placeholder="Ej: BTV-GAM-007">
+    </div>
+    <div>
+      <label for="price" class="form-label">Precio ($)</label>
+      <input type="number" id="price" formControlName="price" class="form-input" placeholder="Ej: 85.00">
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <label for="stock" class="form-label">Stock</label>
+      <input type="number" id="stock" formControlName="stock" class="form-input" placeholder="Ej: 50">
+    </div>
+    <div>
+      <label for="status" class="form-label">Estado</label>
+      <select id="status" formControlName="status" class="form-input">
+        <option value="Publicado">Publicado</option>
+        <option value="Borrador">Borrador</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="flex justify-end gap-4 pt-4">
+  <button type="submit" class="btn flex items-center justify-center w-40" [disabled]="productForm.invalid || isSaving()">
+    @if (isSaving()) {
+      <i class="fas fa-spinner animate-spin mr-2"></i>
+      <span>Guardando...</span>
+    } @else {
+      <span>Guardar Producto</span>
+    }
+  </button>
+  </div>
+</form>
+
+<style>
+  .form-label { @apply block text-sm font-medium text-text-primary mb-1; }
+  .form-input { @apply w-full bg-dark-bg border border-border-color rounded-lg px-3 py-2 text-white; @apply focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/50 transition-all duration-200; }
+  .btn { @apply bg-primary-accent text-dark-bg border-none px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 whitespace-nowrap; }
+  .btn:hover { @apply -translate-y-0.5 shadow-lg shadow-primary-accent/20; }
+  .btn:disabled { @apply opacity-50 cursor-not-allowed transform-none shadow-none; }
+  .btn.btn-secondary { @apply bg-border-color text-text-primary; }
+  .btn.btn-secondary:hover { @apply bg-text-secondary; }
+</style>
