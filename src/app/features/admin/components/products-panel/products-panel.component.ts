@@ -4,11 +4,10 @@ import { ModalComponent } from '../../../../components/ui/modal/modal.component'
 import { ProductFormComponent } from '../product-form/product-form.component';
 import { ProductAdminService } from '../../services/product-admin.service';
 
-// ✅ Añadimos un campo opcional para la URL de previsualización local.
 export interface AdminProduct {
   id: string;
   imageUrl: string;
-  localImagePreview?: string; // Para mostrar la imagen antes de subirla
+  localImagePreview?: string;
   name: string;
   sku: string;
   price: number;
@@ -24,10 +23,9 @@ export interface AdminProduct {
 })
 export class ProductsPanelComponent {
   @HostBinding('class') class = 'content-panel active';
-
   private productAdminService = inject(ProductAdminService);
 
-  viewMode = signal<'list' | 'grid'>('list');
+  // --- Señales de Estado ---
   products = signal<AdminProduct[]>([
     {
       id: '1',
@@ -57,33 +55,61 @@ export class ProductsPanelComponent {
       status: 'Borrador',
     }
   ]);
-  isAddModalOpen = signal(false);
-
+  viewMode = signal<'list' | 'grid'>('list');
   isSaving = signal(false);
+
+  // --- Señales para controlar el modal y el modo (Añadir/Editar) ---
+  isFormModalOpen = signal(false);
+  productToEdit = signal<AdminProduct | null>(null);
 
   setViewMode(mode: 'list' | 'grid'): void {
     this.viewMode.set(mode);
   }
 
-  // ✅ 4. El método ahora usa el servicio para añadir el producto
-  handleAddProduct(event: { productData: Omit<AdminProduct, 'id' | 'imageUrl'>; imageFile: File | null; }) {
-    this.isSaving.set(true); // Inicia el estado de carga
+  // --- Métodos para abrir el modal ---
+  openAddModal(): void {
+    this.productToEdit.set(null);
+    this.isFormModalOpen.set(true);
+  }
 
-    this.productAdminService.addProduct(event.productData, event.imageFile)
-      .subscribe({
-        next: (newProductFromServer) => {
-          // Éxito: añade el producto devuelto por el servidor a nuestra lista local
-          this.products.update(currentProducts => [newProductFromServer, ...currentProducts]);
-          console.log('Producto añadido exitosamente:', newProductFromServer);
-          this.isSaving.set(false); // Finaliza el estado de carga
-          this.isAddModalOpen.set(false); // Cierra el modal
-        },
-        error: (err) => {
-          // Error: maneja el error de la API
-          console.error('Error al añadir el producto:', err);
-          this.isSaving.set(false); // Finaliza el estado de carga
-          // Aquí podríamos mostrar una notificación de error al usuario
+  openEditModal(product: AdminProduct): void {
+    this.productToEdit.set(product);
+    this.isFormModalOpen.set(true);
+  }
+
+  // --- Método unificado para Guardar (Crear o Actualizar) ---
+  handleSaveProduct(event: { productData: Omit<AdminProduct, 'id' | 'imageUrl'>; imageFile: File | null; }) {
+    this.isSaving.set(true);
+    const productToEdit = this.productToEdit();
+
+    // Determina si la operación es una actualización o una creación
+    const operation = productToEdit
+      ? this.productAdminService.updateProduct(productToEdit.id, event.productData, event.imageFile)
+      : this.productAdminService.addProduct(event.productData, event.imageFile);
+
+    operation.subscribe({
+      next: (savedProduct) => {
+        if (productToEdit) {
+          // Actualiza el producto existente en la lista
+          this.products.update(products =>
+            products.map(p => p.id === savedProduct.id ? savedProduct : p)
+          );
+        } else {
+          // Añade el nuevo producto al inicio de la lista
+          this.products.update(products => [savedProduct, ...products]);
         }
-      });
+        this.closeModal();
+      },
+      error: (err) => {
+        console.error('Error al guardar el producto:', err);
+        this.isSaving.set(false);
+      }
+    });
+  }
+
+  // --- Método para cerrar el modal y resetear estados ---
+  closeModal(): void {
+    this.isFormModalOpen.set(false);
+    this.isSaving.set(false);
   }
 }

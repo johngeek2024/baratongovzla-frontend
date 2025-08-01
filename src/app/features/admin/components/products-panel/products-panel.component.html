@@ -2,20 +2,14 @@
   <h1>Gestión de Productos</h1>
   <div class="header-actions">
     <div class="view-toggle-group">
-      <button
-        (click)="setViewMode('list')"
-        class="view-toggle-btn"
-        [class.active]="viewMode() === 'list'">
+      <button (click)="setViewMode('list')" class="view-toggle-btn" [class.active]="viewMode() === 'list'">
         <i class="fas fa-list"></i>
       </button>
-      <button
-        (click)="setViewMode('grid')"
-        class="view-toggle-btn"
-        [class.active]="viewMode() === 'grid'">
+      <button (click)="setViewMode('grid')" class="view-toggle-btn" [class.active]="viewMode() === 'grid'">
         <i class="fas fa-th-large"></i>
       </button>
     </div>
-    <button class="btn" (click)="isAddModalOpen.set(true)">
+    <button class="btn" (click)="openAddModal()">
       <i class="fas fa-plus"></i> Añadir Producto
     </button>
   </div>
@@ -50,7 +44,7 @@
                 </span>
               </td>
               <td class="action-buttons">
-                <button><i class="fas fa-edit"></i></button>
+                <button (click)="openEditModal(product)"><i class="fas fa-edit"></i></button>
                 <button class="delete-btn"><i class="fas fa-trash"></i></button>
               </td>
             </tr>
@@ -88,7 +82,9 @@
             </div>
           </div>
           <div class="product-card__actions">
-            <button class="btn btn-secondary flex-grow justify-center"><i class="fas fa-edit"></i> Editar</button>
+            <button class="btn btn-secondary flex-grow justify-center" (click)="openEditModal(product)">
+              <i class="fas fa-edit"></i> Editar
+            </button>
           </div>
         </div>
       } @empty {
@@ -99,45 +95,38 @@
 </div>
 
 <app-modal
-  [isOpen]="isAddModalOpen"
-  title="Añadir Nuevo Producto"
-  (close)="isAddModalOpen.set(false)">
-
+  [isOpen]="isFormModalOpen"
+  [title]="productToEdit() ? 'Editar Producto' : 'Añadir Nuevo Producto'"
+  (close)="closeModal()">
   <app-product-form
     [isSaving]="isSaving"
-    (save)="handleAddProduct($event)"></app-product-form>
-
+    [productToEdit]="productToEdit()"
+    (save)="handleSaveProduct($event)"></app-product-form>
 </app-modal>
 
 <style>
   .content-header { @apply flex justify-between items-center flex-wrap gap-4; }
   .content-header h1 { @apply text-2xl sm:text-3xl font-bold; }
   .header-actions { @apply flex items-center gap-4; }
-
   .btn { @apply bg-primary-accent text-dark-bg border-none px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 whitespace-nowrap; }
   .btn:hover { @apply -translate-y-0.5 shadow-lg shadow-primary-accent/20; }
   .btn.btn-secondary { @apply bg-border-color text-text-primary; }
   .btn.btn-secondary:hover { @apply bg-text-secondary; }
-
   .view-toggle-group { @apply flex bg-dark-bg p-1 rounded-lg border border-border-color; }
   .view-toggle-btn { @apply bg-transparent border-none text-text-secondary px-3 py-1.5 rounded-md transition-all duration-200; }
   .view-toggle-btn.active { @apply bg-primary-accent text-dark-bg shadow-md shadow-primary-accent/20; }
-
   .admin-table-container { @apply bg-dark-bg-secondary border border-border-color rounded-xl overflow-x-auto; }
   .admin-table { @apply w-full border-collapse; }
   .admin-table th, .admin-table td { @apply p-4 text-left border-b border-border-color; }
   .admin-table th { @apply text-sm font-semibold text-text-secondary uppercase; }
   .admin-table tbody tr:last-child td { @apply border-none; }
   .table-img { @apply w-12 h-12 object-contain rounded-md bg-dark-bg; }
-
   .status-badge { @apply px-3 py-1 rounded-full text-xs font-bold; }
   .status-published { @apply bg-green-500/20 text-green-400; }
   .status-draft { @apply bg-amber-500/20 text-amber-400; }
-
   .action-buttons button { @apply bg-transparent border-none text-text-secondary cursor-pointer text-lg p-2 transition-colors duration-200; }
   .action-buttons button:hover { @apply text-primary-accent; }
   .action-buttons .delete-btn:hover { @apply text-red-500; }
-
   .product-grid { @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6; }
   .product-card { @apply bg-dark-bg-secondary border border-border-color rounded-xl overflow-hidden transition-all duration-200 flex flex-col; }
   .product-card:hover { @apply -translate-y-1 shadow-2xl shadow-black/30 border-primary-accent; }

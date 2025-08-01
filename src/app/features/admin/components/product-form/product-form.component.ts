@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, OnInit, Output, signal, Input } from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output, signal, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AdminProduct } from '../products-panel/products-panel.component';
@@ -10,16 +10,16 @@ import { FormFieldErrorComponent } from '../../../../components/ui/form-field-er
   imports: [CommonModule, ReactiveFormsModule, FormFieldErrorComponent],
   templateUrl: './product-form.component.html',
 })
-export class ProductFormComponent implements OnInit {
+export class ProductFormComponent implements OnInit, OnChanges { // ✅ 2. Implementa OnChanges
   private fb = inject(FormBuilder);
 
-  // ✅ El evento ahora emite también el archivo de la imagen.
+  // ✅ 3. Input para recibir el producto a editar
+  @Input() productToEdit: AdminProduct | null = null;
+  @Input() isSaving = signal(false);
   @Output() save = new EventEmitter<{
     productData: Omit<AdminProduct, 'id' | 'imageUrl'>;
     imageFile: File | null;
   }>();
-
-  @Input() isSaving = signal(false);
 
   productForm!: FormGroup;
   imagePreview = signal<string | null>(null);
@@ -31,9 +31,25 @@ export class ProductFormComponent implements OnInit {
       price: [null, [Validators.required, Validators.min(0.01)]],
       stock: [0, [Validators.required, Validators.min(0)]],
       status: ['Publicado', Validators.required],
-      // ✅ Añadimos un control para el archivo, no se mostrará pero manejará el valor.
       image: [null]
     });
+  }
+
+  // ✅ 4. Hook que detecta cambios en los Inputs
+  ngOnChanges(changes: SimpleChanges): void {
+    // Si el formulario ya está creado y recibimos un producto para editar...
+    if (this.productForm && changes['productToEdit']) {
+      if (this.productToEdit) {
+        // Rellenamos el formulario con los datos del producto
+        this.productForm.patchValue(this.productToEdit);
+        // Mostramos la previsualización de la imagen existente
+        this.imagePreview.set(this.productToEdit.imageUrl);
+      } else {
+        // Si no hay producto para editar (modo "Añadir"), reseteamos el formulario
+        this.productForm.reset({ status: 'Publicado', stock: 0 });
+        this.imagePreview.set(null);
+      }
+    }
   }
 
   // ✅ 3. Crea getters para un acceso más limpio desde la plantilla
