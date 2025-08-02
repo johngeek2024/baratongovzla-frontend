@@ -1,21 +1,15 @@
-// src/app/core/models/product.model.ts
-
+// Esta es ahora la única y definitiva fuente de verdad para la estructura de un producto.
 export interface Product {
   id: string;
-  category: string;
   name: string;
+  category: string;
   imageUrl: string;
   price: number;
   oldPrice?: number;
   isDealOfTheDay?: boolean;
+  tags?: string[];
   description: string;
-  tags: string[];
-  specs: {
-    name: string;
-    value?: string;
-    delay?: string;
-    iconPath?: string;
-  }[];
+  shortDescription?: string;
   features?: {
     subtitle: string;
     title: string;
@@ -23,15 +17,16 @@ export interface Product {
     imageUrl: string;
     imagePosition: 'left' | 'right';
   }[];
-  // --- DATOS NUEVOS PARA SELECTOR DE COLOR Y HOTSPOTS ---
-  colors?: {
+  colors?: { name: string; hex: string; }[];
+  hotspots?: { x: string; y: string; title: string; description: string; }[];
+  specs: {
     name: string;
-    hex: string;
+    value?: string;
+    delay?: string;
+    iconPath?: string;
   }[];
-  hotspots?: {
-    x: string; // Posición en porcentaje (ej: '45%')
-    y: string; // Posición en porcentaje (ej: '48%')
-    title: string;
-    description: string;
-  }[];
+  sku: string;
+  stock: number;
+  status: 'Publicado' | 'Borrador';
+  reviews?: { average: number; count: number; };
 }

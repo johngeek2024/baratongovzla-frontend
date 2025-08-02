@@ -1,9 +1,8 @@
-// src/app/features/cart/pages/cart-page/cart-page.component.ts
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop'; // ✅ 1. Importa toSignal
 import { CartService } from '../../../../core/services/cart.service';
-// CORRECCIÓN: Se importa el ProductService para acceder a los productos
 import { ProductService } from '../../../../core/services/product.service';
 
 @Component({
@@ -14,18 +13,19 @@ import { ProductService } from '../../../../core/services/product.service';
 })
 export class CartPageComponent {
   public cartService = inject(CartService);
-  // CORRECCIÓN: Se inyecta el ProductService
   public productService = inject(ProductService);
+
+  // ✅ 2. Convertimos el Observable de productos en una señal reactiva.
+  private allProducts = toSignal(this.productService.getProducts(), { initialValue: [] });
 
   // --- LÓGICA PARA PRODUCTOS SUGERIDOS (CROSS-SELL) ---
   crossSellProducts = computed(() => {
-    // Obtiene los IDs de los productos que ya están en el carrito
     const cartProductIds = this.cartService.items().map(item => item.product.id);
 
-    // Filtra la lista completa para mostrar solo productos que NO están en el carrito
-    return this.productService.getProducts()
+    // ✅ 3. Ahora filtramos sobre la señal (que es un array), no sobre el Observable.
+    return this.allProducts()
       .filter(product => !cartProductIds.includes(product.id))
-      .slice(0, 3); // Muestra solo los primeros 3 como sugerencia
+      .slice(0, 3);
   });
 
   // --- Lógica para Envío Gratis (se mantiene igual) ---

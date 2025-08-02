@@ -36,12 +36,16 @@ export class ProductDetailComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       const productId = params.get('id');
       if (productId) {
-        const foundProduct = this.productService.getProductById(productId);
-        if (foundProduct) {
-          this.product.set(foundProduct);
-        } else {
-          this.router.navigate(['/']);
-        }
+        // ✅ CORRECCIÓN: Nos suscribimos al Observable para esperar la llegada de los datos.
+        this.productService.getProductById(productId).subscribe(foundProduct => {
+          if (foundProduct) {
+            // Una vez que tenemos el producto, actualizamos la señal.
+            this.product.set(foundProduct);
+          } else {
+            // Si el producto no se encuentra, redirigimos al inicio.
+            this.router.navigate(['/']);
+          }
+        });
       }
     });
   }
