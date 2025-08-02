@@ -1,26 +1,38 @@
-import { Component, HostBinding } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, HostBinding, inject, OnInit, signal } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
+import { CustomerAdminService } from '../../services/customer-admin.service';
+
+// Interfaz para los datos del cliente
+export interface AdminCustomer {
+  id: string;
+  name: string;
+  email: string;
+  registeredDate: string;
+  orderCount: number;
+}
 
 @Component({
   selector: 'app-customers-panel',
   standalone: true,
-  imports: [CommonModule],
-  // Para simplicidad, la plantilla y estilos están en línea por ahora
-  template: `
-    <header class="page-header">
-      <h1 class="text-2xl sm:text-4xl font-bold">Gestión de Clientes</h1>
-    </header>
-    <div class="info-widget">
-      <p class="text-text-secondary">
-        Funcionalidad en desarrollo. Aquí se mostrará la lista de clientes y sus detalles.
-      </p>
-    </div>
-    <style>
-      .page-header { @apply mb-8; }
-      .info-widget { @apply bg-dark-bg-secondary border border-border-color rounded-xl p-6; }
-    </style>
-  `,
+  imports: [CommonModule, DatePipe], // Importamos DatePipe
+  templateUrl: './customers-panel.component.html',
 })
-export class CustomersPanelComponent {
+export class CustomersPanelComponent implements OnInit {
   @HostBinding('class') class = 'content-panel active';
+  private customerAdminService = inject(CustomerAdminService);
+
+  customers = signal<AdminCustomer[]>([]);
+  isLoading = signal(true);
+
+  ngOnInit(): void {
+    this.loadCustomers();
+  }
+
+  private loadCustomers(): void {
+    this.isLoading.set(true);
+    this.customerAdminService.getCustomers().subscribe(data => {
+      this.customers.set(data);
+      this.isLoading.set(false);
+    });
+  }
 }

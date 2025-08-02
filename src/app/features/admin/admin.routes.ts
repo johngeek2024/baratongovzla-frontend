@@ -42,7 +42,13 @@ export const ADMIN_ROUTES: Routes = [
             (c) => c.OrdersPanelComponent
           ),
       },
-      // ✅ CORRECCIÓN: Se añade la nueva ruta para el panel de Clientes.
+      {
+        path: 'orders/:id',
+        loadComponent: () =>
+          import('./pages/order-detail-page/order-detail-page.component').then(
+            (c) => c.OrderDetailPageComponent
+          ),
+      },
       {
         path: 'customers',
         loadComponent: () =>
