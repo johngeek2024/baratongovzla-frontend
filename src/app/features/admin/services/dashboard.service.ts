@@ -27,7 +27,7 @@ export class DashboardService {
       { title: 'Bajo Stock', value: '8 Productos', change: 0, icon: 'fa-exclamation-triangle' },
       { title: 'Ticket Promedio', value: '$122.04', change: -5, icon: 'fa-chart-line' },
     ];
-    return of(mockStats).pipe(delay(500)); // Simula latencia de red
+    return of(mockStats).pipe(delay(50)); // Simula latencia de red
   }
 
   // Simula la obtención de datos para el gráfico de ventas
@@ -36,6 +36,6 @@ export class DashboardService {
       labels: ['Día 1', 'Día 5', 'Día 10', 'Día 15', 'Día 20', 'Día 25', 'Hoy'],
       values: [120, 190, 300, 250, 400, 380, 510]
     };
-    return of(mockChartData).pipe(delay(800)); // Simula latencia de red
+    return of(mockChartData).pipe(delay(50)); // Simula latencia de red
   }
 }

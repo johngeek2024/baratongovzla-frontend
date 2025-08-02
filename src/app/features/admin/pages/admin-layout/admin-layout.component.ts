@@ -1,6 +1,6 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, HostBinding } from '@angular/core'; // ✅ 1. Importa HostBinding
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
@@ -10,19 +10,25 @@ import { AuthService } from '../../../../core/services/auth.service';
   templateUrl: './admin-layout.component.html',
 })
 export class AdminLayoutComponent {
-  public authService = inject(AuthService);
-  isMobileMenuOpen = signal(false);
+  // ✅ 2. Aplica la clase de tema directamente al elemento host del componente
+  @HostBinding('class') class = 'admin-theme';
 
-  // Lista de enlaces para construir el menú de navegación
+  public authService = inject(AuthService);
+  public router = inject(Router);
+
   navLinks = [
     { id: 'dashboard', icon: 'fa-tachometer-alt', label: 'Dashboard' },
     { id: 'products', icon: 'fa-box-open', label: 'Productos' },
-    // ✅ CORRECCIÓN: Se añade el enlace para el panel de Categorías.
     { id: 'categories', icon: 'fa-folder', label: 'Categorías' },
     { id: 'orders', icon: 'fa-receipt', label: 'Pedidos' },
+    { id: 'customers', icon: 'fa-users', label: 'Clientes' },
   ];
 
   handleLogout(): void {
     this.authService.adminLogout();
+  }
+
+  navigateToAddProduct(): void {
+    this.router.navigate(['/admin/products']);
   }
 }

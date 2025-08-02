@@ -28,7 +28,6 @@ export const ADMIN_ROUTES: Routes = [
             (c) => c.ProductsPanelComponent
           ),
       },
-      // ✅ CORRECCIÓN: Se añade la nueva ruta para el panel de categorías.
       {
         path: 'categories',
         loadComponent: () =>
@@ -41,6 +40,14 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () =>
           import('./components/orders-panel/orders-panel.component').then(
             (c) => c.OrdersPanelComponent
+          ),
+      },
+      // ✅ CORRECCIÓN: Se añade la nueva ruta para el panel de Clientes.
+      {
+        path: 'customers',
+        loadComponent: () =>
+          import('./components/customers-panel/customers-panel.component').then(
+            (c) => c.CustomersPanelComponent
           ),
       },
     ],
