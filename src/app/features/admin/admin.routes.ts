@@ -12,13 +12,10 @@ export const ADMIN_ROUTES: Routes = [
     path: '',
     component: AdminLayoutComponent,
     canActivate: [adminAuthGuard],
-    // RUTAS HIJAS: Definen qué componente se carga dentro del AdminLayoutComponent
     children: [
-      // Cuando la ruta sea /admin, redirige a /admin/dashboard
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
         path: 'dashboard',
-        // Carga diferida (lazy loading) del componente del panel del dashboard
         loadComponent: () =>
           import('./components/dashboard-panel/dashboard-panel.component').then(
             (c) => c.DashboardPanelComponent
@@ -26,15 +23,21 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'products',
-        // Carga diferida del panel de productos
         loadComponent: () =>
           import('./components/products-panel/products-panel.component').then(
             (c) => c.ProductsPanelComponent
           ),
       },
+      // ✅ CORRECCIÓN: Se añade la nueva ruta para el panel de categorías.
+      {
+        path: 'categories',
+        loadComponent: () =>
+          import('./components/categories-panel/categories-panel.component').then(
+            (c) => c.CategoriesPanelComponent
+          ),
+      },
       {
         path: 'orders',
-        // Carga diferida del panel de pedidos
         loadComponent: () =>
           import('./components/orders-panel/orders-panel.component').then(
             (c) => c.OrdersPanelComponent
@@ -43,7 +46,6 @@ export const ADMIN_ROUTES: Routes = [
     ],
   },
   {
-    // Cualquier otra ruta dentro de /admin que no coincida, redirige al login
     path: '**',
     redirectTo: 'login',
   },
