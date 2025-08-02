@@ -58,15 +58,19 @@ export class ProductsPanelComponent {
   viewMode = signal<'list' | 'grid'>('list');
   isSaving = signal(false);
 
-  // --- Señales para controlar el modal y el modo (Añadir/Editar) ---
+  // --- Señales para Modales ---
   isFormModalOpen = signal(false);
   productToEdit = signal<AdminProduct | null>(null);
+  // ✅ CORRECCIÓN: Se añaden las señales para el modal de eliminación.
+  isDeleteModalOpen = signal(false);
+  productToDelete = signal<AdminProduct | null>(null);
+
 
   setViewMode(mode: 'list' | 'grid'): void {
     this.viewMode.set(mode);
   }
 
-  // --- Métodos para abrir el modal ---
+  // --- Métodos para Abrir Modales ---
   openAddModal(): void {
     this.productToEdit.set(null);
     this.isFormModalOpen.set(true);
@@ -77,12 +81,17 @@ export class ProductsPanelComponent {
     this.isFormModalOpen.set(true);
   }
 
-  // --- Método unificado para Guardar (Crear o Actualizar) ---
+  // ✅ CORRECCIÓN: Se añade el método para abrir el modal de confirmación de borrado.
+  openDeleteConfirmation(product: AdminProduct): void {
+    this.productToDelete.set(product);
+    this.isDeleteModalOpen.set(true);
+  }
+
+  // --- Métodos para Acciones CRUD ---
   handleSaveProduct(event: { productData: Omit<AdminProduct, 'id' | 'imageUrl'>; imageFile: File | null; }) {
     this.isSaving.set(true);
     const productToEdit = this.productToEdit();
 
-    // Determina si la operación es una actualización o una creación
     const operation = productToEdit
       ? this.productAdminService.updateProduct(productToEdit.id, event.productData, event.imageFile)
       : this.productAdminService.addProduct(event.productData, event.imageFile);
@@ -90,12 +99,8 @@ export class ProductsPanelComponent {
     operation.subscribe({
       next: (savedProduct) => {
         if (productToEdit) {
-          // Actualiza el producto existente en la lista
-          this.products.update(products =>
-            products.map(p => p.id === savedProduct.id ? savedProduct : p)
-          );
+          this.products.update(products => products.map(p => p.id === savedProduct.id ? savedProduct : p));
         } else {
-          // Añade el nuevo producto al inicio de la lista
           this.products.update(products => [savedProduct, ...products]);
         }
         this.closeModal();
@@ -107,9 +112,36 @@ export class ProductsPanelComponent {
     });
   }
 
-  // --- Método para cerrar el modal y resetear estados ---
+  // ✅ CORRECCIÓN: Se añade el método para manejar la eliminación confirmada.
+  handleDeleteProduct(): void {
+    const product = this.productToDelete();
+    if (!product) return;
+
+    this.isSaving.set(true);
+
+    this.productAdminService.deleteProduct(product.id).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.products.update(products => products.filter(p => p.id !== product.id));
+        }
+        this.closeDeleteConfirmation();
+      },
+      error: (err) => {
+        console.error('Error al eliminar el producto:', err);
+        this.isSaving.set(false);
+      }
+    });
+  }
+
+  // --- Métodos para Cerrar Modales ---
   closeModal(): void {
     this.isFormModalOpen.set(false);
+    this.isSaving.set(false);
+  }
+
+  // ✅ CORRECCIÓN: Se añade el método para cerrar el modal de borrado.
+  closeDeleteConfirmation(): void {
+    this.isDeleteModalOpen.set(false);
     this.isSaving.set(false);
   }
 }

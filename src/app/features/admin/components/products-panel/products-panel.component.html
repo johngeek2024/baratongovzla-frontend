@@ -45,7 +45,7 @@
               </td>
               <td class="action-buttons">
                 <button (click)="openEditModal(product)"><i class="fas fa-edit"></i></button>
-                <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                <button class="delete-btn" (click)="openDeleteConfirmation(product)"><i class="fas fa-trash"></i></button>
               </td>
             </tr>
           } @empty {
@@ -78,12 +78,15 @@
               <span>{{ product.stock }} Unidades</span>
             </div>
             <div class="stock-bar">
-              <div class="stock-bar__indicator" [style.width.%]="product.stock > 50 ? 100 : product.stock * 2" [class.bg-green-500]="product.stock > 10" [class.bg-amber-500]="product.stock <= 10 && product.stock > 0" [class.bg-red-500]="product.stock === 0"></div>
+              <div class="stock-bar__indicator" [style.width.%]="product.stock > 50 ? 100 : product.stock * 2" [class.bg-success]="product.stock > 10" [class.bg-warning]="product.stock <= 10 && product.stock > 0" [class.bg-danger]="product.stock === 0"></div>
             </div>
           </div>
           <div class="product-card__actions">
             <button class="btn btn-secondary flex-grow justify-center" (click)="openEditModal(product)">
               <i class="fas fa-edit"></i> Editar
+            </button>
+            <button class="btn btn-secondary !bg-danger/20 !text-danger hover:!bg-danger/40" (click)="openDeleteConfirmation(product)">
+              <i class="fas fa-trash"></i>
             </button>
           </div>
         </div>
@@ -104,6 +107,31 @@
     (save)="handleSaveProduct($event)"></app-product-form>
 </app-modal>
 
+<app-modal
+  [isOpen]="isDeleteModalOpen"
+  title="Confirmar Eliminación"
+  (close)="closeDeleteConfirmation()">
+
+  <p class="text-text-secondary">
+    ¿Estás seguro de que deseas eliminar el producto
+    <strong class="text-white">{{ productToDelete()?.name }}</strong>?
+    Esta acción no se puede deshacer.
+  </p>
+
+  <div modal-footer class="flex justify-end gap-4">
+    <button class="btn btn-secondary" (click)="closeDeleteConfirmation()">Cancelar</button>
+    <button class="btn !bg-danger !text-white" (click)="handleDeleteProduct()" [disabled]="isSaving()">
+      @if (isSaving()) {
+        <i class="fas fa-spinner animate-spin mr-2"></i>
+        <span>Eliminando...</span>
+      } @else {
+        <span>Sí, Eliminar</span>
+      }
+    </button>
+  </div>
+</app-modal>
+
+
 <style>
   .content-header { @apply flex justify-between items-center flex-wrap gap-4; }
   .content-header h1 { @apply text-2xl sm:text-3xl font-bold; }
@@ -122,11 +150,11 @@
   .admin-table tbody tr:last-child td { @apply border-none; }
   .table-img { @apply w-12 h-12 object-contain rounded-md bg-dark-bg; }
   .status-badge { @apply px-3 py-1 rounded-full text-xs font-bold; }
-  .status-published { @apply bg-green-500/20 text-green-400; }
-  .status-draft { @apply bg-amber-500/20 text-amber-400; }
+  .status-published { @apply bg-success/20 text-success; }
+  .status-draft { @apply bg-warning/20 text-warning; }
   .action-buttons button { @apply bg-transparent border-none text-text-secondary cursor-pointer text-lg p-2 transition-colors duration-200; }
   .action-buttons button:hover { @apply text-primary-accent; }
-  .action-buttons .delete-btn:hover { @apply text-red-500; }
+  .action-buttons .delete-btn:hover { @apply text-danger; }
   .product-grid { @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6; }
   .product-card { @apply bg-dark-bg-secondary border border-border-color rounded-xl overflow-hidden transition-all duration-200 flex flex-col; }
   .product-card:hover { @apply -translate-y-1 shadow-2xl shadow-black/30 border-primary-accent; }

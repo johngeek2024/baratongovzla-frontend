@@ -29,7 +29,6 @@ export class ProductAdminService {
     return of(mockProductFromServer).pipe(delay(1500));
   }
 
-  // ✅ NUEVO MÉTODO PARA ACTUALIZAR
   updateProduct(
     productId: string,
     productData: Omit<AdminProduct, 'id' | 'imageUrl'>,
@@ -40,18 +39,24 @@ export class ProductAdminService {
     if (imageFile) {
       formData.append('image', imageFile, imageFile.name);
     }
-
-    // --- SIMULACIÓN DE LLAMADA HTTP PUT/PATCH ---
-    // En una aplicación real, la línea sería:
-    // return this.http.put<AdminProduct>(`${this.apiUrl}/${productId}`, formData);
+    // SIMULACIÓN
     console.log(`Enviando FormData para ACTUALIZAR producto ${productId}:`, formData);
-
     const mockUpdatedProduct: AdminProduct = {
       ...productData,
       id: productId,
-      // Si se subió una nueva imagen, se usa esa. Si no, se mantendría la antigua (lógica del backend).
       imageUrl: imageFile ? URL.createObjectURL(imageFile) : `https://placehold.co/150x150/111827/FFFFFF?text=Edited`,
     };
     return of(mockUpdatedProduct).pipe(delay(1500));
+  }
+
+  // ✅ CORRECCIÓN: Se añade el método para eliminar productos.
+  deleteProduct(productId: string): Observable<{ success: boolean }> {
+    // --- SIMULACIÓN DE LLAMADA HTTP DELETE ---
+    // En una aplicación real, la línea sería:
+    // return this.http.delete<{ success: boolean }>(`${this.apiUrl}/${productId}`);
+    console.log(`Enviando petición para ELIMINAR producto ${productId}`);
+
+    // Simulamos una respuesta exitosa después de un breve retraso.
+    return of({ success: true }).pipe(delay(1000));
   }
 }
