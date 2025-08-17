@@ -68,3 +68,4 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+src/environments/secrets.ts

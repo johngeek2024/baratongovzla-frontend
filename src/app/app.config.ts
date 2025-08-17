@@ -32,7 +32,7 @@ export const appConfig: ApplicationConfig = {
     // ✅ CORRECCIÓN: Service Worker optimizado para apps zoneless
     provideServiceWorker('ngsw-config.json', {
         enabled: !isDevMode(), // Se habilita cuando NO es modo de desarrollo.
-        registrationStrategy: 'registerWhenStable:30000'
+        registrationStrategy: 'registerImmediately'
     })
   ]
 };

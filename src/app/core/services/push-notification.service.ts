@@ -3,8 +3,9 @@ import { Injectable, inject } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
 import { HttpClient } from '@angular/common/http';
 import { EMPTY, catchError, take, tap } from 'rxjs';
-import { secrets } from '../../../environments/secrets';
 import { UiService } from './ui.service';
+// CORRECCIÓN: Se elimina la importación de 'secrets'.
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,8 @@ export class PushNotificationService {
   private http = inject(HttpClient);
   private uiService = inject(UiService);
 
-  private readonly VAPID_PUBLIC_KEY = secrets.vapid.publicKey;
+  // CORRECCIÓN: La clave pública ahora se lee del archivo de entorno de Angular.
+  private readonly VAPID_PUBLIC_KEY = environment.vapidPublicKey;
   private readonly API_URL = '/api/notifications';
 
   constructor() {
@@ -29,13 +31,9 @@ export class PushNotificationService {
       return;
     }
 
-    // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
-    // Se elimina la conversión a Uint8Array. Se pasa el string de la clave VAPID directamente.
-    // El servicio SwPush de Angular maneja la conversión internamente.
     this.swPush.requestSubscription({
       serverPublicKey: this.VAPID_PUBLIC_KEY
     })
-    // ✅ FIN: CORRECCIÓN QUIRÚRGICA
     .then(sub => {
       console.log('Suscripción obtenida:', sub);
       this.uiService.showCartToast('¡Notificaciones activadas!');
@@ -66,8 +64,7 @@ export class PushNotificationService {
     this.swPush.notificationClicks.pipe(
       tap(event => {
         console.log('Clic en notificación:', event);
-        const action = event.action;
-        const notification = event.notification;
+        // Lógica futura para manejar clics puede ir aquí
       })
     ).subscribe();
   }

@@ -8,37 +8,43 @@ import express from 'express';
 import { join } from 'node:path';
 import { DataStoreService } from './app/core/services/data-store.service';
 import { Product } from './app/core/models/product.model';
-// ✅ AÑADIDO: Importaciones para Web Push y Body Parser
 import webpush from 'web-push';
 import bodyParser from 'body-parser';
-import { secrets } from './environments/secrets'; // Importamos nuestros secretos
+// CORRECCIÓN: Se importa 'environment' para la clave pública.
+import { environment } from './environments/environment';
+
+// CORRECCIÓN CRÍTICA: Añadir un chequeo para asegurar que la variable de entorno de la clave privada exista.
+if (!process.env['VAPID_PRIVATE_KEY']) {
+  console.error('ERROR FATAL: La variable de entorno VAPID_PRIVATE_KEY no está definida.');
+  process.exit(1); // Detiene el servidor si el secreto no está configurado.
+}
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-// ✅ AÑADIDO: Middleware para parsear el body de las peticiones a JSON
 app.use(bodyParser.json());
 
-// ✅ INICIO: LÓGICA DEL BACKEND PARA NOTIFICACIONES PUSH
+// =======================================================
+// LÓGICA DEL BACKEND PARA NOTIFICACIONES PUSH (CORREGIDA)
 // =======================================================
 
 const vapidKeys = {
-  publicKey: secrets.vapid.publicKey,
-  privateKey: secrets.vapid.privateKey
+  // CORRECCIÓN: La clave pública se toma de la configuración de entorno de Angular.
+  publicKey: environment.vapidPublicKey,
+  // CORRECCIÓN: La clave privada se toma de las variables de entorno del servidor.
+  privateKey: process.env['VAPID_PRIVATE_KEY']
 };
 
 webpush.setVapidDetails(
-  'mailto:tu-email@baratongovzla.com', // Reemplaza con tu email
+  'mailto:soporte@baratongovzla.com', // Un email de contacto real.
   vapidKeys.publicKey,
   vapidKeys.privateKey
 );
 
-// Almacén de suscripciones en memoria (para desarrollo)
 let subscriptions: webpush.PushSubscription[] = [];
 
-// Endpoint para guardar una nueva suscripción
 app.post('/api/notifications/subscribe', (req, res) => {
   const sub = req.body;
   console.log('Suscripción recibida en el backend:', sub);
@@ -46,7 +52,6 @@ app.post('/api/notifications/subscribe', (req, res) => {
   res.status(201).json({ message: 'Suscripción guardada con éxito.' });
 });
 
-// Endpoint para disparar una notificación de prueba a todos los suscritos
 app.post('/api/notifications/trigger', (req, res) => {
   console.log('Disparando notificaciones...');
   const notificationPayload = {
@@ -68,10 +73,12 @@ app.post('/api/notifications/trigger', (req, res) => {
       res.sendStatus(500);
     });
 });
-// =======================================================
-// ✅ FIN: LÓGICA DEL BACKEND PARA NOTIFICACIONES PUSH
 
-// Ruta para el Sitemap Dinámico (código existente)
+// =======================================================
+// FIN DE LA LÓGICA DE NOTIFICACIONES
+// =======================================================
+
+// Ruta para el Sitemap Dinámico (sin cambios)
 app.get('/sitemap.xml', (req, res) => {
   const dataStore = new DataStoreService();
   const products: Product[] = dataStore.products();
@@ -99,9 +106,6 @@ app.get('/sitemap.xml', (req, res) => {
   res.send(sitemap);
 });
 
-/**
- * Serve static files from /browser
- */
 app.use(
   express.static(browserDistFolder, {
     maxAge: '1y',
@@ -110,9 +114,6 @@ app.use(
   }),
 );
 
-/**
- * Handle all other requests by rendering the Angular application.
- */
 app.use((req, res, next) => {
   angularApp
     .handle(req)
@@ -122,9 +123,6 @@ app.use((req, res, next) => {
     .catch(next);
 });
 
-/**
- * Start the server if this module is the main entry point.
- */
 if (isMainModule(import.meta.url)) {
   const port = process.env['PORT'] || 4000;
   app.listen(port, (error?: any) => {
@@ -135,7 +133,4 @@ if (isMainModule(import.meta.url)) {
   });
 }
 
-/**
- * Request handler used by the Angular CLI.
- */
 export const reqHandler = createNodeRequestHandler(app);
