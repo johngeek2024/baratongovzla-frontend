@@ -1,10 +1,10 @@
 <div class="content-panel active">
-  <header class="page-header">
+  <header class="flex justify-between items-center">
     <div>
-      <a routerLink="/admin/products" class="back-link">
+      <a routerLink="/admin/products" class="text-sm text-primary-accent hover:underline flex items-center gap-2">
         <i class="fas fa-arrow-left"></i> Volver a Productos
       </a>
-      <h1 class="mt-2">{{ isEditMode() ? 'Editar Producto' : 'Añadir Nuevo Producto' }}</h1>
+      <h1 class="mt-2 text-2xl sm:text-3xl font-bold">{{ isEditMode() ? 'Editar Producto' : 'Añadir Nuevo Producto' }}</h1>
     </div>
   </header>
   <div class="mt-8">
@@ -16,8 +16,3 @@
     </app-product-form>
   </div>
 </div>
-<style>
-  .page-header { @apply flex justify-between items-center; }
-  .page-header h1 { @apply text-2xl sm:text-3xl font-bold; }
-  .back-link { @apply text-sm text-primary-accent hover:underline flex items-center gap-2; }
-</style>

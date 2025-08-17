@@ -2,29 +2,29 @@
   <div class="p-4 border border-border-color/50 rounded-lg space-y-4 bg-dark-bg/30">
     <h4 class="font-bold text-text-secondary text-sm">Contenido del Slide</h4>
     <div>
-      <label for="supertitle" class="form-label">Super-título (Etiqueta)</label>
-      <input type="text" id="supertitle" formControlName="supertitle" class="form-input" placeholder="Ej: Smartwatch">
+      <label for="supertitle" class="block text-sm font-medium text-text-primary mb-1">Super-título (Etiqueta)</label>
+      <input type="text" id="supertitle" formControlName="supertitle" class="w-full bg-dark-bg border border-border-color rounded-lg px-3 py-2 text-white focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/50 transition-all" placeholder="Ej: Smartwatch">
       <app-form-field-error [control]="bannerForm.get('supertitle')"></app-form-field-error>
     </div>
     <div>
-      <label for="title" class="form-label">Título Principal</label>
-      <input type="text" id="title" formControlName="title" class="form-input" placeholder="Ej: Aura Watch Series 8">
+      <label for="title" class="block text-sm font-medium text-text-primary mb-1">Título Principal</label>
+      <input type="text" id="title" formControlName="title" class="w-full bg-dark-bg border border-border-color rounded-lg px-3 py-2 text-white focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/50 transition-all" placeholder="Ej: Aura Watch Series 8">
       <app-form-field-error [control]="bannerForm.get('title')"></app-form-field-error>
     </div>
     <div>
-      <label for="paragraph" class="form-label">Párrafo Descriptivo</label>
-      <textarea id="paragraph" formControlName="paragraph" class="form-input" rows="3"></textarea>
+      <label for="paragraph" class="block text-sm font-medium text-text-primary mb-1">Párrafo Descriptivo</label>
+      <textarea id="paragraph" formControlName="paragraph" class="w-full bg-dark-bg border border-border-color rounded-lg px-3 py-2 text-white focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/50 transition-all" rows="3"></textarea>
       <app-form-field-error [control]="bannerForm.get('paragraph')"></app-form-field-error>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
-        <label for="buttonText" class="form-label">Texto del Botón</label>
-        <input type="text" id="buttonText" formControlName="buttonText" class="form-input" placeholder="Ej: Descubra">
+        <label for="buttonText" class="block text-sm font-medium text-text-primary mb-1">Texto del Botón</label>
+        <input type="text" id="buttonText" formControlName="buttonText" class="w-full bg-dark-bg border border-border-color rounded-lg px-3 py-2 text-white focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/50 transition-all" placeholder="Ej: Descubra">
         <app-form-field-error [control]="bannerForm.get('buttonText')"></app-form-field-error>
       </div>
       <div>
-        <label for="linkUrl" class="form-label">Enlace del Botón</label>
-        <input type="text" id="linkUrl" formControlName="linkUrl" class="form-input" placeholder="/products/gaming">
+        <label for="linkUrl" class="block text-sm font-medium text-text-primary mb-1">Enlace del Botón</label>
+        <input type="text" id="linkUrl" formControlName="linkUrl" class="w-full bg-dark-bg border border-border-color rounded-lg px-3 py-2 text-white focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/50 transition-all" placeholder="/products/gaming">
         <app-form-field-error [control]="bannerForm.get('linkUrl')"></app-form-field-error>
       </div>
     </div>
@@ -33,18 +33,18 @@
   <div class="p-4 border border-border-color/50 rounded-lg space-y-4 bg-dark-bg/30">
     <h4 class="font-bold text-text-secondary text-sm">Configuración</h4>
     <div>
-      <label for="internalName" class="form-label">Nombre Interno del Banner</label>
-      <input type="text" id="internalName" formControlName="internalName" class="form-input" placeholder="Ej: Oferta Verano Principal">
+      <label for="internalName" class="block text-sm font-medium text-text-primary mb-1">Nombre Interno del Banner</label>
+      <input type="text" id="internalName" formControlName="internalName" class="w-full bg-dark-bg border border-border-color rounded-lg px-3 py-2 text-white focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/50 transition-all" placeholder="Ej: Oferta Verano Principal">
       <app-form-field-error [control]="bannerForm.get('internalName')"></app-form-field-error>
     </div>
     <div>
-      <label for="imageUrl" class="form-label">URL de la Imagen de Fondo</label>
-      <input type="text" id="imageUrl" formControlName="imageUrl" class="form-input" placeholder="https://...">
+      <label for="imageUrl" class="block text-sm font-medium text-text-primary mb-1">URL de la Imagen de Fondo</label>
+      <input type="text" id="imageUrl" formControlName="imageUrl" class="w-full bg-dark-bg border border-border-color rounded-lg px-3 py-2 text-white focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/50 transition-all" placeholder="https://...">
       <app-form-field-error [control]="bannerForm.get('imageUrl')"></app-form-field-error>
     </div>
     <div>
       <label for="isActive" class="flex items-center justify-between cursor-pointer">
-        <span class="form-label mb-0 font-semibold">¿Activo?</span>
+        <span class="block text-sm text-text-primary mb-0 font-semibold">¿Activo?</span>
         <div class="relative">
           <input type="checkbox" id="isActive" formControlName="isActive" class="sr-only peer">
           <div class="w-11 h-6 bg-border-color rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-success"></div>
@@ -54,8 +54,8 @@
   </div>
 
   <div class="flex justify-end gap-4 pt-4">
-    <button type="button" class="btn btn-secondary" (click)="handleCancel()">Cancelar</button>
-    <button type="submit" class="btn" [disabled]="bannerForm.invalid || isSaving()">
+    <button type="button" class="bg-border-color text-text-primary border-none px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all" (click)="handleCancel()">Cancelar</button>
+    <button type="submit" class="bg-primary-accent text-dark-bg border-none px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all disabled:opacity-50 disabled:bg-border-color disabled:cursor-not-allowed" [disabled]="bannerForm.invalid || isSaving()">
       @if (isSaving()) {
         <i class="fas fa-spinner animate-spin mr-2"></i><span>Guardando...</span>
       } @else {
@@ -64,11 +64,3 @@
     </button>
   </div>
 </form>
-
-<style>
-  .form-label { @apply block text-sm font-medium text-text-primary mb-1; }
-  .form-input { @apply w-full bg-dark-bg border border-border-color rounded-lg px-3 py-2 text-white; @apply focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/50 transition-all; }
-  .btn { @apply bg-primary-accent text-dark-bg border-none px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all; }
-  .btn:disabled { @apply opacity-50 bg-border-color cursor-not-allowed; }
-  .btn-secondary { @apply bg-border-color text-text-primary; }
-</style>

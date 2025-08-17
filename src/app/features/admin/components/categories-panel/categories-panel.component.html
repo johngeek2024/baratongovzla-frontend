@@ -1,30 +1,35 @@
-<header class="content-header">
-  <h1>Gestión de Categorías</h1>
+<header class="flex justify-between items-center">
+  <h1 class="text-2xl sm:text-3xl font-bold">Gestión de Categorías</h1>
   <div class="header-actions">
-    <button class="btn" (click)="openAddModal()">
+    <button class="bg-primary-accent text-dark-bg border-none px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-accent/20" (click)="openAddModal()">
       <i class="fas fa-plus"></i> Añadir Categoría
     </button>
   </div>
 </header>
 
-<div class="admin-table-container mt-8">
-  <table class="admin-table">
+<div class="bg-dark-bg-secondary border border-border-color rounded-xl overflow-x-auto mt-8">
+  <table class="w-full border-collapse">
     <thead>
-      <tr><th>Nombre</th><th>Slug</th><th>Productos</th><th>Acciones</th></tr>
+      <tr>
+        <th class="p-4 text-left border-b border-border-color text-sm font-semibold text-text-secondary uppercase">Nombre</th>
+        <th class="p-4 text-left border-b border-border-color text-sm font-semibold text-text-secondary uppercase">Slug</th>
+        <th class="p-4 text-left border-b border-border-color text-sm font-semibold text-text-secondary uppercase">Productos</th>
+        <th class="p-4 text-left border-b border-border-color text-sm font-semibold text-text-secondary uppercase">Acciones</th>
+      </tr>
     </thead>
     <tbody>
       @for (category of categories(); track category.id) {
-        <tr>
-          <td class="font-semibold text-white">{{ category.name }}</td>
-          <td>/{{ category.slug }}</td>
-          <td>{{ category.productCount }}</td>
-          <td class="action-buttons">
-            <button (click)="openEditModal(category)"><i class="fas fa-edit"></i></button>
-            <button class="delete-btn" (click)="openDeleteConfirmation(category)"><i class="fas fa-trash"></i></button>
+        <tr class="last:border-none">
+          <td class="p-4 text-left border-b border-border-color font-semibold text-white">{{ category.name }}</td>
+          <td class="p-4 text-left border-b border-border-color">/{{ category.slug }}</td>
+          <td class="p-4 text-left border-b border-border-color">{{ category.productCount }}</td>
+          <td class="p-4 text-left border-b border-border-color">
+            <button class="bg-transparent border-none text-text-secondary cursor-pointer text-lg p-2 transition-colors duration-200 hover:text-primary-accent" (click)="openEditModal(category)"><i class="fas fa-edit"></i></button>
+            <button class="bg-transparent border-none text-text-secondary cursor-pointer text-lg p-2 transition-colors duration-200 hover:text-danger" (click)="openDeleteConfirmation(category)"><i class="fas fa-trash"></i></button>
           </td>
         </tr>
       } @empty {
-        <tr><td colspan="4" class="text-center py-8 text-text-secondary">No se encontraron categorías.</td></tr>
+        <tr><td colspan="4" class="text-center py-8 text-text-secondary p-4 border-b border-border-color">No se encontraron categorías.</td></tr>
       }
     </tbody>
   </table>
@@ -44,8 +49,8 @@
     <strong class="text-white">{{ categoryToDelete()?.name }}</strong>?
   </p>
   <div modal-footer class="flex justify-end gap-4">
-    <button class="btn btn-secondary" (click)="closeDeleteConfirmation()">Cancelar</button>
-    <button class="btn !bg-danger !text-white" (click)="handleDeleteCategory()" [disabled]="isSaving()">
+    <button class="bg-border-color text-text-primary px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-accent/20" (click)="closeDeleteConfirmation()">Cancelar</button>
+    <button class="text-dark-bg border-none px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-accent/20 !bg-danger" (click)="handleDeleteCategory()" [disabled]="isSaving()">
       @if (isSaving()) {
         <i class="fas fa-spinner animate-spin mr-2"></i>
         <span>Eliminando...</span>
@@ -55,18 +60,3 @@
     </button>
   </div>
 </app-modal>
-
-<style>
-  .content-header { @apply flex justify-between items-center; }
-  .content-header h1 { @apply text-2xl sm:text-3xl font-bold; }
-  .btn { @apply bg-primary-accent text-dark-bg border-none px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2; }
-  .btn:hover { @apply -translate-y-0.5 shadow-lg shadow-primary-accent/20; }
-  .admin-table-container { @apply bg-dark-bg-secondary border border-border-color rounded-xl overflow-x-auto; }
-  .admin-table { @apply w-full border-collapse; }
-  .admin-table th, .admin-table td { @apply p-4 text-left border-b border-border-color; }
-  .admin-table th { @apply text-sm font-semibold text-text-secondary uppercase; }
-  .admin-table tbody tr:last-child td { @apply border-none; }
-  .action-buttons button { @apply bg-transparent border-none text-text-secondary cursor-pointer text-lg p-2 transition-colors duration-200; }
-  .action-buttons button:hover { @apply text-primary-accent; }
-  .action-buttons .delete-btn:hover { @apply text-danger; }
-</style>
