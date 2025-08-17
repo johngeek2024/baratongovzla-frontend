@@ -1,88 +1,72 @@
-<header class="content-header">
-  <h1>Gestión de Pedidos</h1>
+<header class="flex justify-between items-center">
+  <h1 class="text-2xl sm:text-3xl font-bold">Gestión de Pedidos</h1>
 </header>
 
-<div class="admin-table-container mt-8">
-  <table class="admin-table">
+<div class="bg-dark-bg-secondary border border-border-color rounded-xl overflow-x-auto mt-8">
+  <table class="w-full border-collapse">
     <thead>
       <tr>
-        <th>Pedido #</th>
-        <th>Cliente</th>
-        <th>Fecha</th>
-        <th>Total</th>
-        <th>Estado</th>
-        <th>Acciones</th>
+        <th class="p-4 text-left border-b border-border-color text-sm font-semibold text-text-secondary uppercase whitespace-nowrap">Pedido #</th>
+        <th class="p-4 text-left border-b border-border-color text-sm font-semibold text-text-secondary uppercase whitespace-nowrap">Cliente</th>
+        <th class="p-4 text-left border-b border-border-color text-sm font-semibold text-text-secondary uppercase whitespace-nowrap">Fecha</th>
+        <th class="p-4 text-left border-b border-border-color text-sm font-semibold text-text-secondary uppercase whitespace-nowrap">Total</th>
+        <th class="p-4 text-left border-b border-border-color text-sm font-semibold text-text-secondary uppercase whitespace-nowrap">Estado</th>
+        <th class="p-4 text-left border-b border-border-color text-sm font-semibold text-text-secondary uppercase whitespace-nowrap">Acciones</th>
       </tr>
     </thead>
     <tbody>
       @if (isLoading()) {
         @for (_ of [1,2,3,4]; track $index) {
-          <tr>
+          <tr class="last:border-b-0">
             @for (_ of [1,2,3,4,5,6]; track $index) {
-              <td><div class="skeleton-line"></div></td>
+              <td class="p-4 text-left border-b border-border-color"><div class="w-full h-4 bg-border-color rounded animate-pulse"></div></td>
             }
           </tr>
         }
       } @else {
         @for (order of orders(); track order.id) {
-          <tr>
-            <td class="font-semibold text-white">{{ order.id }}</td>
-            <td>{{ order.customerName }}</td>
-            <td>{{ order.date | date: 'dd MMM, yyyy' }}</td>
-            <td>${{ order.total.toFixed(2) }}</td>
-            <td>
-              <select class="status-select"
-                      [value]="order.status"
-                      (change)="onStatusChange($event, order)"
-                      [class.status-processing]="order.status === 'Procesando'"
-                      [class.status-shipped]="order.status === 'Enviado'"
-                      [class.status-delivered]="order.status === 'Entregado'"
-                      [class.status-cancelled]="order.status === 'Cancelado'">
-                @for (status of statusOptions; track status) {
-                  <option [value]="status">{{ status }}</option>
-                }
-              </select>
+          <tr class="last:border-b-0">
+            <td class="p-4 text-left border-b border-border-color font-semibold text-white">{{ order.id }}</td>
+            <td class="p-4 text-left border-b border-border-color">{{ order.customerName }}</td>
+            <td class="p-4 text-left border-b border-border-color">{{ order.date | date: 'dd MMM, yyyy' }}</td>
+            <td class="p-4 text-left border-b border-border-color">${{ order.total.toFixed(2) }}</td>
+            <td class="p-4 text-left border-b border-border-color">
+              <div class="relative inline-block">
+                <select class="appearance-none cursor-pointer rounded-full font-bold text-xs bg-transparent py-1 pl-3 pr-8 focus:outline-none border"
+                        [value]="order.status"
+                        (change)="onStatusChange($event, order)"
+                        [ngClass]="{
+                          'text-warning border-warning bg-warning/20': order.status === 'Procesando',
+                          'text-primary-accent border-primary-accent bg-primary-accent/20': order.status === 'Enviado',
+                          'text-success border-success bg-success/20': order.status === 'Entregado',
+                          'text-danger border-danger bg-danger/20': order.status === 'Cancelado'
+                        }">
+                  @for (status of statusOptions; track status) {
+                    <option class="bg-dark-bg-secondary text-text-primary" [value]="status">{{ status }}</option>
+                  }
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2" [ngClass]="{
+                    'text-warning': order.status === 'Procesando',
+                    'text-primary-accent': order.status === 'Enviado',
+                    'text-success': order.status === 'Entregado',
+                    'text-danger': order.status === 'Cancelado'
+                  }">
+                  <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                </div>
+              </div>
             </td>
-            <td class="action-buttons">
-              <a [routerLink]="['/admin/orders', order.id]" class="action-btn" title="Ver Detalles del Pedido">
+            <td class="p-4 text-left border-b border-border-color">
+              <a [routerLink]="['/admin/orders', order.id]" class="bg-transparent border-none text-text-secondary cursor-pointer text-lg p-2 transition-colors hover:text-primary-accent" title="Ver Detalles del Pedido">
                 <i class="fas fa-eye"></i>
               </a>
             </td>
           </tr>
         } @empty {
           <tr>
-            <td colspan="6" class="text-center py-8 text-text-secondary">No se encontraron pedidos.</td>
+            <td colspan="6" class="p-4 text-left border-b border-border-color py-8 text-text-secondary">No se encontraron pedidos.</td>
           </tr>
         }
       }
     </tbody>
   </table>
 </div>
-
-<style>
-  .content-header { @apply flex justify-between items-center; }
-  .content-header h1 { @apply text-2xl sm:text-3xl font-bold; }
-  .admin-table-container { @apply bg-dark-bg-secondary border border-border-color rounded-xl overflow-x-auto; }
-  .admin-table { @apply w-full border-collapse; }
-  .admin-table th, .admin-table td { @apply p-4 text-left border-b border-border-color; }
-  .admin-table th { @apply text-sm font-semibold text-text-secondary uppercase whitespace-nowrap; }
-  .admin-table tbody tr:last-child td { @apply border-none; }
-  .action-buttons button { @apply bg-transparent border-none text-text-secondary cursor-pointer text-lg p-2 transition-colors; }
-  .action-buttons button:hover { @apply text-primary-accent; }
-
-  /* Estilos para el select de estado */
-  .status-select {
-    @apply bg-transparent border-none font-bold text-xs rounded-full py-1 pl-3 pr-8 appearance-none cursor-pointer;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239CA3AF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 0.2rem center;
-    background-repeat: no-repeat;
-    background-size: 1.25em 1.25em;
-  }
-  .status-processing { @apply bg-warning/20 text-warning; }
-  .status-shipped { @apply bg-primary-accent/20 text-primary-accent; }
-  .status-delivered { @apply bg-success/20 text-success; }
-  .status-cancelled { @apply bg-danger/20 text-danger; }
-
-  /* Estilo para el skeleton de carga */
-  .skeleton-line { @apply w-full h-4 bg-border-color rounded animate-pulse; }
-</style>

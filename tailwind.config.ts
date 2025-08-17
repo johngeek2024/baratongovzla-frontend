@@ -11,7 +11,6 @@ const config: Config = {
       aspectRatio: {
         '3/2': '3 / 2',
       },
-      // ✅ MEJORA ARQUITECTÓNICA: Los colores ahora consumen las variables CSS de styles.css
       colors: {
         'primary-accent': 'hsl(var(--color-primary-accent) / <alpha-value>)',
         'primary-accent-darker': 'hsl(var(--color-primary-accent-darker) / <alpha-value>)',
@@ -23,7 +22,7 @@ const config: Config = {
         'text-secondary': 'hsl(var(--color-text-secondary) / <alpha-value>)',
         'text-on-dark': 'hsl(var(--color-text-on-dark) / <alpha-value>)',
         'border-color': 'hsl(var(--color-border) / <alpha-value>)',
-        'flash-accent': '#ff3b3b', // Mantenemos este como un valor fijo por ahora
+        'flash-accent': '#ff3b3b',
         'success': 'hsl(var(--color-success) / <alpha-value>)',
         'warning': 'hsl(var(--color-warning) / <alpha-value>)',
         'danger': 'hsl(var(--color-danger) / <alpha-value>)',
@@ -66,6 +65,10 @@ const config: Config = {
         DEFAULT: '0 2px 4px rgba(0, 0, 0, 0.5)',
         md: '0 2px 10px rgba(0, 0, 0, 0.5)',
         lg: '0 4px 12px rgba(0, 0, 0, 0.5)',
+      },
+      // ✅ CORRECCIÓN: Se añade la propiedad backgroundImage
+      backgroundImage: {
+        'select-arrow': `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239CA3AF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
       },
     },
   },

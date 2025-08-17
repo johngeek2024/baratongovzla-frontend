@@ -1,48 +1,48 @@
-<header class="page-header">
+<header class="mb-8">
   <h1 class="text-2xl sm:text-4xl font-bold">Dashboard Principal</h1>
 </header>
 
-<div class="stats-grid">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
   @for (stat of stats(); track stat.title) {
     @if (stat.title === 'Bajo Stock') {
-      <div class="stat-card stat-card--health">
+      <div class="bg-dark-bg-secondary border border-border-color rounded-xl flex flex-col min-height: 172px p-0 overflow-hidden">
         @if (stat.health; as health) {
-          <div class="stat-card-health-top" [class.text-success]="health.color === 'success'" [class.text-warning]="health.color === 'warning'" [class.text-danger]="health.color === 'danger'">
+          <div class="font-semibold flex items-center gap-2 px-6 py-3 border-b border-border-color/50 bg-dark-bg/30" [class.text-success]="health.color === 'success'" [class.text-warning]="health.color === 'warning'" [class.text-danger]="health.color === 'danger'">
             <i class="fas fa-heart-pulse"></i>
             <span>Salud del Inventario: <strong>{{ health.status }}</strong></span>
           </div>
         }
-        <div class="stat-card-main-content">
-          <div class="stat-card-header">
+        <div class="px-6 pt-4 pb-6 flex-grow flex flex-col">
+          <div class="flex items-center gap-3 text-text-secondary">
             <i class="{{ stat.icon }}"></i>
             <span>{{ stat.title }}</span>
           </div>
-          <p class="stat-card-value">{{ stat.value }}</p>
+          <p class="text-3xl font-bold text-white mt-auto">{{ stat.value }}</p>
         </div>
         @if (stat.action; as action) {
-          <button (click)="navigateTo(action.link)" class="btn btn-secondary btn-small">
+          <button (click)="navigateTo(action.link)" class="btn btn-secondary p-2 text-sm mt-4 justify-center">
             <i class="{{ action.icon }}"></i>
             <span>{{ action.label }}</span>
           </button>
         }
       </div>
     } @else {
-      <div class="stat-card">
-        <div class="stat-card-header">
+      <div class="bg-dark-bg-secondary border border-border-color rounded-xl p-6 flex flex-col min-height: 172px">
+        <div class="flex items-center gap-3 text-text-secondary">
           <i class="{{ stat.icon }}"></i>
           <span>{{ stat.title }}</span>
         </div>
 
         <div class="flex items-baseline gap-4 mt-auto">
-          <p class="stat-card-value">{{ stat.value }}</p>
+          <p class="text-3xl font-bold text-white">{{ stat.value }}</p>
           <div class="flex flex-col">
             @if(stat.subValue; as sub) {
-              <p class="stat-card-subvalue">
+              <p class="text-lg font-bold text-text-secondary leading-tight">
                 {{ sub.value }} <span class="text-sm font-medium">{{ sub.label }}</span>
               </p>
             }
             @if(stat.subValue2; as sub2) {
-              <p class="stat-card-subvalue">
+              <p class="text-lg font-bold text-text-secondary leading-tight">
                 {{ sub2.value }} <span class="text-sm font-medium">{{ sub2.label }}</span>
               </p>
             }
@@ -50,12 +50,12 @@
         </div>
 
         @if (stat.progress; as progress) {
-          <div class="stat-card-progress">
-            <div class="progress-bar" [style.width.%]="progress.value" [class.bg-success]="progress.color === 'success'"></div>
+          <div class="w-full h-1 bg-border-color rounded-full mt-auto mb-4">
+            <div class="h-full rounded-full transition-all duration-500" [style.width.%]="progress.value" [class.bg-success]="progress.color === 'success'"></div>
           </div>
         }
         @if (stat.action; as action) {
-          <button (click)="navigateTo(action.link)" class="btn btn-secondary btn-small">
+          <button (click)="navigateTo(action.link)" class="btn btn-secondary p-2 text-sm mt-auto justify-center">
             <i class="{{ action.icon }}"></i>
             <span>{{ action.label }}</span>
           </button>
@@ -65,41 +65,41 @@
   }
 </div>
 
-<div class="dashboard-grid">
-  <div class="chart-container">
-    <h3 class="chart-title">Análisis de Ventas (Últimos 30 días)</h3>
+<div class="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 mb-8">
+  <div class="bg-dark-bg-secondary border border-border-color rounded-xl p-6 relative h-96">
+    <h3 class="text-xl font-bold text-white mb-4">Análisis de Ventas (Últimos 30 días)</h3>
     <canvas baseChart [data]="lineChartData()" [options]="lineChartOptions" type="line"></canvas>
   </div>
 
-  <div class="info-widget">
-    <h3 class="widget-title">Productos Más Vendidos</h3>
-    <ul class="info-widget-list">
+  <div class="bg-dark-bg-secondary border border-border-color rounded-xl p-6">
+    <h3 class="text-xl font-bold text-white mb-4">Productos Más Vendidos</h3>
+    <ul class="list-none p-0 m-0">
       @for (item of hotProducts(); track item.product!.id) {
-        <li>
-          <span class="product-name">{{ item.product!.name }}</span>
-          <span class="product-metric hot">{{ item.quantity }} uds.</span>
+        <li class="flex justify-between items-center py-3 border-b border-border-color last:border-none">
+          <span class="font-medium">{{ item.product!.name }}</span>
+          <span class="text-success font-semibold">{{ item.quantity }} uds.</span>
         </li>
       } @empty {
-        <li class="justify-center text-text-secondary">No hay datos de ventas.</li>
+        <li class="justify-center text-text-secondary flex items-center py-3 border-b border-border-color last:border-none">No hay datos de ventas.</li>
       }
     </ul>
   </div>
 </div>
 
-<div class="info-widget">
-  <h3 class="widget-title">Productos Fríos (Sin Ventas > 60 días)</h3>
-  <ul class="info-widget-list">
+<div class="bg-dark-bg-secondary border border-border-color rounded-xl p-6">
+  <h3 class="text-xl font-bold text-white mb-4">Productos Fríos (Sin Ventas > 60 días)</h3>
+  <ul class="list-none p-0 m-0">
     @for (product of coldProducts().slice(0, isColdProductsExpanded() ? coldProducts().length : 5); track product.id) {
-      <li>
-        <span class="product-name">{{ product.name }}</span>
-        <span class="product-metric cold">{{ product.stock }} en stock</span>
+      <li class="flex justify-between items-center py-3 border-b border-border-color last:border-none">
+        <span class="font-medium">{{ product.name }}</span>
+        <span class="text-danger font-semibold">{{ product.stock }} en stock</span>
       </li>
     } @empty {
-      <li class="justify-center text-success">¡Todo el inventario ha rotado recientemente!</li>
+      <li class="justify-center text-success flex items-center py-3 border-b border-border-color last:border-none">¡Todo el inventario ha rotado recientemente!</li>
     }
   </ul>
   @if (coldProducts().length > 5) {
-    <button (click)="isColdProductsExpanded.set(!isColdProductsExpanded())" class="expand-button">
+    <button (click)="isColdProductsExpanded.set(!isColdProductsExpanded())" class="w-full text-left text-sm font-semibold text-primary-accent mt-3 px-3 py-2 rounded-lg hover:bg-primary-accent/10 transition-colors">
       @if (isColdProductsExpanded()) {
         <span><i class="fas fa-chevron-up mr-2"></i>Ver menos</span>
       } @else {
@@ -108,35 +108,3 @@
     </button>
   }
 </div>
-
-<style>
-  .page-header { @apply mb-8; }
-  .stats-grid { @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8; }
-  .stat-card { @apply bg-dark-bg-secondary border border-border-color rounded-xl p-6 flex flex-col; min-height: 172px; }
-  .stat-card-header { @apply flex items-center gap-3 text-text-secondary; }
-  .stat-card-value { @apply text-3xl font-bold text-white; }
-  .stat-card-subvalue { @apply text-lg font-bold text-text-secondary leading-tight; }
-  .stat-card-progress { @apply w-full h-1 bg-border-color rounded-full mt-auto mb-4; }
-  .progress-bar { @apply h-full rounded-full transition-all duration-500; }
-  .btn-small { @apply p-2 text-sm mt-auto justify-center; }
-
-  .stat-card--health { @apply p-0 overflow-hidden; }
-  .stat-card-health-top { @apply font-semibold flex items-center gap-2 px-6 py-3 border-b border-border-color/50 bg-dark-bg/30; }
-  .stat-card-main-content { @apply px-6 pt-4 pb-6 flex-grow flex flex-col; }
-  .stat-card--health .stat-card-value { @apply mt-auto; }
-  .stat-card--health .btn-small { @apply mt-4; }
-
-  .dashboard-grid { @apply grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 mb-8; }
-  .chart-container { @apply bg-dark-bg-secondary border border-border-color rounded-xl p-6 relative h-96; }
-  .chart-title, .widget-title { @apply text-xl font-bold text-white mb-4; }
-  .info-widget { @apply bg-dark-bg-secondary border border-border-color rounded-xl p-6; }
-  .info-widget-list { @apply list-none p-0 m-0; }
-  .info-widget-list li { @apply flex justify-between items-center py-3 border-b border-border-color; }
-  .info-widget-list li:last-child { @apply border-none; }
-  .product-name { @apply font-medium; }
-  .product-metric.hot { @apply text-success font-semibold; }
-  .product-metric.cold { @apply text-danger font-semibold; }
-  .product-metric.warning { @apply text-warning font-semibold; }
-
-  .expand-button { @apply w-full text-left text-sm font-semibold text-primary-accent mt-3 px-3 py-2 rounded-lg hover:bg-primary-accent/10 transition-colors; }
-</style>
