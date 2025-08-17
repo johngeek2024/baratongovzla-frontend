@@ -1,6 +1,6 @@
 <div class="fixed inset-0 -z-10 bg-dark-bg">
   <div
-    class="absolute inset-0 bg-[linear-gradient(to_right,rgba(55,65,81,0.2)_1px,transparent_1px),linear-gradient(to_bottom,rgba(55,65,81,0.2)_1px,transparent_1px)] bg-[size:40px_40px] [animation:move-grid_60s_linear_infinite]">
+    class="absolute inset-0 bg-[linear-gradient(to_right,rgba(55,65,81,0.2)_1px,transparent_1px),linear-gradient(to_bottom,rgba(55,65,81,0.2)_1px,transparent_1px)] bg-[size:40px_40px] animate-[move-grid_60s_linear_infinite]">
   </div>
 </div>
 
@@ -17,7 +17,7 @@
     <div class="relative mb-6">
       <i class="fas fa-user-shield absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"></i>
       <input type="text"
-             class="input-field"
+             class="w-full bg-dark-bg border border-border-color rounded-lg py-3 pr-4 pl-10 text-text-primary text-base transition-all duration-200 focus:border-primary-accent focus:outline-none focus:ring-2 focus:ring-primary-accent/50"
              placeholder="ID de Administrador"
              formControlName="adminId">
     </div>
@@ -25,7 +25,7 @@
     <div class="relative mb-6">
       <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"></i>
       <input type="password"
-             class="input-field"
+             class="w-full bg-dark-bg border border-border-color rounded-lg py-3 pr-4 pl-10 text-text-primary text-base transition-all duration-200 focus:border-primary-accent focus:outline-none focus:ring-2 focus:ring-primary-accent/50"
              placeholder="Contraseña"
              formControlName="password">
     </div>
@@ -34,27 +34,8 @@
       <p class="text-red-500 text-sm text-center -mt-2 mb-4">ID de administrador o contraseña incorrectos.</p>
     }
 
-    <button type="submit" [disabled]="loginForm.invalid" class="submit-btn">
+    <button type="submit" [disabled]="loginForm.invalid" class="w-full bg-primary-accent text-dark-bg font-bold py-3 px-6 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none">
       Ingresar
     </button>
   </form>
 </div>
-
-<style>
-  :host {
-    @apply flex items-center justify-center min-h-screen p-4;
-  }
-  .input-field {
-    @apply w-full bg-dark-bg border border-border-color rounded-lg py-3 pr-4 pl-10 text-text-primary text-base;
-    @apply transition-all duration-200 focus:border-primary-accent focus:outline-none focus:ring-2 focus:ring-primary-accent/50;
-  }
-  .submit-btn {
-    @apply w-full bg-primary-accent text-dark-bg font-bold py-3 px-6 rounded-lg transition-all duration-300;
-    @apply hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-accent/30;
-    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none;
-  }
-  @keyframes move-grid {
-    from { background-position: 0 0; }
-    to { background-position: 400px 400px; }
-  }
-</style>

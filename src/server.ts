@@ -1,4 +1,4 @@
-// CORRECCIÓN: Cargar variables de entorno locales desde el archivo .env
+// Cargar variables de entorno locales desde el archivo .env
 // Debe ser lo primero que se ejecute en el servidor.
 import * as dotenv from 'dotenv';
 dotenv.config();
@@ -80,6 +80,23 @@ app.post('/api/notifications/trigger', (req, res) => {
 // FIN DE LA LÓGICA DE NOTIFICACIONES
 // =======================================================
 
+// ✅ INICIO: SIMULACIÓN DE RUTAS API DE LOGIN FALLIDO
+// Este bloque intercepta las peticiones de login ANTES de que lleguen a Angular.
+app.post('/api/auth/login', (req, res) => {
+  // Para la simulación, siempre devolvemos un error 401 (No Autorizado).
+  // Esto será capturado por el errorInterceptor del frontend.
+  console.log('[SSR Server] Simulación de login de cliente fallido.');
+  res.sendStatus(401);
+});
+
+app.post('/api/auth/admin/login', (req, res) => {
+  // Hacemos lo mismo para el login de administrador.
+  console.log('[SSR Server] Simulación de login de admin fallido.');
+  res.sendStatus(401);
+});
+// ✅ FIN: SIMULACIÓN DE RUTAS API
+
+// Ruta para el Sitemap Dinámico
 app.get('/sitemap.xml', (req, res) => {
   const dataStore = new DataStoreService();
   const products: Product[] = dataStore.products();
@@ -107,6 +124,7 @@ app.get('/sitemap.xml', (req, res) => {
   res.send(sitemap);
 });
 
+// Servir archivos estáticos
 app.use(
   express.static(browserDistFolder, {
     maxAge: '1y',
@@ -115,6 +133,7 @@ app.use(
   }),
 );
 
+// Manejador de Angular para todas las demás rutas
 app.use((req, res, next) => {
   angularApp
     .handle(req)
@@ -124,6 +143,7 @@ app.use((req, res, next) => {
     .catch(next);
 });
 
+// Iniciar el servidor
 if (isMainModule(import.meta.url)) {
   const port = process.env['PORT'] || 4000;
   app.listen(port, (error?: any) => {

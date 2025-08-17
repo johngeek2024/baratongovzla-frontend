@@ -5,43 +5,43 @@
 } @else {
   @if (order(); as currentOrder) {
     <div class="animate-in fade-in-0 duration-500">
-      <header class="content-header">
+      <header class="flex justify-between items-center mb-8">
         <div>
-          <a routerLink="/admin/orders" class="back-link"><i class="fas fa-arrow-left"></i> Volver a Pedidos</a>
-          <h1 class="mt-2">Pedido {{ currentOrder.id }}</h1>
+          <a routerLink="/admin/orders" class="text-sm text-primary-accent hover:underline flex items-center gap-2"><i class="fas fa-arrow-left"></i> Volver a Pedidos</a>
+          <h1 class="mt-2 text-2xl sm:text-3xl font-bold">Pedido {{ currentOrder.id }}</h1>
         </div>
       </header>
 
-      <div class="detail-grid">
-        <div class="space-y-6">
-          <div class="info-widget">
-            <h3>Items del Pedido</h3>
-            <div class="admin-table-container -m-6">
-              <table class="admin-table">
-                <thead><tr><th>Producto</th><th>Cantidad</th><th>Precio</th><th>Subtotal</th></tr></thead>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="space-y-6 lg:col-span-2">
+          <div class="bg-dark-bg-secondary border border-border-color rounded-xl p-6">
+            <h3 class="text-lg font-bold text-white mt-0 mb-4">Items del Pedido</h3>
+            <div class="bg-transparent border-none -m-6">
+              <table class="w-full">
+                <thead>
+                  <tr><th class="p-4 text-left border-b border-border-color">Producto</th><th class="p-4 text-left border-b border-border-color">Cantidad</th><th class="p-4 text-left border-b border-border-color">Precio</th><th class="p-4 text-left border-b border-border-color">Subtotal</th></tr>
+                </thead>
                 <tbody>
                   @for(item of currentOrder.items; track item.productId) {
-                    <tr>
-                      <td class="font-semibold text-white">{{ item.name }}</td>
-                      <td>x {{ item.quantity }}</td>
-                      <td>${{ item.price.toFixed(2) }}</td>
-                      <td class="font-semibold text-white">${{ (item.price * item.quantity).toFixed(2) }}</td>
-                    </tr>
+                    <tr class="last:border-none"><td class="p-4 text-left border-b border-border-color font-semibold text-white">{{ item.name }}</td><td class="p-4 text-left border-b border-border-color">x {{ item.quantity }}</td><td class="p-4 text-left border-b border-border-color">${{ item.price.toFixed(2) }}</td><td class="p-4 text-left border-b border-border-color font-semibold text-white">${{ (item.price * item.quantity).toFixed(2) }}</td></tr>
                   }
                 </tbody>
               </table>
             </div>
           </div>
-          <div class="totals-summary">
-            <div><span>Subtotal</span> <span class="value">${{ subtotal().toFixed(2) }}</span></div>
-            <div><span>Envío</span> <span class="value">$0.00</span></div>
-            <div class="total"><span>Total</span> <span class="value">${{ currentOrder.total.toFixed(2) }}</span></div>
+          <div class="bg-dark-bg-secondary border border-border-color rounded-xl p-6 space-y-3">
+            <div class="flex justify-between items-center text-text-secondary"><span>Subtotal</span> <span class="font-semibold text-white">${{ subtotal().toFixed(2) }}</span></div>
+            <div class="flex justify-between items-center text-text-secondary"><span>Envío</span> <span class="font-semibold text-white">$0.00</span></div>
+            <div class="flex justify-between items-center text-lg text-white border-t border-border-color pt-3">
+                <span>Total</span>
+                <span class="font-semibold text-white">${{ currentOrder.total.toFixed(2) }}</span>
+            </div>
           </div>
         </div>
 
         <div class="space-y-6">
-          <div class="info-widget">
-            <h3>Detalles del Cliente</h3>
+          <div class="bg-dark-bg-secondary border border-border-color rounded-xl p-6">
+            <h3 class="text-lg font-bold text-white mt-0 mb-4">Detalles del Cliente</h3>
             <p class="font-semibold text-white">{{ currentOrder.customerName }}</p>
             <p class="text-text-secondary">{{ currentOrder.customerEmail }}</p>
             <p class="text-text-secondary mt-4 border-t border-border-color pt-4">
@@ -49,37 +49,18 @@
               <strong class="text-white">{{ currentOrder.date | date: 'fullDate':'':'es-VE' }}</strong>
             </p>
           </div>
-          <div class="info-widget">
-            <h3>Dirección de Envío</h3>
+          <div class="bg-dark-bg-secondary border border-border-color rounded-xl p-6">
+            <h3 class="text-lg font-bold text-white mt-0 mb-4">Dirección de Envío</h3>
             <p class="text-text-secondary">{{ currentOrder.shippingAddress }}</p>
           </div>
         </div>
       </div>
     </div>
   } @else {
-    <div class="info-widget text-center">
+    <div class="bg-dark-bg-secondary border border-border-color rounded-xl p-6 text-center">
       <h2 class="text-danger">Pedido no encontrado</h2>
       <p class="text-text-secondary">El pedido que buscas no existe o fue eliminado.</p>
-      <a routerLink="/admin/orders" class="btn mt-4">Volver a Pedidos</a>
+      <a routerLink="/admin/orders" class="bg-primary-accent text-dark-bg border-none px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all duration-200 inline-flex mt-4">Volver a Pedidos</a>
     </div>
   }
 }
-
-<style>
-  .content-header { @apply flex justify-between items-center mb-8; }
-  .content-header h1 { @apply text-2xl sm:text-3xl font-bold; }
-  .back-link { @apply text-sm text-primary-accent hover:underline flex items-center gap-2; }
-  .detail-grid { @apply grid grid-cols-1 lg:grid-cols-3 gap-6; }
-  .detail-grid > div:first-child { @apply lg:col-span-2; }
-  .info-widget { @apply bg-dark-bg-secondary border border-border-color rounded-xl p-6; }
-  .info-widget h3 { @apply text-lg font-bold text-white mt-0 mb-4; }
-  .admin-table-container { @apply bg-transparent border-none; }
-  .admin-table { @apply w-full; }
-  .admin-table th, .admin-table td { @apply p-4 text-left border-b border-border-color; }
-  .admin-table tbody tr:last-child td { @apply border-none; }
-  .totals-summary { @apply bg-dark-bg-secondary border border-border-color rounded-xl p-6 space-y-3; }
-  .totals-summary > div { @apply flex justify-between items-center text-text-secondary; }
-  .totals-summary .value { @apply font-semibold text-white; }
-  .totals-summary .total { @apply text-lg text-white border-t border-border-color pt-3; }
-  .btn { @apply bg-primary-accent text-dark-bg border-none px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all duration-200 inline-flex; }
-</style>
