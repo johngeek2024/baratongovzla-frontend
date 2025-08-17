@@ -1,0 +1,83 @@
+<header class="content-header">
+  <h1>Analítica Avanzada</h1>
+</header>
+
+<div class="info-widget mb-8">
+  <h3 class="widget-title">Análisis de Cohorts de Retención</h3>
+  <p class="text-text-secondary -mt-3 mb-6">
+    Retención de clientes por mes de su primera compra. Muestra qué % de clientes de un mes específico volvieron a comprar en los meses siguientes.
+  </p>
+  @if (cohortData().length > 0) {
+    <div class="cohort-analysis-container">
+      <table class="cohort-table">
+        <thead>
+          <tr>
+            <th>Cohorte (1ra Compra)</th>
+            <th>Nuevos</th>
+            @for (i of [0,1,2,3,4,5]; track i) {
+              <th>Mes {{ i }}</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (cohort of cohortData(); track cohort.cohortMonth) {
+            <tr>
+              <td class="cohort-date">{{ cohort.cohortMonth }}</td>
+              <td>{{ cohort.newCustomers }}</td>
+              @for (retention of cohort.retention; track $index) {
+                <td class="retention-cell" [style.backgroundColor]="getCohortCellColor(retention)">
+                  {{ retention !== null ? retention + '%' : '-' }}
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <p class="text-text-secondary text-center">No hay suficientes datos para generar el análisis de cohorts.</p>
+  }
+</div>
+
+<div class="dashboard-grid-full">
+  <div class="chart-container">
+    <h3 class="chart-title">Ventas por Categoría</h3>
+    <canvas baseChart [data]="barChartData()" [options]="barChartOptions" type="bar"></canvas>
+  </div>
+  <div class="info-widget">
+    <h3 class="widget-title">Top 5 Clientes (Por Gasto Total)</h3>
+    <ul class="info-widget-list">
+      @for (customer of topCustomers(); track customer.name) {
+        <li>
+          <span class="product-name">{{ customer.name }}</span>
+          <div class="text-right">
+            <span class="product-metric hot">${{ customer.totalSpent.toFixed(2) }}</span>
+            <span class="block text-xs text-text-secondary">{{ customer.orderCount }} pedidos</span>
+          </div>
+        </li>
+      } @empty {
+        <li class="justify-center text-text-secondary">No hay datos de clientes.</li>
+      }
+    </ul>
+  </div>
+</div>
+
+<style>
+  .widget-title { @apply text-xl font-bold text-white mb-2; }
+  .info-widget { @apply bg-dark-bg-secondary border border-border-color rounded-xl p-6; }
+  .dashboard-grid-full { @apply grid grid-cols-1 lg:grid-cols-2 gap-8; }
+  .chart-container { @apply relative h-96; }
+  .chart-title { @apply text-lg font-bold text-white mb-4; }
+  .info-widget-list { @apply list-none p-0 m-0; }
+  .info-widget-list li { @apply flex justify-between items-center py-3 border-b border-border-color; }
+  .info-widget-list li:last-child { @apply border-none; }
+  .product-name { @apply font-medium; }
+  .product-metric.hot { @apply text-success font-semibold; }
+
+  .cohort-analysis-container { @apply overflow-x-auto; }
+  .cohort-table { @apply w-full border-collapse text-sm whitespace-nowrap; }
+  .cohort-table th, .cohort-table td { @apply p-3 text-center border border-border-color; }
+  .cohort-table th { @apply font-semibold text-text-secondary; }
+  .cohort-table .cohort-date { @apply font-bold bg-dark-bg text-left; }
+  .cohort-table .retention-cell { @apply text-white font-bold transition-colors duration-300; }
+</style>

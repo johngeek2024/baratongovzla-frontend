@@ -1,0 +1,77 @@
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <header class="sidebar-header">
+      <img src="assets/isologo-blanco.svg" alt="Logo BaratongoVzla">
+    </header>
+    <nav class="sidebar-nav">
+      @for(link of navLinks; track link.id) {
+        <a [routerLink]="link.id" routerLinkActive="active">
+          <i class="fas {{ link.icon }}"></i>
+          <span>{{ link.label }}</span>
+        </a>
+      }
+    </nav>
+    <footer class="sidebar-footer">
+      <a (click)="handleLogout()" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Cerrar Sesión</span>
+      </a>
+    </footer>
+  </aside>
+
+  <main class="admin-main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
+
+<div class="mobile-bottom-bar">
+  <a routerLink="dashboard" routerLinkActive="active"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+  <a routerLink="products" routerLinkActive="active"><i class="fas fa-box-open"></i><span>Productos</span></a>
+  <div class="fab-placeholder"></div>
+  <a routerLink="orders" routerLinkActive="active"><i class="fas fa-receipt"></i><span>Pedidos</span></a>
+  <a routerLink="customers" routerLinkActive="active"><i class="fas fa-users"></i><span>Clientes</span></a>
+</div>
+
+<button (click)="navigateToAddProduct()" class="fab" aria-label="Añadir Nuevo Producto">
+  <i class="fas fa-plus"></i>
+</button>
+
+<style>
+  :host {
+    --color-dark-bg: 220 17% 5%;
+    --color-dark-bg-secondary: 222 47% 11%;
+    --color-primary-accent: 199 100% 50%; /* Azul claro para admin */
+    --color-text-primary: 220 14% 90%;
+    --color-text-secondary: 215 9% 65%;
+    --color-text-on-dark: 220 14% 91%;
+    --color-border: 215 16% 27%;
+    --color-success: 145 63% 49%;
+    --color-warning: 38 92% 53%;
+    --color-danger: 4 85% 61%;
+    @apply bg-dark-bg text-text-primary font-sans;
+  }
+  .admin-layout { @apply flex min-h-screen; }
+  .admin-sidebar { @apply w-64 bg-dark-bg-secondary border-r border-border-color p-6 flex-col flex-shrink-0 hidden md:flex; }
+  .sidebar-header { @apply text-center mb-8; }
+  .sidebar-header img { @apply h-10; }
+  .sidebar-nav { @apply flex-grow; }
+  .sidebar-nav a, .sidebar-footer a { @apply flex items-center gap-4 px-4 py-3 rounded-lg text-text-secondary font-medium transition-all duration-200 mb-2 cursor-pointer; }
+  .sidebar-nav a:hover, .sidebar-nav a.active { @apply bg-primary-accent text-dark-bg shadow-lg shadow-primary-accent/20; }
+  .sidebar-nav a i, .sidebar-footer a i { @apply w-5 text-center text-lg; }
+  .sidebar-footer { @apply border-t border-border-color pt-6; }
+  .sidebar-footer .logout-btn { @apply text-danger; }
+  .sidebar-footer .logout-btn:hover { @apply bg-danger/10 text-danger shadow-none; }
+  .admin-main-content { @apply flex-grow p-4 sm:p-8 pb-24 md:pb-8; }
+
+  .mobile-bottom-bar, .fab { @apply md:hidden; }
+
+  @media (max-width: 767px) {
+    .mobile-bottom-bar { @apply flex justify-around items-center fixed bottom-0 left-0 right-0 h-16 bg-dark-bg-secondary border-t border-border-color z-50; }
+    .mobile-bottom-bar a { @apply text-text-secondary no-underline text-center text-xs flex flex-col items-center justify-center flex-grow h-full transition-colors; }
+    .mobile-bottom-bar a i { @apply text-xl mb-1; }
+    .mobile-bottom-bar a.active { @apply text-primary-accent; }
+    .fab-placeholder { @apply w-16 flex-shrink-0; }
+    .fab { @apply flex items-center justify-center fixed left-1/2 -translate-x-1/2 bottom-5 w-16 h-16 bg-primary-accent text-dark-bg rounded-full border-none text-2xl shadow-lg shadow-primary-accent/30 cursor-pointer z-50 transition-transform; }
+    .fab:hover { @apply scale-110; }
+  }
+</style>

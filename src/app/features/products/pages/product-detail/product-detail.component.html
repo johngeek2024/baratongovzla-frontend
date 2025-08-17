@@ -1,0 +1,74 @@
+@if(product(); as productData) {
+  <div class="products-theme max-w-[1400px] mx-auto px-4 pt-28 pb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-12">
+
+      <main>
+        <section class="relative flex justify-center items-center mb-8 min-h-[50vh] md:min-h-[60vh]">
+          <div class="relative w-full max-w-[600px] aspect-[4/3] bg-dark-bg rounded-lg overflow-hidden">
+
+            <div [class.hidden]="activeView() !== '2d'" class="relative w-full h-full">
+              <img
+                [ngSrc]="productData.imageUrl"
+                [alt]="productData.name"
+                width="600"
+                height="450"
+                priority
+                class="w-full h-full object-contain filter drop-shadow-2xl"
+              >
+
+              @for(hotspot of productData.hotspots; track hotspot.title) {
+                <div class="absolute group" [style.top]="hotspot.y" [style.left]="hotspot.x" tabindex="0">
+                  <div class="relative w-6 h-6 bg-primary-accent rounded-full cursor-pointer z-10 animate-pulse group-hover:animate-none"></div>
+                  <div class="absolute bottom-[calc(100%+15px)] left-1/2 -translate-x-1/2 w-56 p-4 rounded-lg border border-border-color bg-dark-bg/90 backdrop-blur-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none">
+                    <h4 class="font-bold text-primary-accent mb-1">{{ hotspot.title }}</h4>
+                    <p class="text-sm text-text-on-dark/80 leading-tight">{{ hotspot.description }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+
+            @if(activeView() === '3d') {
+              <app-pdp-viewer></app-pdp-viewer>
+            }
+          </div>
+
+          <div class="absolute bottom-5 left-1/2 -translate-x-1/2 z-30 bg-dark-bg-secondary border border-border-color rounded-full p-1 flex gap-1">
+            <button (click)="setView('2d')" [class.active-view]="activeView() === '2d'" class="px-4 py-2 rounded-full text-sm font-semibold transition-colors text-text-on-dark">2D</button>
+            <button (click)="setView('3d')" [class.active-view]="activeView() === '3d'" class="px-4 py-2 rounded-full text-sm font-semibold transition-colors text-text-on-dark">3D</button>
+          </div>
+        </section>
+
+        <div class="lg:hidden mb-8" #mobilePurchasePanel>
+          <app-purchase-panel [product]="productData"></app-purchase-panel>
+        </div>
+
+        <div class="mt-16">
+          @for(feature of productData.features; track feature.title) {
+            <app-feature-section [feature]="feature"></app-feature-section>
+          }
+        </div>
+      </main>
+
+      <aside class="hidden lg:block lg:sticky top-24 h-fit">
+        <app-purchase-panel [product]="productData"></app-purchase-panel>
+      </aside>
+
+    </div>
+
+    <app-related-products></app-related-products>
+  </div>
+
+  <div
+    class="fixed bottom-0 left-0 w-full bg-dark-bg/80 backdrop-blur-md p-4 border-t border-border-color z-50 transform translate-y-full transition-transform duration-300 lg:hidden"
+    [appStickyOnScroll]="mobilePurchasePanel">
+    <button (click)="addToCartOnSticky(productData)" class="w-full bg-primary-accent text-white font-bold py-3 rounded-xl flex items-center justify-center gap-3">
+      <i class="fas fa-shopping-cart"></i>
+      <span>Añadir al Carrito</span>
+    </button>
+  </div>
+
+} @else {
+  <div class="flex justify-center items-center h-screen">
+    <p class="text-text-secondary">Cargando producto...</p>
+  </div>
+}

@@ -1,0 +1,44 @@
+<app-static-page pageTitle="Políticas de Privacidad" [navItems]="navItems">
+  <section content-block #contentSection id="info" class="content-block">
+    <h2><i class="fas fa-database"></i>1. Información que Recopilamos</h2>
+    <p>Recopilamos información para procesar tus pedidos y mejorar tu experiencia de compra. Esto incluye:</p>
+    <ul>
+      <li><strong>Información de Contacto:</strong> Nombre, dirección de envío, número de teléfono y correo electrónico.</li>
+      <li><strong>Información de Pago:</strong> Detalles necesarios para procesar los pagos (no almacenamos datos completos de tarjetas de crédito).</li>
+      <li><strong>Datos de Navegación:</strong> Información sobre cómo interactúas con nuestro sitio web, como páginas visitadas y productos vistos.</li>
+    </ul>
+  </section>
+  <section content-block #contentSection id="uso" class="content-block">
+    <h2><i class="fas fa-tasks"></i>2. Cómo Usamos tu Información</h2>
+    <p>Tu información se utiliza para:</p>
+    <ul>
+      <li>Procesar y enviar tus pedidos.</li>
+      <li>Comunicarnos contigo sobre tu compra y ofrecerte soporte al cliente.</li>
+      <li>Personalizar tu experiencia en nuestro sitio web.</li>
+      <li>Enviarte correos electrónicos promocionales (solo si has dado tu consentimiento).</li>
+    </ul>
+  </section>
+  <section content-block #contentSection id="seguridad" class="content-block">
+    <h2><i class="fas fa-shield-alt"></i>3. Seguridad de tus Datos</h2>
+    <p>Implementamos medidas de seguridad técnicas y organizativas para proteger tu información personal contra el acceso no autorizado, la alteración, la divulgación o la destrucción. Nuestro sitio utiliza cifrado SSL para proteger los datos sensibles durante la transmisión.</p>
+  </section>
+  <section content-block #contentSection id="cookies" class="content-block">
+    <h2><i class="fas fa-cookie-bite"></i>4. Cookies</h2>
+    <p>Utilizamos cookies para mejorar la funcionalidad del sitio, como mantener los artículos en tu carrito de compras y entender las preferencias de los usuarios para futuras visitas. Puedes gestionar tus preferencias de cookies a través de la configuración de tu navegador.</p>
+  </section>
+  <section content-block #contentSection id="derechos" class="content-block">
+    <h2><i class="fas fa-user-check"></i>5. Tus Derechos</h2>
+    <p>Tienes derecho a acceder, corregir o eliminar tu información personal que tenemos registrada. Si deseas ejercer estos derechos, por favor contáctanos a través de nuestro correo electrónico de soporte.</p>
+  </section>
+  <p content-block class="last-updated">Última actualización: 14 de Agosto de 2025</p>
+</app-static-page>
+
+<style>
+  .content-block { @apply bg-dark-bg-secondary p-8 rounded-2xl mb-8 border-l-4 border-primary-accent; }
+  .content-block h2 { @apply font-headings text-2xl text-white mb-6 flex items-center gap-4; }
+  .content-block h2 i { @apply text-primary-accent text-xl; }
+  .content-block p, .content-block li { @apply text-lg text-text-secondary leading-relaxed mb-6; }
+  .content-block a { @apply text-primary-accent font-semibold hover:underline; }
+  .content-block ul { @apply list-disc pl-6; }
+  .last-updated { @apply italic text-text-secondary text-right mt-8; }
+</style>

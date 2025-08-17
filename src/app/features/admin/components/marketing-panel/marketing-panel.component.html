@@ -1,0 +1,176 @@
+<header class="content-header">
+  <h1>Gestión de Marketing y Contenido</h1>
+</header>
+
+<nav class="tabs-nav">
+  <button (click)="selectTab('banners')" [class.active]="activeTab() === 'banners'">
+    <i class="fas fa-images"></i> Banners del Carrusel
+  </button>
+  <button (click)="selectTab('stage')" [class.active]="activeTab() === 'stage'">
+    <i class="fas fa-desktop"></i> Bundle "Product Stage"
+  </button>
+  <button (click)="selectTab('bundle')" [class.active]="activeTab() === 'bundle'">
+    <i class="fas fa-cubes"></i> Bundle "Destacados"
+  </button>
+  <button (click)="selectTab('quick-cat')" [class.active]="activeTab() === 'quick-cat'">
+    <i class="fas fa-star"></i> Categorías Rápidas
+  </button>
+</nav>
+
+<div class="tab-content">
+  @switch (activeTab()) {
+    @case ('banners') {
+      <div class="info-widget">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="!m-0">Banners del Carrusel Principal</h3>
+          <a routerLink="/admin/marketing/new" class="btn"><i class="fas fa-plus"></i> Añadir Banner</a>
+        </div>
+        <div class="admin-table-container !p-0">
+          <table class="admin-table">
+            <tbody>
+              @for (banner of banners(); track banner.id) {
+                <tr>
+                  <td class="font-semibold text-white">{{ banner.internalName }}</td>
+                  <td>
+                    @if (banner.isActive) { <span class="status-badge status-active">Activo</span> }
+                    @else { <span class="status-badge status-inactive">Inactivo</span> }
+                  </td>
+                  <td class="action-buttons">
+                    <a [routerLink]="['/admin/marketing/edit', banner.id]" class="action-btn-link"><i class="fas fa-edit"></i></a>
+                    <button class="delete-btn" (click)="openDeleteConfirmation(banner)"><i class="fas fa-trash"></i></button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr><td colspan="3" class="text-center text-text-secondary py-4">No hay banners creados.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+    @case ('stage') {
+      <form [formGroup]="productStageForm" (ngSubmit)="saveProductStage()" class="info-widget">
+        <h3 class="mb-6">Editar Bundle "Product Stage"</h3>
+        <div class="space-y-4">
+          <div><label class="form-label">URL Imagen de Fondo</label><input formControlName="backgroundUrl" class="form-input"></div>
+          <div><label class="form-label">Título</label><input formControlName="title" class="form-input"></div>
+          <div><label class="form-label">Párrafo</label><textarea formControlName="paragraph" class="form-input" rows="3"></textarea></div>
+          <div class="grid grid-cols-2 gap-4">
+            <div><label class="form-label">Texto del Botón</label><input formControlName="buttonText" class="form-input"></div>
+            <div><label class="form-label">Enlace del Botón</label><input formControlName="buttonLink" class="form-input"></div>
+          </div>
+          <div class="flex justify-end pt-4 border-t border-border-color mt-6">
+            <button type="submit" class="btn" [disabled]="isSaving() || productStageSaved() || productStageForm.invalid">
+              @if (isSaving()) { <i class="fas fa-spinner animate-spin mr-2"></i><span>Guardando...</span> }
+              @else if (productStageSaved()) { <i class="fas fa-check mr-2"></i><span>¡Guardado!</span> }
+              @else { <span>Guardar Cambios</span> }
+            </button>
+          </div>
+        </div>
+      </form>
+    }
+    @case ('bundle') {
+      <form [formGroup]="bundleForm" (ngSubmit)="saveBundle()" class="info-widget">
+        <h3 class="mb-6">Editar Bundle "Destacados"</h3>
+        <div class="space-y-4">
+          <div><label class="form-label">Título de la Sección</label><input formControlName="sectionTitle" class="form-input"></div>
+          <div><label class="form-label">URL Imagen Principal</label><input formControlName="imageUrl" class="form-input"></div>
+          <div><label class="form-label">Título Superpuesto</label><input formControlName="overlayTitle" class="form-input"></div>
+          <div><label class="form-label">Párrafo Superpuesto</label><textarea formControlName="overlayParagraph" class="form-input" rows="2"></textarea></div>
+          <div class="pt-4 border-t border-border-color mt-6">
+            <div class="flex justify-between items-center">
+              <h4 class="text-base font-bold">Productos del Bundle (Hotspots)</h4>
+              <button type="button" (click)="addHotspot()" class="btn btn-secondary !px-3 !py-1.5"><i class="fas fa-plus"></i></button>
+            </div>
+            <div formArrayName="hotspots" class="space-y-3 mt-3 max-h-60 overflow-y-auto pr-2">
+              @for (hotspot of hotspots.controls; track $index) {
+                <div [formGroupName]="$index" class="grid grid-cols-[2fr_1fr_2fr_2fr_auto] gap-3 items-center">
+                  <input type="text" formControlName="title" class="form-input !text-sm" placeholder="Nombre Producto">
+                  <input type="text" formControlName="price" class="form-input !text-sm" placeholder="Precio ($)">
+                  <input type="text" formControlName="imageUrl" class="form-input !text-sm" placeholder="URL Imagen (Móvil)">
+                  <input type="text" formControlName="linkUrl" class="form-input !text-sm" placeholder="Enlace (/product/slug)">
+                  <button type="button" (click)="removeHotspot($index)" class="text-danger"><i class="fas fa-trash"></i></button>
+                </div>
+              }
+            </div>
+          </div>
+          <div class="flex justify-end pt-4 border-t border-border-color mt-6">
+            <button type="submit" class="btn" [disabled]="isSaving() || bundleSaved() || bundleForm.invalid">
+              @if (isSaving()) { <i class="fas fa-spinner animate-spin mr-2"></i><span>Guardando...</span> }
+              @else if (bundleSaved()) { <i class="fas fa-check mr-2"></i><span>¡Guardado!</span> }
+              @else { <span>Guardar Cambios</span> }
+            </button>
+          </div>
+        </div>
+      </form>
+    }
+    @case ('quick-cat') {
+      <form [formGroup]="quickCategoriesForm" (ngSubmit)="saveQuickCategories()" class="info-widget">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="!m-0">Editar Sección "Categorías Rápidas" (Home)</h3>
+          <button type="button" (click)="addQuickCategory()" class="btn btn-secondary !px-3 !py-1.5"><i class="fas fa-plus"></i> Añadir</button>
+        </div>
+        <div formArrayName="categories" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+          @for (category of quickCategoriesArray.controls; track $index) {
+            <div [formGroupName]="$index" class="grid grid-cols-[2fr_2fr_2fr_auto] gap-3 items-center">
+              <input type="text" formControlName="title" class="form-input !text-sm" placeholder="Título (ej: Gaming)">
+              <input type="text" formControlName="iconClass" class="form-input !text-sm" placeholder="Icono (ej: fas fa-gamepad)">
+              <input type="text" formControlName="link" class="form-input !text-sm" placeholder="Enlace (/products/slug)">
+              <button type="button" (click)="removeQuickCategory($index)" class="text-danger"><i class="fas fa-trash"></i></button>
+            </div>
+          }
+        </div>
+        <div class="flex justify-end pt-4 border-t border-border-color mt-6">
+          <button type="submit" class="btn" [disabled]="isSaving() || quickCategoriesSaved() || quickCategoriesForm.invalid">
+            @if (isSaving()) { <i class="fas fa-spinner animate-spin mr-2"></i><span>Guardando...</span> }
+            @else if (quickCategoriesSaved()) { <i class="fas fa-check mr-2"></i><span>¡Guardado!</span> }
+            @else { <span>Guardar Cambios</span> }
+          </button>
+        </div>
+      </form>
+    }
+  }
+</div>
+
+<app-modal [isOpen]="isDeleteModalOpen" title="Confirmar Eliminación" (close)="closeDeleteConfirmation()">
+  <p class="text-text-secondary">
+    ¿Estás seguro de que deseas eliminar el banner
+    <strong class="text-white">{{ bannerToDelete()?.internalName }}</strong>?
+  </p>
+  <div modal-footer class="flex justify-end gap-4">
+    <button class="btn btn-secondary" (click)="closeDeleteConfirmation()">Cancelar</button>
+    <button class="btn !bg-danger !text-white" (click)="handleDeleteBanner()" [disabled]="isSaving()">
+      @if (isSaving()) {
+        <i class="fas fa-spinner animate-spin mr-2"></i><span>Eliminando...</span>
+      } @else {
+        <span>Sí, Eliminar</span>
+      }
+    </button>
+  </div>
+</app-modal>
+
+<style>
+  .tabs-nav { @apply flex items-center gap-2 border-b border-border-color mb-8; }
+  .tabs-nav button { @apply bg-transparent border-0 px-5 py-3 font-semibold text-text-secondary cursor-pointer transition-all duration-200 border-b-2 border-transparent -mb-px; @apply flex items-center gap-2; }
+  .tabs-nav button:hover { @apply text-white; }
+  .tabs-nav button.active { @apply text-primary-accent border-primary-accent; }
+  .tab-content { animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .info-widget { @apply bg-dark-bg-secondary border border-border-color rounded-xl p-6; }
+  .form-label { @apply block text-sm font-medium text-text-primary mb-1; }
+  .form-input { @apply w-full bg-dark-bg border border-border-color rounded-lg px-3 py-2 text-white; }
+  .btn { @apply bg-primary-accent text-dark-bg border-none px-6 py-2.5 rounded-lg font-bold cursor-pointer; @apply inline-flex items-center justify-center; }
+  .btn:disabled { @apply opacity-60 bg-border-color cursor-not-allowed; }
+  .btn.btn-secondary { @apply bg-border-color text-text-primary; }
+  .action-buttons { @apply text-right; }
+  .action-buttons button, .action-buttons .action-btn-link { @apply bg-transparent border-none text-text-secondary cursor-pointer text-lg p-2 transition-colors duration-200 inline-block; }
+  .action-buttons button:hover, .action-buttons .action-btn-link:hover { @apply text-primary-accent; }
+  .action-buttons .delete-btn:hover { @apply text-danger; }
+  .admin-table-container { @apply bg-transparent border-none; }
+  .admin-table { @apply w-full border-collapse; }
+  .admin-table td { @apply p-4 text-left border-b border-border-color; }
+  .admin-table tbody tr:last-child td { @apply border-none; }
+  .status-badge { @apply py-1 px-3 rounded-full text-xs font-bold; }
+  .status-active { @apply bg-success/20 text-success; }
+  .status-inactive { @apply bg-danger/20 text-danger; }
+</style>

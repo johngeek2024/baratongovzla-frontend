@@ -1,0 +1,35 @@
+<main>
+  <section class="page-hero">
+    <h1 class="page-hero__title">{{ pageTitle() }}</h1>
+  </section>
+
+  <div class="main-container">
+    <div class="page-layout">
+      <aside class="page-nav">
+        <ul class="page-nav__list">
+          @for(item of navItems(); track item.id; let i = $index) {
+            <li class="page-nav__item">
+              <button #navLink class="nav-link-legal" [attr.data-target-id]="item.id">
+                {{ i + 1 }}. {{ item.title }}
+              </button>
+            </li>
+          }
+        </ul>
+      </aside>
+      <article class="content-section">
+        <ng-content></ng-content>
+      </article>
+    </div>
+  </div>
+</main>
+
+<style>
+  .main-container { @apply max-w-7xl mx-auto px-6; }
+  .page-hero { @apply py-16 text-center bg-gradient-to-b from-dark-bg-secondary to-dark-bg border-b border-border-color; }
+  .page-hero__title { @apply font-headings text-4xl md:text-5xl font-bold text-white; }
+  .page-layout { @apply flex flex-col lg:flex-row gap-12 py-12; }
+  .page-nav { @apply lg:sticky lg:top-28 lg:w-[250px] lg:flex-shrink-0 self-start; }
+  .page-nav__list { @apply list-none p-0 m-0 flex flex-row lg:flex-col gap-1 overflow-x-auto pb-4 lg:pb-0; }
+  .nav-link-legal { @apply text-left w-full cursor-pointer; }
+  .content-section { @apply flex-grow min-w-0; }
+</style>

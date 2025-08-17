@@ -1,0 +1,73 @@
+<div
+  class="fixed inset-0 bg-dark-bg/90 backdrop-blur-lg z-[100] flex flex-col items-center p-8 transition-opacity duration-300"
+  [ngClass]="{
+    'opacity-100 visible': uiService.isSearchOverlayOpen(),
+    'opacity-0 invisible': !uiService.isSearchOverlayOpen()
+  }">
+
+  <button (click)="closeSearch()" class="absolute top-8 right-8 text-4xl text-text-secondary transition-transform hover:text-white hover:rotate-90">&times;</button>
+
+  <div class="w-full max-w-2xl mt-24">
+    <input
+      type="text"
+      placeholder="Busca tu próximo gadget..."
+      class="w-full bg-transparent border-b-2 border-primary-accent text-white text-center text-3xl md:text-5xl font-headings py-4 outline-none"
+      [value]="searchQuery()"
+      (input)="onSearchInput($event)">
+
+    @if (searchQuery()) {
+      <div class="search-results-container">
+        @for (product of searchResults(); track product.id) {
+          <a (click)="navigateToProduct(product.slug)" class="result-item">
+            <img [src]="product.imageUrl" [alt]="product.name" class="result-item__image">
+            <div class="result-item__info">
+              <h4 class="result-item__title">{{ product.name }}</h4>
+              <p class="result-item__category">{{ product.category }}</p>
+            </div>
+            <span class="result-item__price">${{ product.price.toFixed(2) }}</span>
+          </a>
+        } @empty {
+          @if(searchQuery().length > 1) {
+            <p class="no-results-message">No se encontraron resultados para "{{ searchQuery() }}"</p>
+          }
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<style>
+    .search-results-container {
+        @apply mt-8 max-h-[60vh] overflow-y-auto pr-2;
+    }
+    .result-item {
+        @apply flex items-center gap-4 p-4 rounded-lg cursor-pointer transition-all duration-200 hover:bg-primary-accent/10;
+        animation: fade-in-up 0.5s ease-out forwards;
+    }
+    .result-item__image {
+        @apply w-16 h-16 object-contain bg-dark-bg-secondary rounded-md flex-shrink-0;
+    }
+    .result-item__info {
+        @apply flex-grow;
+    }
+    .result-item__title {
+        @apply font-semibold text-white leading-tight;
+    }
+    .result-item__category {
+        @apply text-sm text-text-secondary capitalize;
+    }
+    .result-item__price {
+        @apply font-bold text-lg text-primary-accent;
+    }
+    .no-results-message {
+        @apply text-center text-text-secondary mt-8;
+    }
+
+    /* ✅ INICIO: CORRECCIÓN DE SINTAXIS */
+    /* Se eliminaron las comillas y los dos puntos para usar la sintaxis correcta de CSS. */
+    @keyframes fade-in-up {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    /* ✅ FIN: CORRECCIÓN DE SINTAXIS */
+</style>

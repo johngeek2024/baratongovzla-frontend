@@ -1,0 +1,206 @@
+<header class="content-header">
+  <h1>Gestión de Productos</h1>
+  <div class="header-actions">
+    <div class="view-toggle-group">
+      <button (click)="setViewMode('list')" class="view-toggle-btn" [class.active]="viewMode() === 'list'">
+        <i class="fas fa-list"></i>
+      </button>
+      <button (click)="setViewMode('grid')" class="view-toggle-btn" [class.active]="viewMode() === 'grid'">
+        <i class="fas fa-th-large"></i>
+      </button>
+    </div>
+    <button (click)="openBulkUploadModal()" class="btn btn-secondary">
+      <i class="fas fa-file-upload"></i> Carga Masiva
+    </button>
+    <a routerLink="/admin/products/new" class="btn">
+      <i class="fas fa-plus"></i> Añadir Producto
+    </a>
+  </div>
+</header>
+
+<div class="mt-8">
+  @if (viewMode() === 'list') {
+    <div class="bg-dark-bg-secondary border border-border-color rounded-xl overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-border-color">
+            <th class="p-4 text-left text-sm font-semibold text-text-secondary uppercase">Imagen</th>
+            <th class="p-4 text-left text-sm font-semibold text-text-secondary uppercase">Nombre</th>
+            <th class="p-4 text-left text-sm font-semibold text-text-secondary uppercase">Precio</th>
+            <th class="p-4 text-left text-sm font-semibold text-text-secondary uppercase">Stock</th>
+            <th class="p-4 text-left text-sm font-semibold text-text-secondary uppercase">Estado</th>
+            <th class="p-4 text-left text-sm font-semibold text-text-secondary uppercase">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of products(); track product.id) {
+            <tr class="border-b border-border-color/50 last:border-none">
+              <td class="p-4 align-middle">
+                <img [src]="product.imageUrl" [alt]="product.name" class="w-12 h-12 object-contain rounded-md bg-dark-bg">
+              </td>
+              <td class="p-4 align-middle font-semibold text-white">{{ product.name }}</td>
+              <td class="p-4 align-middle">${{ product.price.toFixed(2) }}</td>
+              <td class="p-4 align-middle">{{ product.stock }}</td>
+              <td class="p-4 align-middle">
+                <span class="status-badge" [class.status-published]="product.status === 'Publicado'" [class.status-draft]="product.status === 'Borrador'">
+                  {{ product.status }}
+                </span>
+              </td>
+              <td class="p-4 align-middle">
+                <div class="flex items-center gap-2">
+                  <a [routerLink]="['/admin/products/edit', product.id]" class="action-btn" title="Editar Producto">
+                    <i class="fas fa-edit"></i>
+                  </a>
+                  <button (click)="openDeleteConfirmation(product)" class="action-btn delete-btn" title="Eliminar Producto">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="text-center py-8 text-text-secondary">No se encontraron productos.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else if (viewMode() === 'grid') {
+    <div class="product-grid">
+      @for (product of products(); track product.id) {
+        <div class="product-card">
+          <div class="product-card__image-container">
+            <img [src]="product.imageUrl" [alt]="product.name">
+            <span class="status-badge absolute top-4 right-4" [class.status-published]="product.status === 'Publicado'" [class.status-draft]="product.status === 'Borrador'">{{ product.status }}</span>
+          </div>
+          <div class="product-card__info">
+            <h4 class="product-card__name">{{ product.name }}</h4>
+            <p class="product-card__sku">{{ product.sku }}</p>
+          </div>
+          <div class="product-card__stock-info">
+            <div class="stock-level">
+              <span class="price">${{ product.price.toFixed(2) }}</span>
+              <span>{{ product.stock }} Unidades</span>
+            </div>
+            <div class="stock-bar">
+              <div class="stock-bar__indicator" [style.width.%]="product.stock > 50 ? 100 : product.stock * 2" [class.bg-success]="product.stock > 10" [class.bg-warning]="product.stock <= 10 && product.stock > 0" [class.bg-danger]="product.stock === 0"></div>
+            </div>
+          </div>
+          <div class="product-card__actions">
+            <a [routerLink]="['/admin/products/edit', product.id]" class="btn btn-secondary flex-grow justify-center">
+              <i class="fas fa-edit"></i> Editar
+            </a>
+            <button class="btn btn-secondary !bg-danger/20 !text-danger hover:!bg-danger/40" (click)="openDeleteConfirmation(product)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      } @empty {
+        <p class="text-center py-8 text-text-secondary">No se encontraron productos.</p>
+      }
+    </div>
+  }
+</div>
+
+<app-modal [isOpen]="isDeleteModalOpen" title="Confirmar Eliminación" (close)="closeDeleteConfirmation()">
+  <p class="text-text-secondary">
+    ¿Estás seguro de que deseas eliminar el producto
+    <strong class="text-white">{{ productToDelete()?.name }}</strong>?
+    Esta acción no se puede deshacer.
+  </p>
+  <div modal-footer class="flex justify-end gap-4">
+    <button class="btn btn-secondary" (click)="closeDeleteConfirmation()">Cancelar</button>
+    <button class="btn !bg-danger !text-white" (click)="handleDeleteProduct()" [disabled]="isSaving()">
+      @if (isSaving()) {
+        <i class="fas fa-spinner animate-spin mr-2"></i>
+        <span>Eliminando...</span>
+      } @else {
+        <span>Sí, Eliminar</span>
+      }
+    </button>
+  </div>
+</app-modal>
+
+<app-modal [isOpen]="isBulkUploadModalOpen" title="Carga Masiva de Productos" (close)="isBulkUploadModalOpen.set(false)">
+  <div class="space-y-6">
+    <p class="text-text-secondary">
+      Sube un archivo en formato CSV para añadir múltiples productos a tu inventario.
+      El sistema ignorará automáticamente cualquier producto con un SKU o Nombre que ya exista.
+    </p>
+    <div class="bg-dark-bg border border-border-color rounded-lg p-4 flex items-center justify-between">
+      <span class="font-semibold">Plantilla de Carga</span>
+      <button (click)="downloadTemplate()" class="btn btn-secondary !px-4 !py-2 !text-sm">
+        <i class="fas fa-download"></i> Descargar CSV
+      </button>
+    </div>
+    <div>
+      <label for="csv-upload" class="btn w-full justify-center !py-4 cursor-pointer">
+        @if(isProcessingFile()) {
+          <i class="fas fa-spinner animate-spin"></i>
+          <span>Procesando...</span>
+        } @else {
+          <i class="fas fa-upload"></i>
+          <span>Seleccionar Archivo CSV</span>
+        }
+      </label>
+      <input type="file" id="csv-upload" class="hidden" accept=".csv" (change)="handleFileUpload($event)">
+    </div>
+
+    @if(uploadFeedback(); as feedback) {
+      <div class="border rounded-lg p-4" [ngClass]="{'border-success/50': feedback.errorCount === 0, 'border-danger/50': feedback.errorCount > 0}">
+        <h4 class="font-bold mb-2" [ngClass]="{'text-success': feedback.errorCount === 0, 'text-danger': feedback.errorCount > 0}">
+          Proceso Completado
+        </h4>
+        <p class="text-sm text-text-primary">
+          <span class="text-success">{{ feedback.successCount }}</span> productos añadidos.
+          <span class="text-danger">{{ feedback.errorCount }}</span> filas con errores.
+        </p>
+        @if(feedback.errors.length > 0) {
+          <ul class="text-xs text-text-secondary list-disc pl-5 mt-2 max-h-24 overflow-y-auto">
+            @for(error of feedback.errors; track $index) {
+              <li>{{ error }}</li>
+            }
+          </ul>
+        }
+      </div>
+    }
+  </div>
+  <div modal-footer class="flex justify-end gap-4">
+    <button class="btn btn-secondary" (click)="isBulkUploadModalOpen.set(false)">Cerrar</button>
+  </div>
+</app-modal>
+
+<style>
+  .content-header { @apply flex justify-between items-center flex-wrap gap-4; }
+  .content-header h1 { @apply text-2xl sm:text-3xl font-bold; }
+  .header-actions { @apply flex items-center gap-4; }
+  .btn { @apply bg-primary-accent text-dark-bg border-none px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 whitespace-nowrap; }
+  .btn:hover { @apply -translate-y-0.5 shadow-lg shadow-primary-accent/20; }
+  .btn.btn-secondary { @apply bg-border-color text-text-primary; }
+  .btn.btn-secondary:hover { @apply bg-text-secondary; }
+  .view-toggle-group { @apply flex bg-dark-bg p-1 rounded-lg border border-border-color; }
+  .view-toggle-btn { @apply bg-transparent border-none text-text-secondary px-3 py-1.5 rounded-md transition-all duration-200; }
+  .view-toggle-btn.active { @apply bg-primary-accent text-dark-bg shadow-md shadow-primary-accent/20; }
+
+  .status-badge { @apply px-3 py-1 rounded-full text-xs font-bold; }
+  .status-published { @apply bg-success/20 text-success; }
+  .status-draft { @apply bg-warning/20 text-warning; }
+  .action-btn { @apply bg-transparent border-none text-text-secondary cursor-pointer text-lg p-2 rounded-md transition-colors duration-200; }
+  .action-btn:hover { @apply text-primary-accent bg-primary-accent/10; }
+  .action-btn.delete-btn:hover { @apply text-danger bg-danger/10; }
+
+  .product-grid { @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6; }
+  .product-card { @apply bg-dark-bg-secondary border border-border-color rounded-xl overflow-hidden transition-all duration-200 flex flex-col; }
+  .product-card:hover { @apply -translate-y-1 shadow-2xl shadow-black/30 border-primary-accent; }
+  .product-card__image-container { @apply h-48 bg-dark-bg flex items-center justify-center p-4 relative; }
+  .product-card__image-container img { @apply max-h-full max-w-full object-contain; }
+  .product-card__info { @apply p-4 flex-grow; }
+  .product-card__name { @apply font-bold text-base text-white leading-tight; }
+  .product-card__sku { @apply text-sm text-text-secondary mt-1; }
+  .product-card__stock-info { @apply px-4 pb-4; }
+  .stock-level { @apply flex justify-between text-sm mb-2; }
+  .stock-level .price { @apply font-bold text-white; }
+  .stock-bar { @apply h-1.5 bg-border-color rounded-full overflow-hidden; }
+  .stock-bar__indicator { @apply h-full; }
+  .product-card__actions { @apply flex gap-2 p-3 border-t border-border-color bg-dark-bg/50; }
+</style>

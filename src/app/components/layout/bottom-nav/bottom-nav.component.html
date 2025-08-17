@@ -1,0 +1,47 @@
+<nav class="md:hidden fixed bottom-4 left-4 right-4 h-16 bg-surface-dark/80 backdrop-blur-lg border border-white/20 rounded-full z-50 grid grid-cols-[1fr_1fr_68px_1fr_1fr] items-center text-center shadow-lg">
+
+  <!-- Enlace de Inicio -->
+  <a href="#" class="flex flex-col items-center text-primary-accent [text-shadow:0_0_10px_var(--tw-shadow-color)] shadow-primary-accent/50">
+    <i class="fas fa-home text-xl"></i>
+    <span class="text-xs mt-1">Inicio</span>
+  </a>
+
+  <!-- Botón de Búsqueda -->
+  <button (click)="uiService.openSearchOverlay()" type="button" class="flex flex-col items-center text-text-on-dark hover:text-primary-accent">
+    <i class="fas fa-search text-xl"></i>
+    <span class="text-xs mt-1">Buscar</span>
+  </button>
+
+  <!-- Botón del Carrito -->
+  <button
+    (click)="uiService.openCartPanel()"
+    type="button"
+    class="relative -top-5 bg-gradient-to-r from-primary-accent to-primary-accent-darker w-16 h-16 rounded-full flex items-center justify-center text-white shadow-md transition-all hover:shadow-neon-primary justify-self-center">
+    <i class="fas fa-shopping-cart text-2xl"></i>
+
+    <!--
+      CORRECCIÓN: Se añade el contador dinámico, idéntico al del header.
+      Aparecerá solo si hay productos en el carrito.
+    -->
+    @if (cartService.cartCount() > 0) {
+      <span class="absolute top-1 right-1 bg-flash-accent text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-dark-bg">
+        {{ cartService.cartCount() }}
+      </span>
+    }
+  </button>
+
+  <!-- Enlace de Ofertas -->
+  <a href="#" class="flex flex-col items-center text-text-on-dark hover:text-primary-accent">
+    <i class="fas fa-tags text-xl"></i>
+    <span class="text-xs mt-1">Ofertas</span>
+  </a>
+
+  <!-- Botón de Menú -->
+  <button
+    (click)="uiService.openMenuPanel()"
+    type="button"
+    class="flex flex-col items-center text-text-on-dark hover:text-primary-accent">
+    <i class="fas fa-bars text-xl"></i>
+    <span class="text-xs mt-1">Menú</span>
+  </button>
+</nav>

@@ -1,0 +1,6 @@
+[
+  { "id": "qc-1", "title": "Gaming", "iconClass": "fas fa-gamepad", "link": "/products/gaming" },
+  { "id": "qc-2", "title": "Smartwatches", "iconClass": "far fa-clock", "link": "/products/smartwatches" },
+  { "id": "qc-3", "title": "Proyectores", "iconClass": "fas fa-satellite-dish", "link": "/products/proyectores" },
+  { "id": "qc-4", "title": "Seguridad", "iconClass": "fas fa-camera", "link": "/products/seguridad" }
+]

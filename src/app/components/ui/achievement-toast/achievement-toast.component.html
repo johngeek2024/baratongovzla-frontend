@@ -1,0 +1,19 @@
+<!--
+  CORRECCIÓN:
+  1. Se ha simplificado la estructura. El contenedor exterior siempre existe y sus clases de posición/opacidad se controlan con [ngClass].
+  2. Se ha eliminado el bloque '@if' interno. Ahora, el mensaje se muestra directamente en el <span>. Cuando el mensaje es nulo, el span simplemente estará vacío, pero el contenedor del toast permanecerá, permitiendo que la animación de salida se complete suavemente.
+  3. Se ha ajustado el estado oculto a '-bottom-24' para una transición más predecible.
+-->
+<div
+  class="fixed left-1/2 -translate-x-1/2 z-[100] transition-all duration-500 ease-in-out"
+  [ngClass]="{
+    'bottom-8 opacity-100': uiService.achievementMessage(),
+    '-bottom-24 opacity-0 pointer-events-none': !uiService.achievementMessage()
+  }">
+
+  <div class="bg-secondary-accent text-dark-bg px-6 py-3 rounded-full flex items-center gap-3 font-bold shadow-lg shadow-black/30">
+    <i class="fas fa-trophy text-xl"></i>
+    <span>{{ uiService.achievementMessage() }}</span>
+  </div>
+
+</div>

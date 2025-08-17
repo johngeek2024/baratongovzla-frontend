@@ -1,0 +1,45 @@
+@if(uiService.isFilterSidebarOpen()){
+  <div (click)="uiService.closeAllPanels()" class="fixed inset-0 bg-black/60 z-[105] md:hidden"></div>
+}
+
+<div class="products-theme max-w-[1600px] mx-auto px-4 md:px-8 pt-28 pb-8 flex flex-col md:flex-row gap-8">
+
+  <app-filter-sidebar></app-filter-sidebar>
+
+  <main class="flex-grow">
+    <header class="flex flex-col md:flex-row justify-between md:items-center mb-8 gap-4">
+      <div>
+        <button (click)="uiService.openFilterSidebar()" class="md:hidden flex items-center gap-2 bg-dark-bg-secondary border border-border-color px-4 py-2 rounded-lg mb-4 text-text-on-dark">
+          <i class="fas fa-filter"></i> Filtros
+        </button>
+        <h1 class="text-3xl md:text-5xl font-bold font-headings text-text-on-dark">Explorando: <span class="text-primary-accent">{{ activeCategoryName() }}</span></h1>
+        <p class="text-lg text-text-on-dark/70 mt-2">{{ filteredProducts().length }} productos encontrados</p>
+      </div>
+
+      <div class="flex bg-dark-bg-secondary border border-border-color rounded-lg p-1 self-start">
+        <button (click)="setViewMode('grid')" [class.active-view]="viewMode() === 'grid'" class="px-3 py-2 rounded-md text-text-on-dark transition-colors">
+          <i class="fas fa-th-large"></i>
+        </button>
+        <button (click)="setViewMode('list')" [class.active-view]="viewMode() === 'list'" class="px-3 py-2 rounded-md text-text-on-dark transition-colors">
+          <i class="fas fa-list"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="grid gap-8"
+         [class.grid-cols-1]="viewMode() === 'list'"
+         [class.sm:grid-cols-2]="viewMode() === 'grid'"
+         [class.xl:grid-cols-3]="viewMode() === 'grid'">
+
+      @for(product of filteredProducts(); track product.id) {
+        <app-plp-card [product]="product" [viewMode]="viewMode()"></app-plp-card>
+      }
+    </div>
+
+    @if (filteredProducts().length === 0) {
+      <div class="text-center py-20">
+        <p class="text-text-secondary">No se encontraron productos con los filtros actuales.</p>
+      </div>
+    }
+  </main>
+</div>

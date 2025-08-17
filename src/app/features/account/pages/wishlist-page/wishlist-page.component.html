@@ -1,0 +1,54 @@
+<div class="content-panel active">
+  <div class="content-header">
+    <h2 class="text-3xl font-bold mb-6">Mi Lista de Deseos</h2>
+  </div>
+
+  @if (wishlistItems().length > 0) {
+    <div class="wishlist-grid">
+      @for (item of wishlistItems(); track item.id) {
+        <a [routerLink]="['/product', item.slug]" class="product-card">
+          <div class="product-card__image-wrapper">
+            <img [src]="item.imageUrl" [alt]="item.name">
+          </div>
+          <div class="product-card__content">
+            <h3 class="product-card__title">{{ item.name }}</h3>
+            <div class="product-card__footer">
+              <p class="product-card__price">${{ item.price }}</p>
+              <button (click)="$event.preventDefault(); $event.stopPropagation()" class="product-card__cta">
+                <i class="fas fa-shopping-cart"></i>
+              </button>
+            </div>
+          </div>
+        </a>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <i class="fas fa-heart-broken"></i>
+      <h3 class="text-xl font-bold mt-4">Tu lista de deseos está vacía</h3>
+      <p class="text-text-secondary mt-2">Explora nuestros productos y guarda los que más te gusten.</p>
+      <a routerLink="/products" class="btn-primary mt-6">Explorar Productos</a>
+    </div>
+  }
+</div>
+
+<style>
+  .wishlist-grid { @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6; }
+  .product-card {
+    @apply block bg-dark-bg-secondary border border-border-color rounded-xl overflow-hidden text-left transition-all duration-300;
+    @apply flex flex-col; /* Asegura que el contenido se estire */
+    /* Efecto neón azul cian */
+    @apply hover:border-primary-accent hover:shadow-[0_0_25px_theme(colors.primary-accent/20)] hover:-translate-y-2;
+  }
+  .product-card__image-wrapper { @apply bg-dark-bg h-48 flex items-center justify-center p-4; }
+  .product-card__image-wrapper img { @apply max-h-full max-w-full object-contain; }
+  .product-card__content { @apply p-4 flex flex-col flex-grow; }
+  .product-card__title { @apply font-semibold text-text-primary mb-2 flex-grow; }
+  .product-card__footer { @apply flex justify-between items-center mt-4; }
+  .product-card__price { @apply text-xl font-bold text-secondary-accent; }
+  .product-card__cta { @apply bg-primary-accent text-dark-bg w-10 h-10 rounded-lg flex items-center justify-center transition-colors hover:bg-white; }
+
+  .empty-state { @apply text-center bg-dark-bg-secondary border border-border-color rounded-2xl p-8 sm:p-12 mt-8; }
+  .empty-state i { @apply text-5xl text-text-secondary; }
+  .btn-primary { @apply inline-block bg-primary-accent text-dark-bg font-bold py-3 px-6 rounded-lg transition-transform hover:-translate-y-1; }
+</style>

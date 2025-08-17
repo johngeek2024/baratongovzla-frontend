@@ -1,0 +1,50 @@
+@if(product(); as productData) {
+  <div class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8">
+
+    <div class="mb-6">
+      <p class="text-[0.9rem] text-text-on-dark/70 capitalize">{{ productData.category }}</p>
+      <h1 class="text-[1.8rem] leading-tight font-bold font-headings mt-1 text-text-on-dark">{{ productData.name }}</h1>
+    </div>
+
+    <div class="mb-6">
+      <p class="text-[2.2rem] font-bold font-headings text-text-on-dark">
+        ${{ productData.price }}
+        @if(productData.oldPrice) {
+          <span class="ml-4 text-[1.4rem] font-normal text-text-on-dark/50 line-through">${{ productData.oldPrice }}</span>
+        }
+      </p>
+    </div>
+
+    <div class="space-y-6">
+      @if (productData.colors && productData.colors.length) {
+        <div>
+          <label class="block font-semibold mb-2 text-text-on-dark">Color: <span class="font-normal text-text-on-dark/70">{{ selectedColor()?.name }}</span></label>
+          <div class="flex items-center gap-3">
+            @for(color of productData.colors; track color.name) {
+              <button
+                (click)="selectColor(color)"
+                [style.backgroundColor]="color.hex"
+                [class.is-active]="selectedColor()?.name === color.name"
+                [attr.aria-label]="'Seleccionar color ' + color.name"
+                class="w-8 h-8 rounded-full border-2 border-border-color transition-all duration-200 hover:scale-110 is-active:border-primary-accent is-active:scale-110">
+              </button>
+            }
+          </div>
+        </div>
+      }
+      <div>
+        <label class="block font-semibold mb-2 text-text-on-dark">Cantidad</label>
+        <div class="flex items-center gap-4">
+          <button (click)="decreaseQuantity()" [disabled]="quantity() === 1" class="w-10 h-10 rounded-full bg-border-color text-white transition-colors hover:bg-text-secondary disabled:opacity-50 disabled:cursor-not-allowed text-xl">-</button>
+          <span class="text-2xl font-bold w-10 text-center text-text-on-dark">{{ quantity() }}</span>
+          <button (click)="increaseQuantity()" class="w-10 h-10 rounded-full bg-border-color text-white transition-colors hover:bg-text-secondary text-xl">+</button>
+        </div>
+      </div>
+    </div>
+
+    <button (click)="addToCart()" class="w-full bg-primary-accent text-white font-bold py-4 rounded-xl mt-8 transition-all duration-300 hover:bg-white hover:text-dark-bg hover:shadow-neon-primary flex items-center justify-center gap-3 text-lg">
+      <i class="fas fa-shopping-cart"></i>
+      <span>Añadir al Carrito</span>
+    </button>
+  </div>
+}

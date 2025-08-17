@@ -1,0 +1,16 @@
+@if (isOpen()) {
+  <div (click)="closeModal()" class="fixed inset-0 bg-dark-bg/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in-0 duration-300">
+    <div (click)="$event.stopPropagation()" class="bg-dark-bg-secondary w-full max-w-2xl rounded-2xl border border-border-color shadow-2xl shadow-black/40 animate-in slide-in-from-bottom-5 duration-500 ease-out">
+      <header class="flex justify-between items-center p-6 border-b border-border-color">
+        <h3 class="text-xl font-bold text-white">{{ title }}</h3>
+        <button (click)="closeModal()" class="text-2xl text-text-secondary transition-transform duration-300 hover:text-white hover:rotate-90">&times;</button>
+      </header>
+      <main class="p-6">
+        <ng-content></ng-content>
+      </main>
+      <footer class="p-6 border-t border-border-color bg-dark-bg/50 rounded-b-2xl">
+        <ng-content select="[modal-footer]"></ng-content>
+      </footer>
+    </div>
+  </div>
+}

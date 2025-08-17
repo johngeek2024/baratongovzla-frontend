@@ -1,0 +1,27 @@
+<!--
+  CORRECCIÓN: Se ha aumentado el z-index de 'z-[100]' a 'z-[120]'.
+  Esto le da una prioridad de capa superior a la barra de filtros (que tiene z-[110]),
+  solucionando el problema de superposición.
+-->
+<div
+  class="fixed top-0 h-full w-[90%] max-w-md bg-dark-bg/80 backdrop-blur-lg border-white/10 shadow-2xl z-[120] transition-transform duration-500 ease-in-out flex flex-col"
+  [ngClass]="{
+    'translate-x-0': isOpen,
+    'left-0 -translate-x-full': position === 'left' && !isOpen,
+    'right-0 translate-x-full': position === 'right' && !isOpen,
+    'border-l': position === 'right',
+    'border-r': position === 'left'
+  }">
+
+  <!-- Cabecera del Panel con Título y Botón de Cierre -->
+  <div class="flex justify-between items-center p-6 border-b border-white/10 flex-shrink-0">
+    <h3 class="font-headings text-2xl text-white">{{ title }}</h3>
+    <button (click)="close.emit()" class="text-text-secondary text-3xl transition-transform hover:text-white hover:rotate-90">&times;</button>
+  </div>
+
+  <!-- Contenido del Panel -->
+  <div class="p-6 flex-grow overflow-y-auto">
+    <ng-content></ng-content>
+  </div>
+
+</div>

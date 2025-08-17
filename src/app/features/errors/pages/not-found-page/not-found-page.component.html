@@ -1,0 +1,118 @@
+<canvas #particleCanvas id="particle-canvas"></canvas>
+
+<main class="error-container">
+    <div class="error-content">
+        <h1 #glitchTitle class="glitch-title" data-text="404">404</h1>
+        <h2>Anomalía Detectada // Sistema Inestable</h2>
+        <p>
+            Has alcanzado un sector corrupto. La ruta de datos es inválida.
+            Recomendamos recalibrar tu trayectoria o iniciar un nuevo escaneo del sistema.
+        </p>
+        <div class="error-actions">
+            <a routerLink="/" class="cta-button" (mouseenter)="playSound()">
+                <span class="relative z-10">Recalibrar (Volver al Inicio)</span>
+            </a>
+            <form action="/products" method="get" class="search-form">
+                <input type="search" name="q" placeholder="Iniciar nuevo escaneo...">
+                <button type="submit" (mouseenter)="playSound()"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<style>
+    :host {
+        @apply grid place-items-center w-screen h-screen overflow-hidden bg-[#0A0C10];
+    }
+
+    #particle-canvas {
+        @apply fixed top-0 left-0 w-full h-full z-10;
+    }
+
+    .error-container {
+        @apply relative z-20 text-center p-8 bg-black/30 border border-white/20 rounded-2xl;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+    }
+
+    .error-content {
+        @apply max-w-[650px];
+    }
+
+    .glitch-title {
+        @apply relative m-0 font-headings text-[clamp(6rem,25vw,12rem)] font-bold text-white transition-transform duration-100 ease-in-out;
+    }
+
+    .glitch-title::before,
+    .glitch-title::after {
+        content: attr(data-text);
+        @apply absolute top-0 left-0 w-full h-full bg-transparent overflow-hidden transition-[clip-path] duration-100 ease-out;
+        clip-path: var(--clip-path, inset(50% 50% 50% 50%));
+    }
+
+    .glitch-title::before {
+        @apply left-px;
+        text-shadow: -2px 0 var(--color-primary-accent);
+    }
+
+    .glitch-title::after {
+        @apply -left-px;
+        text-shadow: -2px 0 var(--color-secondary-accent), 2px 2px var(--color-primary-accent);
+    }
+
+    h2 {
+        @apply font-headings text-text-secondary text-xl m-0 mb-6 uppercase tracking-[2px];
+    }
+
+    p {
+        @apply text-text-secondary text-base leading-relaxed max-w-lg mx-auto mb-10;
+    }
+
+    .error-actions {
+        @apply flex flex-col items-center gap-6;
+    }
+
+    /* ✅ INICIO: CORRECCIÓN DE ESTILOS DEL BOTÓN */
+    .cta-button {
+        @apply relative overflow-hidden bg-transparent text-primary-accent border-2 border-primary-accent rounded-lg py-3 px-8 text-base font-headings font-semibold no-underline cursor-pointer transition-colors duration-300 ease-in-out;
+    }
+
+    .cta-button::before {
+        content: '';
+        @apply absolute top-0 left-0 w-full h-full bg-primary-accent origin-center transition-transform duration-300 ease-in-out scale-x-0;
+    }
+
+    .cta-button:hover::before {
+        @apply scale-x-100;
+    }
+
+    .cta-button:hover {
+        @apply text-dark-bg;
+    }
+
+    .cta-button span {
+        @apply relative z-10;
+    }
+    /* ✅ FIN: CORRECCIÓN DE ESTILOS DEL BOTÓN */
+
+    .search-form {
+        @apply relative w-full max-w-sm;
+    }
+
+    .search-form input {
+        @apply w-full bg-dark-bg-secondary border border-border-color rounded-lg py-3 px-4 pr-12 text-text-primary text-sm font-sans transition-all duration-300 ease-in-out;
+    }
+
+    .search-form input:focus {
+        @apply outline-none border-primary-accent;
+        box-shadow: 0 0 15px var(--color-primary-accent-glow);
+    }
+
+    .search-form button {
+        @apply absolute right-[5px] top-1/2 -translate-y-1/2 bg-none border-none text-text-secondary text-lg p-2 cursor-pointer transition-colors duration-200 ease-in-out;
+    }
+
+    .search-form button:hover {
+        @apply text-primary-accent;
+    }
+</style>

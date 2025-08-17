@@ -1,0 +1,80 @@
+<div class="content-panel active">
+  <div class="content-header">
+    <h2 class="text-3xl font-bold mb-6">El Oráculo Baratongo</h2>
+  </div>
+
+  <div class="oracle-interface">
+    @if (isAnalyzing()) {
+      <div class="oracle-animation">
+        <div class="oracle-bar"></div><div class="oracle-bar"></div><div class="oracle-bar"></div><div class="oracle-bar"></div><div class="oracle-bar"></div>
+      </div>
+      <p>Analizando tu arsenal y preferencias...</p>
+    } @else {
+      @if (recommendedProduct(); as product) {
+        <div class="recommendation-content">
+          <p>Basado en tu arsenal, tu próximo gadget ideal es:</p>
+          <a [routerLink]="['/product', product.slug]" class="product-card recommendation-card">
+            <div class="product-card__image-wrapper">
+              <img [src]="product.imageUrl" [alt]="product.name">
+            </div>
+            <div class="product-card__content">
+              <h3 class="product-card__title">{{ product.name }}</h3>
+              <div class="product-card__footer">
+                <p class="product-card__price">${{ product.price }}</p>
+                <button class="product-card__cta"><i class="fas fa-shopping-cart"></i></button>
+              </div>
+            </div>
+          </a>
+        </div>
+      } @else {
+        <div class="recommendation-content">
+           <i class="fas fa-galaxy text-5xl text-text-secondary"></i>
+           <h3 class="text-xl font-bold mt-4">Has conquistado el catálogo</h3>
+           <p class="text-text-secondary mt-2">Parece que ya tienes lo mejor de lo mejor. ¡Vuelve pronto para nuevos lanzamientos!</p>
+        </div>
+      }
+    }
+  </div>
+</div>
+
+<style>
+  /* El contenedor principal ya no tiene efectos de hover */
+  .oracle-interface {
+    @apply text-center bg-dark-bg-secondary border border-border-color rounded-2xl p-8 sm:p-12 transition-all duration-300;
+  }
+  .oracle-animation { @apply flex justify-center items-center gap-2 h-12 mb-8; }
+  .oracle-bar {
+    @apply w-2 bg-primary-accent;
+    animation: oracle-wave 1.2s ease-in-out infinite;
+  }
+  .oracle-bar:nth-child(1) { animation-delay: 0s; }
+  .oracle-bar:nth-child(2) { animation-delay: 0.1s; }
+  .oracle-bar:nth-child(3) { animation-delay: 0.2s; }
+  .oracle-bar:nth-child(4) { animation-delay: 0.3s; }
+  .oracle-bar:nth-child(5) { animation-delay: 0.4s; }
+
+  .recommendation-content { animation: fade-in 0.5s ease-out; }
+  .product-card { @apply block bg-dark-bg-secondary border border-border-color rounded-xl overflow-hidden text-left transition-all max-w-sm mx-auto; }
+
+  /* El efecto neón se aplica aquí de forma estática y exclusiva */
+  .recommendation-card {
+    @apply mt-8;
+    @apply border-primary-accent shadow-[0_0_25px_theme(colors.primary-accent/20)];
+  }
+  .product-card__image-wrapper { @apply bg-dark-bg h-48 flex items-center justify-center p-4; }
+  .product-card__image-wrapper img { @apply max-h-full max-w-full object-contain; }
+  .product-card__content { @apply p-4; }
+  .product-card__title { @apply font-semibold text-text-primary mb-2; }
+  .product-card__footer { @apply flex justify-between items-center mt-4; }
+  .product-card__price { @apply text-xl font-bold text-secondary-accent; }
+  .product-card__cta { @apply bg-primary-accent text-dark-bg w-10 h-10 rounded-lg flex items-center justify-center transition-colors hover:bg-white; }
+
+  @keyframes oracle-wave {
+    0%, 40%, 100% { transform: scaleY(0.4); height: 1rem; }
+    20% { transform: scaleY(1); height: 3rem; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>

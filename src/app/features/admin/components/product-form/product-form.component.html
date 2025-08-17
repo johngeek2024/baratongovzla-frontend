@@ -1,0 +1,280 @@
+<div (click)="closeHotspotEditor()">
+    @if (productForm) {
+      <form [formGroup]="productForm" (ngSubmit)="handleSubmit()" class="product-form-grid">
+
+        <div class="main-column">
+          <div class="form-section">
+            <h4 class="form-section-title">Información Básica <span class="text-danger">*</span></h4>
+            <div>
+              <label for="name" class="form-label">Nombre del Producto <span class="text-danger">*</span></label>
+              <input type="text" id="name" formControlName="name" class="form-input" [class.border-danger]="name?.invalid && name?.touched">
+              <app-form-field-error [control]="name"></app-form-field-error>
+            </div>
+            <div>
+              <label for="shortDescription" class="form-label">Descripción Corta</label>
+              <textarea id="shortDescription" formControlName="shortDescription" class="form-input" rows="3" placeholder="Un resumen atractivo para la vista de lista."></textarea>
+            </div>
+             <div>
+              <label for="description" class="form-label">Descripción Larga</label>
+              <textarea id="description" formControlName="description" class="form-input" rows="6" placeholder="Detalles completos del producto."></textarea>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="flex justify-between items-center -mt-2 mb-4">
+              <h4 class="form-section-title mb-0">Especificaciones Clave <span class="text-danger">*</span></h4>
+              <button type="button" (click)="addSpec()" class="btn btn-secondary !px-3 !py-1.5">
+                <i class="fas fa-plus"></i> Añadir Spec
+              </button>
+            </div>
+            <p class="text-xs text-text-secondary -mt-3 mb-4">Añade las 3 especificaciones principales que aparecen en la tarjeta de producto.</p>
+            <div formArrayName="specs" class="space-y-4">
+              @for (specGroup of specs.controls; track $index) {
+                <div [formGroupName]="$index" class="feature-group !p-3">
+                  <div class="grid grid-cols-[1fr_1fr_1fr_1fr_auto] gap-3 items-center">
+                    <input type="text" formControlName="name" class="form-input" placeholder="Nombre (ej: Resolución 4K)">
+                    <input type="text" formControlName="value" class="form-input" placeholder="Valor (ej: 4K Nativo)">
+                    <input type="text" formControlName="delay" class="form-input" placeholder="Delay (ej: 150ms)">
+                    <input type="text" formControlName="iconPath" class="form-input" placeholder="SVG Path del Icono (opcional)">
+                    <button type="button" (click)="removeSpec($index)" class="text-danger transition-colors hover:text-danger/70" title="Eliminar Spec">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="flex justify-between items-center -mt-2 mb-4">
+              <h4 class="form-section-title mb-0">Atributos para Filtros</h4>
+              <button type="button" (click)="addAttribute()" class="btn btn-secondary !px-3 !py-1.5">
+                <i class="fas fa-plus"></i> Añadir Atributo
+              </button>
+            </div>
+            <p class="text-xs text-text-secondary -mt-3 mb-4">Define los filtros específicos para este producto. Ej: (Nombre: Lúmenes, Valor: 3200).</p>
+            <div formArrayName="filterableAttributes" class="space-y-4">
+              @for (attrGroup of filterableAttributes.controls; track $index) {
+                <div [formGroupName]="$index" class="feature-group !p-3">
+                  <div class="grid grid-cols-[1fr_1fr_auto] gap-3 items-center">
+                    <input type="text" formControlName="name" class="form-input" placeholder="Nombre del Filtro (ej: Color)">
+                    <input type="text" formControlName="value" class="form-input" placeholder="Valor del Filtro (ej: Negro)">
+                    <button type="button" (click)="removeAttribute($index)" class="text-danger transition-colors hover:text-danger/70" title="Eliminar Atributo">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h4 class="form-section-title">Editor de Hotspots</h4>
+            <p class="text-xs text-text-secondary -mt-3 mb-4">Haz clic sobre la imagen para añadir un punto de interés.</p>
+            <div #hotspotEditorContainer class="hotspot-editor-container" (click)="addHotspot($event)">
+              @if (imagePreview()) {
+                <img [src]="imagePreview()" alt="Previsualización del producto">
+                <div formArrayName="hotspots">
+                  @for (hotspotGroup of hotspots.controls; track $index) {
+                    <div [formGroupName]="$index" class="hotspot-control" [style.left]="hotspotGroup.get('x')?.value" [style.top]="hotspotGroup.get('y')?.value" (click)="openHotspotEditor($index, $event)">
+                      <div class="hotspot-dot"></div>
+                    </div>
+                  }
+                  @if (editingHotspotIndex() !== null) {
+                    <div [formGroupName]="editingHotspotIndex()!" [id]="'hotspot-editor-' + editingHotspotIndex()!" class="hotspot-editor" [style]="hotspotEditorStyle()" (click)="$event.stopPropagation()">
+                      <h6 class="hotspot-editor-title">
+                        <span>Editando Hotspot #{{ editingHotspotIndex()! + 1 }}</span>
+                        <button type="button" (click)="removeHotspot(editingHotspotIndex()!)" class="hotspot-delete-btn" title="Eliminar Hotspot">&times;</button>
+                      </h6>
+                      <input type="text" formControlName="title" placeholder="Título" class="hotspot-input">
+                      <textarea formControlName="description" placeholder="Descripción" class="hotspot-input" rows="2"></textarea>
+                      <button type="button" (click)="closeHotspotEditor()" class="btn btn-secondary !px-3 !py-1 w-full mt-2">Aceptar</button>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="placeholder-box">
+                  <i class="fas fa-image text-4xl text-text-secondary"></i>
+                  <span class="mt-2 text-text-secondary text-sm">Sube una imagen para empezar</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="flex justify-between items-center -mt-2 mb-4">
+              <h4 class="form-section-title mb-0">Sección de Características</h4>
+              <button type="button" (click)="addFeature()" class="btn btn-secondary !px-3 !py-1.5">
+                <i class="fas fa-plus"></i> Añadir
+              </button>
+            </div>
+            <div formArrayName="features" class="space-y-6">
+              @for (featureGroup of features.controls; track $index) {
+                <div [formGroupName]="$index" class="feature-group">
+                  <h5 class="feature-group-title">Característica #{{ $index + 1 }}</h5>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="form-label">Subtítulo</label><input type="text" formControlName="subtitle" class="form-input"></div>
+                    <div><label class="form-label">Título</label><input type="text" formControlName="title" class="form-input"></div>
+                  </div>
+                  <div><label class="form-label">Texto</label><textarea formControlName="text" class="form-input" rows="3"></textarea></div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div><label class="form-label">URL de Imagen</label><input type="text" formControlName="imageUrl" class="form-input" placeholder="https://..."></div>
+                    <div><label class="form-label">Posición de Imagen</label><select formControlName="imagePosition" class="form-input"><option value="right">Derecha</option><option value="left">Izquierda</option></select></div>
+                  </div>
+                  <button type="button" (click)="removeFeature($index)" class="remove-feature-btn"><i class="fas fa-trash"></i> Eliminar Característica</button>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-column">
+           <div class="form-section">
+            <h4 class="form-section-title">Imagen Principal <span class="text-danger">*</span></h4>
+            <label for="image-upload" class="cursor-pointer block">
+              <div class="placeholder-box aspect-video">
+                @if(imagePreview()) {
+                  <img [src]="imagePreview()" class="w-full h-full object-contain rounded-lg">
+                } @else {
+                  <div class="text-center text-text-secondary">
+                    <i class="fas fa-upload text-2xl"></i>
+                    <p class="text-sm mt-2">Subir Imagen</p>
+                  </div>
+                }
+              </div>
+            </label>
+            <input id="image-upload" type="file" class="hidden" (change)="onFileChange($event)">
+          </div>
+
+          <div class="form-section">
+            <h4 class="form-section-title">Organización <span class="text-danger">*</span></h4>
+            <div>
+              <label for="sku" class="form-label">SKU (Código único) <span class="text-danger">*</span></label>
+              <input type="text" id="sku" formControlName="sku" class="form-input" [class.border-danger]="sku?.invalid && sku?.touched">
+              <app-form-field-error [control]="sku"></app-form-field-error>
+            </div>
+            <div>
+              <label for="slug" class="form-label">Slug (URL del producto) <span class="text-danger">*</span></label>
+              <div class="flex items-center gap-2">
+                <input type="text" id="slug" formControlName="slug" class="form-input flex-grow" (input)="onSlugInput()" [class.border-danger]="slug?.invalid && slug?.touched">
+                <button type="button" (click)="regenerateSlug()" class="btn btn-secondary !px-3" title="Sugerir slug a partir del nombre">
+                  <i class="fas fa-magic-wand-sparkles"></i>
+                </button>
+              </div>
+              <app-form-field-error [control]="slug"></app-form-field-error>
+              <p class="text-xs text-text-secondary mt-1">Debe ser texto en minúsculas sin espacios, ej: nombre-del-producto</p>
+            </div>
+            <div>
+              <label for="category" class="form-label">Categoría <span class="text-danger">*</span></label>
+              <select id="category" formControlName="category" class="form-input" [class.border-danger]="category?.invalid && category?.touched">
+                <option [ngValue]="null" disabled>Selecciona una categoría</option>
+                @for(cat of categories(); track cat.id) { <option [value]="cat.slug">{{ cat.name }}</option> }
+              </select>
+              <app-form-field-error [control]="category"></app-form-field-error>
+            </div>
+            <div>
+              <label for="status" class="form-label">Estado</label>
+              <select id="status" formControlName="status" class="form-input"><option value="Publicado">Publicado</option><option value="Borrador">Borrador</option></select>
+            </div>
+             <div>
+              <label for="tags" class="form-label">Etiquetas</label>
+              <input type="text" id="tags" formControlName="tags" class="form-input" placeholder="PC, PS5, RGB (separadas por coma)">
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h4 class="form-section-title">Precios e Inventario <span class="text-danger">*</span></h4>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="price" class="form-label">Precio ($) <span class="text-danger">*</span></label>
+                <input type="number" id="price" formControlName="price" class="form-input" [class.border-danger]="price?.invalid && price?.touched">
+                <app-form-field-error [control]="price"></app-form-field-error>
+              </div>
+              <div>
+                <label for="oldPrice" class="form-label">Precio Anterior ($)</label>
+                <input type="number" id="oldPrice" formControlName="oldPrice" class="form-input">
+              </div>
+            </div>
+            <div>
+              <label for="cost" class="form-label">Costo ($)</label>
+              <input type="number" id="cost" formControlName="cost" class="form-input">
+            </div>
+            <div>
+              <label for="stock" class="form-label">Stock <span class="text-danger">*</span></label>
+              <input type="number" id="stock" formControlName="stock" class="form-input">
+            </div>
+            <div class="pt-4 border-t border-border-color/50">
+              <label for="isDealOfTheDay" class="flex items-center justify-between cursor-pointer">
+                <span class="flex flex-col">
+                  <span class="form-label mb-0 font-semibold">¿Baratongazo del Día?</span>
+                  <span class="text-xs text-text-secondary">Marcar este producto como la oferta principal.</span>
+                </span>
+                <div class="relative">
+                  <input type="checkbox" id="isDealOfTheDay" formControlName="isDealOfTheDay" class="sr-only peer">
+                  <div class="w-11 h-6 bg-border-color rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary-accent"></div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+            @if (formError()) {
+                <div class="form-error-alert">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>{{ formError() }}</span>
+                </div>
+            }
+          <button type="button" class="btn btn-secondary" (click)="handleCancel()">Cancelar</button>
+          <button type="submit" class="btn btn-primary" [disabled]="isSaving()">
+            @if (isSaving()) {
+              <i class="fas fa-spinner animate-spin mr-2"></i><span>Guardando...</span>
+            } @else {
+              <span>Guardar Producto</span>
+            }
+          </button>
+        </div>
+      </form>
+    }
+</div>
+
+<style>
+  .product-form-grid { @apply grid grid-cols-1 lg:grid-cols-3 gap-6; }
+  .main-column { @apply lg:col-span-2; }
+  .sidebar-column { @apply lg:col-span-1; }
+  .form-section { @apply bg-dark-bg-secondary border border-border-color rounded-xl p-6 space-y-4 mb-6; }
+  .form-section:last-child { @apply mb-0; }
+  .form-section-title { @apply text-lg font-bold text-white -mt-2 mb-4; }
+  .form-label { @apply block text-sm font-medium text-text-primary mb-1; }
+  .form-input { @apply w-full bg-dark-bg border border-border-color rounded-lg px-3 py-2 text-white; @apply focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/50 transition-all; }
+  .form-actions { @apply lg:col-span-3 flex justify-end items-center gap-4 pt-4 mt-2 border-t border-border-color; }
+  .btn { @apply px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all inline-flex items-center justify-center gap-2; }
+  .btn-primary { @apply bg-primary-accent text-dark-bg border-none; }
+  .btn-primary:hover { @apply -translate-y-0.5 shadow-lg shadow-primary-accent/20; }
+  .btn-primary:disabled { @apply opacity-50 bg-border-color cursor-not-allowed transform-none shadow-none; }
+  .btn-secondary { @apply bg-border-color text-text-primary; }
+  .btn-secondary:hover { @apply bg-text-secondary; }
+  .placeholder-box { @apply w-full rounded-lg bg-dark-bg border border-dashed border-border-color flex flex-col items-center justify-center flex-shrink-0 hover:border-primary-accent transition-colors; }
+  .feature-group { @apply border border-border-color/50 p-4 rounded-lg space-y-4 relative bg-dark-bg/30; }
+  .feature-group-title { @apply font-bold text-text-secondary text-sm; }
+  .remove-feature-btn { @apply text-danger text-xs font-semibold absolute top-4 right-4 transition-colors hover:text-danger/70; }
+
+  .hotspot-editor-container { @apply relative w-full bg-dark-bg border border-dashed border-border-color rounded-lg cursor-crosshair overflow-hidden p-1; }
+  .hotspot-editor-container img { @apply w-full h-auto rounded-md; }
+  .hotspot-control { @apply absolute -translate-x-1/2 -translate-y-1/2; }
+  .hotspot-dot { @apply w-6 h-6 rounded-full bg-primary-accent border-2 border-white shadow-lg animate-pulse cursor-pointer; }
+  .hotspot-editor { @apply absolute w-64 bg-dark-bg-secondary p-4 rounded-lg shadow-2xl border border-border-color space-y-2 z-10; animation: pop-in 0.2s ease-out forwards; }
+  .hotspot-editor-title { @apply text-sm font-bold text-white mb-2 flex justify-between items-center; }
+  .hotspot-input { @apply w-full bg-dark-bg border border-border-color rounded-md px-2 py-1 text-sm text-white focus:border-primary-accent focus:ring-0; }
+  .hotspot-delete-btn { @apply text-text-secondary text-xl leading-none transition-colors hover:text-danger; }
+
+  /* ✅ CORRECCIÓN: Estilos para la alerta de error global */
+  .form-error-alert {
+    @apply flex-grow flex items-center gap-3 text-danger text-sm font-semibold;
+  }
+
+  @keyframes pop-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+</style>

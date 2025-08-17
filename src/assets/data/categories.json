@@ -1,0 +1,5 @@
+[
+    { "id": "cat-1", "name": "Proyectores", "slug": "proyectores", "productCount": 0, "icon": "fas fa-video" },
+    { "id": "cat-2", "name": "Gaming", "slug": "gaming", "productCount": 0, "icon": "fas fa-gamepad" },
+    { "id": "cat-3", "name": "Smartwatches", "slug": "smartwatches", "productCount": 0, "icon": "fas fa-stopwatch-20" }
+]

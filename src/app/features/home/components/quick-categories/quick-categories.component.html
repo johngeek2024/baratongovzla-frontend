@@ -1,0 +1,20 @@
+<section class="bg-dark-bg py-16">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      @for (category of categories(); track category.title) {
+        <a
+          [routerLink]="category.link"
+          class="block bg-dark-bg-secondary rounded-2xl p-6 text-center no-underline
+                 border border-transparent
+                 transition-all duration-300
+                 hover:-translate-y-2 hover:border-primary-accent hover:shadow-neon-primary">
+
+          <div class="flex flex-col items-center justify-center h-full">
+            <i [class]="category.iconClass + ' text-3xl text-primary-accent mb-4'"></i>
+            <span class="font-semibold text-sm md:text-base text-text-on-dark">{{ category.title }}</span>
+          </div>
+        </a>
+      }
+    </div>
+  </div>
+</section>

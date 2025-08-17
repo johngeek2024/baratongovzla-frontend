@@ -1,0 +1,18 @@
+@if(content(); as c) {
+  <section class="relative h-[450px] text-white text-center overflow-hidden">
+    <div
+      class="absolute inset-0 bg-cover bg-center -z-10"
+      [style.backgroundImage]="'url(' + c.backgroundUrl + ')'"
+      appParallax
+      [ratio]="-0.1">
+    </div>
+    <div class="absolute inset-0 bg-black/60"></div>
+    <div class="relative z-10 max-w-2xl mx-auto h-full flex flex-col justify-center items-center p-6 fade-in-up" appScrollFadeIn>
+      <h2 class="font-headings text-4xl md:text-6xl font-bold mb-4">{{ c.title }}</h2>
+      <p class="text-lg text-text-on-dark mb-8">{{ c.paragraph }}</p>
+      <a [href]="c.buttonLink" class="bg-secondary-accent text-dark-bg font-bold py-3 px-8 rounded-lg transition-all hover:scale-105 inline-block hover:shadow-neon-secondary">
+        {{ c.buttonText }}
+      </a>
+    </div>
+  </section>
+}

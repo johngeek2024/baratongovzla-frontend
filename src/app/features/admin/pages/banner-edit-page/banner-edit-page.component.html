@@ -1,0 +1,24 @@
+<div class="content-panel active">
+  <header class="page-header">
+    <div>
+      <a routerLink="/admin/marketing" class="back-link">
+        <i class="fas fa-arrow-left"></i> Volver a Marketing
+      </a>
+      <h1 class="mt-2">{{ isEditMode() ? 'Editar Banner' : 'Añadir Nuevo Banner' }}</h1>
+    </div>
+  </header>
+  <div class="mt-8">
+    <app-banner-form
+      [isSaving]="isSaving"
+      [bannerToEdit]="bannerToEdit()"
+      (save)="handleSaveBanner($event)"
+      (cancel)="handleCancel()">
+    </app-banner-form>
+  </div>
+</div>
+
+<style>
+  .page-header { @apply flex justify-between items-center; }
+  .page-header h1 { @apply text-2xl sm:text-3xl font-bold; }
+  .back-link { @apply text-sm text-primary-accent hover:underline flex items-center gap-2; }
+</style>

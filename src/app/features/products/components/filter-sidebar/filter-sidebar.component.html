@@ -1,0 +1,72 @@
+<aside
+  class="fixed inset-y-0 left-0 z-[110] w-[300px] flex-shrink-0 bg-dark-bg-secondary border-r border-border-color p-6 h-full transition-transform duration-300 ease-in-out -translate-x-full md:relative md:h-fit md:w-[280px] md:rounded-2xl md:border md:translate-x-0 md:top-[100px]"
+  [ngClass]="{ 'translate-x-0': uiService.isFilterSidebarOpen() }">
+
+  <div class="mb-8">
+    <h3 class="text-lg font-semibold text-text-on-dark pb-3 mb-4 border-b border-border-color">Categorías</h3>
+    <nav class="flex flex-col gap-2">
+      <a (click)="selectAllProducts()" [class.active]="activeCategory() === null" class="category-link" href="javascript:void(0);">
+        <i class="fas fa-th-large w-5 text-center"></i> Todos
+      </a>
+      @for(category of visibleCategories(); track category.id) {
+        <a (click)="uiService.closeAllPanels()"
+           [routerLink]="['/products', category.slug]"
+           [class.active]="activeCategory() === category.slug"
+           class="category-link">
+          <i [class]="category.icon + ' w-5 text-center'"></i>
+          <span>{{ category.name }}</span>
+        </a>
+      }
+    </nav>
+    @if(canExpand()) {
+      <button (click)="toggleExpansion()" class="w-full text-left text-sm font-semibold text-primary-accent mt-3 px-3 py-2 rounded-lg hover:bg-primary-accent/10 transition-colors">
+        @if (isExpanded()) {
+          <span><i class="fas fa-chevron-up mr-2"></i>Ver menos</span>
+        } @else {
+          <span><i class="fas fa-chevron-down mr-2"></i>Ver {{ hiddenCategoriesCount() }} más</span>
+        }
+      </button>
+    }
+  </div>
+
+  @if (contextualFilters().length > 0) {
+    <div class="space-y-8">
+      @for(group of contextualFilters(); track group.name) {
+        <div>
+          <h3 class="text-lg font-semibold text-text-on-dark pb-3 mb-4 border-b border-border-color">{{ group.name }}</h3>
+          <div class="space-y-3">
+            @for(value of group.values; track value) {
+              <label class="flex items-center gap-3 cursor-pointer text-text-on-dark hover:text-primary-accent transition-colors">
+                <input type="checkbox"
+                       [checked]="isFilterActive(group.name, value)"
+                       (change)="productService.toggleFilter(group.name, value)"
+                       class="h-4 w-4 rounded border-border-color bg-dark-bg text-primary-accent focus:ring-primary-accent focus:ring-offset-dark-bg-secondary">
+                <span>{{ value }}</span>
+              </label>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <div class="mb-8 mt-8">
+    <h3 class="text-lg font-semibold text-text-on-dark pb-3 mb-4 border-b border-border-color">Filtros Generales</h3>
+    <div class="flex justify-between items-center mb-4">
+      <span class="text-text-on-dark">En Oferta</span>
+      <label class="relative inline-block w-11 h-6">
+        <input (change)="onSaleChange($event)" type="checkbox" class="opacity-0 w-0 h-0 peer">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="mb-8">
+    <h3 class="text-lg font-semibold text-text-on-dark pb-3 mb-4 border-b border-border-color">Precio</h3>
+    <div class="flex justify-between text-sm mb-2 text-text-on-dark">
+      <span>$50</span>
+      <span>${{ productService.maxPriceFilter() }}</span>
+    </div>
+    <input (input)="onPriceChange($event)" type="range" min="50" max="1000" [value]="productService.maxPriceFilter()" class="w-full h-1 bg-border-color rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-primary-accent [&::-webkit-slider-thumb]:rounded-full">
+  </div>
+</aside>

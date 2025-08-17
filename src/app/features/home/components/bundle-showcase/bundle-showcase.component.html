@@ -1,0 +1,72 @@
+@if(content(); as c) {
+  <section class="py-20 bg-dark-bg fade-in-up" appScrollFadeIn>
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-headings font-bold text-white inline-block border-b-4 border-primary-accent pb-2">
+          {{ c.sectionTitle }}
+        </h2>
+      </div>
+
+      <div class="bg-surface-dark rounded-2xl overflow-hidden shadow-2xl">
+        <div class="relative hidden md:block">
+
+          <img
+            [srcset]="imageSrcset()"
+            sizes="(max-width: 768px) 600px, 1200px"
+            alt="Imagen de un escritorio gamer completo"
+            width="1200"
+            height="600"
+            priority
+            class="w-full h-auto block"
+          >
+
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 p-6 md:p-10 text-white">
+            <h3 class="font-headings text-2xl md:text-4xl font-bold">{{ c.overlayTitle }}</h3>
+            <p class="mt-2 max-w-xl text-text-on-dark">{{ c.overlayParagraph }}</p>
+          </div>
+
+          @for(hotspot of c.hotspots; track hotspot.title) {
+            <div class="group absolute" [style.top]="hotspot.y" [style.left]="hotspot.x">
+              <div class="w-6 h-6 rounded-full bg-white flex items-center justify-center cursor-pointer animate-pulse"><i class="fas fa-plus text-primary-accent"></i></div>
+              <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-48 bg-surface-dark p-3 rounded-lg text-center opacity-0 group-hover:opacity-100 transition-all pointer-events-none">
+                <h4 class="font-bold text-sm text-white">{{ hotspot.title }}</h4>
+                <p class="text-secondary-accent text-xs">{{ hotspot.price }}</p>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="md:hidden">
+
+          <img
+            [srcset]="imageSrcset()"
+            sizes="(max-width: 768px) 600px, 1200px"
+            alt="Imagen de un escritorio gamer completo"
+            width="1200"
+            height="600"
+            class="w-full h-auto block"
+          >
+
+          <div class="p-6">
+            <h3 class="font-headings text-2xl font-bold text-white">{{ c.overlayTitle }}</h3>
+            <p class="mt-2 text-text-on-dark mb-6">{{ c.overlayParagraph }}</p>
+
+            <div class="flex flex-col gap-4">
+              @for (hotspot of c.hotspots; track hotspot.title) {
+                <a [routerLink]="hotspot.linkUrl" class="flex items-center gap-4 bg-dark-bg/50 p-3 rounded-lg">
+                  <img [ngSrc]="hotspot.imageUrl" [alt]="hotspot.title" width="64" height="64" class="w-16 h-16 object-contain rounded-md">
+                  <div class="flex-grow">
+                    <p class="font-semibold text-white">{{ hotspot.title }}</p>
+                    <p class="text-secondary-accent font-bold">{{ hotspot.price }}</p>
+                  </div>
+                </a>
+              }
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+}

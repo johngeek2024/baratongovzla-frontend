@@ -1,0 +1,276 @@
+<div class="products-theme">
+  <div class="max-w-[1400px] mx-auto px-4 md:px-8 pt-28 pb-16">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12 items-start">
+      <main class="flex flex-col gap-8">
+
+        <section class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-primary-accent text-dark-bg font-bold">1</div>
+            <h2 class="text-2xl font-headings font-bold text-text-on-dark m-0">Método de Entrega</h2>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div (click)="selectDeliveryMethod('pickup')" class="option-card" [ngClass]="{'active-card': deliveryMethod() === 'pickup'}">
+              <i class="fas fa-store"></i>
+              <h4>Retirar en Puntos Gratuitos</h4>
+              <p>Gratis</p>
+            </div>
+            <div (click)="selectDeliveryMethod('delivery')" class="option-card" [ngClass]="{'active-card': deliveryMethod() === 'delivery'}">
+              <i class="fas fa-motorcycle"></i>
+              <h4>Delivery Local en Valencia</h4>
+              <p>Costo Adicional</p>
+            </div>
+            <div (click)="selectDeliveryMethod('shipping')" class="option-card" [ngClass]="{'active-card': deliveryMethod() === 'shipping'}">
+              <i class="fas fa-truck"></i>
+              <h4>Envío Nacional</h4>
+              <p>Cobro a Destino</p>
+            </div>
+          </div>
+          @if(deliveryMethod()) {
+            <div class="mt-6 pt-6 border-t border-border-color">
+              @switch (deliveryMethod()) {
+                @case ('pickup') {
+                  <div class="bg-dark-bg rounded-lg p-6 border border-border-color">
+                    <div class="flex items-center gap-4">
+                      <i class="fas fa-map-marked-alt text-2xl text-primary-accent flex-shrink-0"></i>
+                      <div class="flex-grow">
+                        <label for="pickup-location" class="form-label">Selecciona uno de nuestros puntos de retiro gratuitos:</label>
+                        <select (change)="onPickupPointChange($event)" id="pickup-location" class="form-input">
+                          <option value="" disabled selected>-- Elige un punto --</option>
+                          <option value="colegio_luz">Colegio Luz de Carabobo (Trigal)</option>
+                          @if(cartService.totalPrice() >= 10) {
+                            <option value="metro_lara">Estación Metro Av. Lara (Salida Sur)</option>
+                            <option value="metro_cedeno">Estación Metro Av. Cedeño (Salida Sur)</option>
+                            <option value="torre_banaven">Torre Banaven (Av. Bolívar)</option>
+                          }
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                }
+                @case ('delivery') {
+                  <div class="space-y-6">
+                    <div class="bg-dark-bg rounded-lg p-4 border border-border-color">
+                      <div class="flex items-start gap-4">
+                        <i class="fas fa-map-marker-alt text-2xl text-primary-accent mt-1 flex-shrink-0"></i>
+                        <div class="flex-grow">
+                          <p class="font-semibold text-text-on-dark">Dirección de Entrega:</p>
+                          <p class="text-text-secondary leading-tight">{{ shippingAddress() }}</p>
+                          <button (click)="uiService.openAddressModal()" class="text-primary-accent text-sm font-semibold p-0 mt-2 bg-transparent border-none hover:underline">
+                            Cambiar / Añadir otra dirección
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div (click)="selectDeliveryVehicle('moto')" class="option-card !p-4" [ngClass]="{'active-card': selectedDeliveryVehicle() === 'moto'}">
+                        <i class="fas fa-motorcycle"></i><h4>Moto</h4>
+                      </div>
+                      <div (click)="selectDeliveryVehicle('carro')" class="option-card !p-4" [ngClass]="{'active-card': selectedDeliveryVehicle() === 'carro'}">
+                        <i class="fas fa-car"></i><h4>Carro</h4>
+                      </div>
+                    </div>
+                    @if(selectedDeliveryVehicle()) {
+                      <div class="bg-dark-bg rounded-lg p-4 border border-border-color">
+                        <label for="delivery-zone" class="form-label">Selecciona tu zona para calcular la tarifa:</label>
+                        <select (change)="onZoneChange($event)" id="delivery-zone" class="form-input">
+                          <option value="" disabled selected>-- Elige una zona --</option>
+                          <option value="valencia_norte">Valencia Norte</option>
+                          <option value="valencia_sur">Valencia Sur</option>
+                          <option value="naguanagua">Naguanagua</option>
+                          <option value="san_diego">San Diego</option>
+                          <option value="guacara">Guacara</option>
+                        </select>
+                      </div>
+                    }
+                  </div>
+                }
+                @case ('shipping') {
+                  <div class="bg-dark-bg rounded-lg p-6 border border-border-color space-y-4">
+                    <p class="text-text-secondary text-center">Completa los datos para tu envío nacional.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div><label class="form-label">Nombre y Apellido</label><input type="text" class="form-input" placeholder="Ej: Aura Pérez"></div>
+                      <div><label class="form-label">Cédula</label><input type="text" class="form-input" placeholder="Ej: V-12345678"></div>
+                    </div>
+                    <div><label class="form-label">Celular</label><input type="tel" class="form-input" placeholder="Ej: 0412-1234567"></div>
+                    <div><label class="form-label">Agencia de Envío</label><select class="form-input"><option value="mrw">MRW</option><option value="zoom">Zoom</option><option value="tealca">Tealca</option></select></div>
+                    <div><label class="form-label">Dirección de la Agencia</label><input type="text" class="form-input" placeholder="Ej: Av. Bolívar, C.C. Global"></div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div><label class="form-label">Estado</label><input type="text" class="form-input" placeholder="Ej: Carabobo"></div>
+                      <div><label class="form-label">Ciudad</label><input type="text" class="form-input" placeholder="Ej: Valencia"></div>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          }
+        </section>
+
+        @if (isDeliveryStepComplete()) {
+          <section class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-primary-accent text-dark-bg font-bold">2</div>
+              <h2 class="text-2xl font-headings font-bold text-text-on-dark m-0">Información de Contacto</h2>
+            </div>
+            <div class="bg-dark-bg rounded-lg p-6 border border-border-color">
+              <label for="customer-phone" class="form-label">
+                Número de Teléfono (WhatsApp)
+              </label>
+              <input
+                (input)="onCustomerPhoneInput($event)"
+                type="tel"
+                id="customer-phone"
+                class="form-input"
+                placeholder="Ej: 0412-1234567"
+              >
+              <p class="text-xs text-text-secondary mt-2">
+                Usaremos este número para confirmar tu pedido y coordinar la entrega.
+              </p>
+            </div>
+          </section>
+        }
+
+        <section class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8 transition-opacity duration-300"
+                 [class.opacity-50]="!isContactStepComplete()" [class.pointer-events-none]="!isContactStepComplete()">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-primary-accent text-dark-bg font-bold">3</div>
+            <h2 class="text-2xl font-headings font-bold text-text-on-dark m-0">Método de Pago</h2>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            @for (method of availablePaymentMethods(); track method.id) {
+              <div (click)="selectPaymentMethod(method.id)"
+                   class="option-card"
+                   [ngClass]="{'active-card': paymentMethod() === method.id}">
+                <i [class]="method.icon"></i>
+                <h4 class="font-semibold text-text-on-dark">{{ method.name }}</h4>
+              </div>
+            }
+          </div>
+          @if (paymentMethod()) {
+            <div class="mt-6 pt-6 border-t border-border-color">
+              @switch (paymentMethod()) {
+                @case ('pago_movil') {
+                  <div class="bg-dark-bg rounded-lg p-6 border border-border-color">
+                    <div class="flex flex-col gap-6">
+                      <div>
+                        <p class="text-text-secondary mb-3 text-center text-base">Realiza tu pago a través de los siguientes datos:</p>
+                        <div class="bg-dark-bg-secondary border border-border-color rounded-lg p-4 space-y-3 text-text-on-dark">
+                          <div class="flex items-center gap-3"><i class="fas fa-user w-4 text-center text-primary-accent"></i><span><strong>Nombre:</strong> Jonathan Moreno</span></div>
+                          <div class="flex items-center gap-3"><i class="fas fa-id-card w-4 text-center text-primary-accent"></i><span><strong>CI:</strong> V-18.781.028</span></div>
+                          <div class="flex items-center gap-3"><i class="fas fa-mobile-alt w-4 text-center text-primary-accent"></i><span><strong>Celular:</strong> 0412-8433922</span></div>
+                          <div class="flex items-center gap-3"><i class="fas fa-university w-4 text-center text-primary-accent"></i><span><strong>Banco:</strong> Bancamiga (0172)</span></div>
+                        </div>
+                      </div>
+                      <div class="border-t border-border-color pt-4">
+                        <label for="pago-movil-ref" class="form-label">Referencia de Pago:</label>
+                        <input (input)="onPaymentReferenceChange($event)" type="text" id="pago-movil-ref" class="form-input" placeholder="Ingresa el nro. de confirmación">
+                      </div>
+                      <div>
+                        <button class="bg-border-color text-text-on-dark font-semibold py-2 px-4 rounded-lg hover:bg-text-secondary transition-colors text-sm">
+                          <i class="fas fa-paperclip mr-2"></i>Subir Comprobante (Opcional)
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                }
+                @case ('binance') {
+                  <div class="bg-dark-bg rounded-lg p-6 border border-border-color">
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                      <div class="flex-shrink-0">
+                        <img src="https://placehold.co/150x150/FFFFFF/0D1017?text=QR" alt="Código QR de Binance Pay" class="mx-auto block bg-white rounded-lg">
+                      </div>
+                      <div class="flex-grow w-full text-center md:text-left">
+                        <p class="text-text-secondary leading-relaxed">Escanea el QR o usa nuestro Pay ID:</p>
+                        <div class="my-2 bg-dark-bg-secondary border border-border-color rounded-lg px-4 py-3 flex items-center justify-between">
+                          <span class="font-mono text-primary-accent font-bold text-lg">BaratongoVzla</span>
+                          <button class="text-text-secondary hover:text-white transition-colors"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <div class="mt-4">
+                          <label for="binance-txid" class="form-label !text-left">ID de Transacción (TxID):</label>
+                          <input (input)="onPaymentReferenceChange($event)" type="text" id="binance-txid" class="form-input" placeholder="Pega el TxID aquí">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                }
+                @case ('cash') {
+                  <div class="bg-dark-bg rounded-lg p-6 border border-border-color">
+                    <div class="flex items-center gap-4">
+                      <i class="fas fa-info-circle text-2xl text-primary-accent flex-shrink-0"></i>
+                      <p class="text-text-on-dark leading-relaxed">
+                        Paga al momento de recibir tu pedido. Debido a la dificultad de conseguir sencillo, te agradecemos por favor el <strong class="text-primary-accent">monto exacto a pagar.</strong>
+                      </p>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+          }
+        </section>
+      </main>
+
+      <aside class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8 sticky top-24">
+        <h3 class="text-2xl font-headings font-bold text-text-on-dark m-0 pb-4 border-b border-border-color mb-6">Resumen del Pedido</h3>
+        <div class="flex flex-col gap-4 mb-6 border-b border-border-color pb-6">
+          @for(item of cartService.items(); track item.product.id) {
+            <div class="flex items-center gap-4">
+              <img [src]="item.product.imageUrl" [alt]="item.product.name" class="w-16 h-16 rounded-lg bg-dark-bg object-contain flex-shrink-0">
+              <div class="flex-grow">
+                <p class="font-semibold text-text-on-dark leading-tight">{{item.product.name}}</p>
+                <p class="text-sm text-text-secondary">Cant: {{item.quantity}}</p>
+              </div>
+              <p class="font-semibold text-text-on-dark">${{item.product.price * item.quantity}}</p>
+            </div>
+          }
+        </div>
+        <div class="space-y-3 text-lg">
+          <div class="flex justify-between items-center text-text-secondary">
+            <span>Subtotal</span>
+            <span class="font-semibold text-text-on-dark">${{ cartService.totalPrice() }}</span>
+          </div>
+          <div class="flex justify-between items-center text-text-secondary">
+            <span>Envío</span>
+            <span class="font-semibold text-text-on-dark">${{ shippingCost() }}</span>
+          </div>
+        </div>
+        <div class="flex justify-between text-2xl font-bold text-text-on-dark mt-4 pt-4 border-t border-border-color">
+          <span>Total</span>
+          <span>${{ totalPrice() }}</span>
+        </div>
+        <button (click)="confirmOrder()"
+                class="w-full mt-8 bg-gradient-to-r from-primary-accent to-blue-500 text-white font-bold py-4 rounded-lg transition-all duration-300 hover:shadow-[0_0_20px_hsl(var(--color-primary-accent)/0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                [disabled]="!isContactStepComplete() || !isPaymentStepComplete()">
+          Confirmar Pedido
+        </button>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<style>
+  .option-card {
+    @apply bg-dark-bg border-2 border-border-color rounded-xl p-6 text-center cursor-pointer transition-all duration-300;
+  }
+  .option-card:hover {
+    @apply border-primary-accent -translate-y-1;
+  }
+  .option-card i {
+    @apply text-3xl text-primary-accent mb-4 block;
+  }
+  .option-card h4 {
+    @apply font-semibold text-text-on-dark text-base m-0;
+  }
+  .option-card p {
+    @apply text-xs text-text-secondary mt-1 m-0;
+  }
+  .option-card.active-card {
+    border-color: hsl(var(--color-primary-accent)) !important;
+    box-shadow: 0 0 20px hsl(var(--color-primary-accent) / 0.4);
+    background-color: hsl(var(--color-primary-accent) / 0.1);
+  }
+  .form-input {
+      @apply w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark focus:border-primary-accent focus:ring-0;
+  }
+  .form-label {
+      @apply block text-sm font-medium text-text-on-dark mb-2;
+  }
+</style>

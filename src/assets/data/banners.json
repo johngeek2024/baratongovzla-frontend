@@ -1,0 +1,5 @@
+[
+  { "id": "banner-1", "internalName": "Smartwatch Launch", "isActive": true, "imageUrl": "https://placehold.co/800x1200/1a4a2f/FFFFFF?text=Aura+Watch", "supertitle": "Smartwatch", "title": "Aura Watch Series 8", "paragraph": "A sua vida, conectada. Monitore a sua saúde e mantenha-se ativo com um design impecável.", "buttonText": "Descubra", "linkUrl": "#" },
+  { "id": "banner-2", "internalName": "Gaming Keyboard", "isActive": true, "imageUrl": "https://placehold.co/800x1200/4a1a3c/FFFFFF?text=Void-Dasher", "supertitle": "Gaming", "title": "Teclado Void-Dasher", "paragraph": "Precisão mecânica e um espetáculo de luzes RGB nas suas mãos. Domine cada partida.", "buttonText": "Ver Oferta", "linkUrl": "#" },
+  { "id": "banner-3", "internalName": "Projector Promo", "isActive": true, "imageUrl": "https://placehold.co/800x1200/1a1d4a/FFFFFF?text=Hyperion+X1", "supertitle": "Cinema em Casa", "title": "Projetor Hyperion X1", "paragraph": "Noites de cinema inesquecíveis com qualidade 4K e até 200 polegadas de pura emoção.", "buttonText": "Comprar Agora", "linkUrl": "#" }
+]

@@ -1,0 +1,88 @@
+/* src/styles.css */
+@import 'swiper/css';
+@import 'swiper/css/pagination';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =============================================================== */
+/* DEFINICIÓN DE TEMAS PARA LA TIENDA PÚBLICA                      */
+/* Esta es la configuración de color para todo el sitio,           */
+/* excepto el panel de administración.                             */
+/* =============================================================== */
+
+/* --- TEMA POR DEFECTO (Home, etc.) --- */
+:root {
+  --color-dark-bg: 225 27% 8%;
+  --color-dark-bg-secondary: 222 47% 11%;
+  --color-dark-bg-tertiary: 222 22% 17%;
+  --color-primary-accent: 223 100% 50%; /* Azul Eléctrico del Home */
+  --color-primary-accent-darker: 223 100% 45%;
+  --color-secondary-accent: 45 100% 57%;
+  --color-text-primary: 220 13% 91%;
+  --color-text-secondary: 215 9% 65%;
+  --color-text-on-dark: 220 14% 91%;
+  --color-border: 215 16% 27%;
+  /* Colores de estado por defecto */
+  --color-success: 145 63% 49%;
+  --color-warning: 38 92% 53%;
+  --color-danger: 4 85% 61%;
+}
+
+/* --- TEMA PARA PÁGINAS DE PRODUCTOS --- */
+.products-theme {
+  --color-dark-bg: 225 27% 8%;
+  --color-dark-bg-secondary: 222 47% 11%;
+  --color-primary-accent: 200 100% 50%; /* Azul Cian para productos */
+  --color-primary-accent-darker: 200 100% 45%;
+  --color-secondary-accent: 45 100% 57%;
+  --color-text-primary: 220 13% 91%;
+  --color-text-secondary: 215 9% 65%;
+  --color-border: 215 16% 27%;
+}
+
+/* --- Estilos para la animación de aparición en scroll --- */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in-up.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- ESTILOS PARA COMPONENTES (CAPA @layer) --- */
+@layer components {
+  /* Estilos para los enlaces de categoría en el sidebar */
+  .category-link {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-text-on-dark font-medium hover:bg-primary-accent/10 hover:text-primary-accent transition-colors;
+  }
+  .category-link.active {
+    @apply bg-primary-accent text-white font-bold;
+  }
+
+  /* Estilos para el interruptor (toggle) */
+  .slider {
+    @apply absolute cursor-pointer inset-0 bg-border-color rounded-full transition-colors before:absolute before:h-4 before:w-4 before:left-1 before:bottom-1 before:bg-white before:rounded-full before:transition-transform peer-checked:bg-primary-accent peer-checked:before:translate-x-5;
+  }
+
+  /* Estilos para los botones de vista activa (Grid/List, 2D/3D) */
+  .active-view {
+    @apply bg-primary-accent text-white;
+  }
+
+  /* ✅ INICIO: NUEVA DIRECTIVA - Componente de enlace para navegación legal */
+  .nav-link-legal {
+    @apply block px-4 py-3 text-text-secondary rounded-lg font-medium border-l-[3px] border-transparent transition-all whitespace-nowrap;
+  }
+  .nav-link-legal:hover {
+    @apply text-white bg-dark-bg-secondary;
+  }
+  .nav-link-legal.active {
+    @apply text-primary-accent border-primary-accent font-bold;
+  }
+  /* ✅ FIN: NUEVA DIRECTIVA */
+}

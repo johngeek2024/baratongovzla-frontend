@@ -1,0 +1,10 @@
+<section class="py-24 border-t border-border-color mt-16">
+  <div class="text-center mb-12">
+    <h2 class="text-3xl font-headings font-bold text-white">También te puede interesar</h2>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    @for (product of relatedProducts(); track product.id) {
+      <app-related-product-card [product]="product"></app-related-product-card>
+    }
+  </div>
+</section>

@@ -1,0 +1,14 @@
+<section class="py-20 fade-in-up" appScrollFadeIn>
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-headings font-bold text-white inline-block border-b-4 border-primary-accent pb-2">
+        Recién Agregados
+      </h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-20">
+      @for(product of products(); track product.id) {
+        <app-product-card [product]="product"></app-product-card>
+      }
+    </div>
+  </div>
+</section>

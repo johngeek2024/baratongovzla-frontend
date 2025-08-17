@@ -1,0 +1,89 @@
+<main>
+  <section class="page-hero">
+    <img src="https://placehold.co/1920x800/111827/FFFFFF?text=Equipo+Tech" alt="Fondo abstracto de tecnología" class="page-hero__bg">
+    <div class="page-hero__content">
+      <h1 class="page-hero__title text-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">Nuestra Pasión es la Tecnología</h1>
+      <p class="page-hero__subtitle">Somos más que una tienda: somos curadores, gamers y expertos dedicados a traerte lo mejor del mundo digital a Venezuela.</p>
+    </div>
+  </section>
+
+  <div class="main-container">
+    <article class="content-section">
+      <h2>Nuestra Historia</h2>
+      <p>
+        Nacimos en el corazón de Valencia, Carabobo, de una pasión compartida: la tecnología y el universo gamer. Empezamos como un pequeño proyecto para traer a nuestros amigos los gadgets que veíamos en el exterior, y hoy, esa misión ha crecido para servir a toda Venezuela con la misma dedicación y conocimiento del primer día.
+      </p>
+    </article>
+
+    <section class="values-section">
+      <h2>¿Por Qué Confiar en Nosotros?</h2>
+      <div class="values-grid">
+        <div class="value-card">
+          <i class="fas fa-check-double"></i>
+          <h3>Curación Experta</h3>
+          <p class="text-white">Cada producto es probado y aprobado por nuestro equipo. Si no lo usaríamos, no lo vendemos.</p>
+        </div>
+        <div class="value-card">
+          <i class="fas fa-headset"></i>
+          <h3>Soporte Real</h3>
+          <p class="text-white">Habla con alguien que entiende. Te asesoramos para que hagas la mejor elección para ti.</p>
+        </div>
+        <div class="value-card">
+          <i class="fas fa-truck-fast"></i>
+          <h3>Compromiso Local</h3>
+          <p class="text-white">Desde Valencia para toda Venezuela, con envíos seguros y puntos de entrega convenientes.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="team-section">
+      <h2>Conoce al Equipo</h2>
+      <div class="team-grid">
+        <div class="team-member flex flex-col items-center">
+          <img src="https://placehold.co/120x120/EFEFEF/333333?text=CEO" alt="Foto del Fundador">
+          <div class="text-center">
+            <h3>Johannys Ramirez</h3>
+            <p>Fundadora & CEO</p>
+          </div>
+        </div>
+        <div class="team-member flex flex-col items-center">
+          <img src="https://placehold.co/120x120/EFEFEF/333333?text=Ventas" alt="Foto del Experto en Ventas">
+          <div class="text-center">
+            <h3>Jonathan Moreno</h3>
+            <p>Ventas & Soporte</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<style>
+  /* Estilos validados para una réplica 1:1 */
+  .main-container { @apply max-w-[900px] mx-auto px-6; }
+  .page-hero { @apply relative text-center overflow-hidden bg-black py-24 px-6; }
+  .page-hero__bg { @apply absolute inset-0 w-full h-full object-cover opacity-30 filter blur-[3px]; }
+  .page-hero__content { @apply relative z-10; }
+  .page-hero__title { @apply font-headings text-4xl sm:text-5xl lg:text-6xl font-bold text-white m-0; }
+  .page-hero__subtitle { @apply text-lg text-text-on-dark max-w-2xl mx-auto mt-4 leading-relaxed; }
+
+  .content-section { @apply py-16; }
+  .content-section h2 { @apply font-headings text-3xl font-bold text-white text-center mb-6; }
+  .content-section p { @apply text-lg text-text-secondary text-center max-w-3xl mx-auto leading-loose; }
+
+  .values-section { @apply py-16; }
+  .values-section h2 { @apply font-headings text-3xl font-bold text-white text-center mb-12; }
+  .values-grid { @apply grid grid-cols-1 md:grid-cols-3 gap-8 mt-12; }
+  .value-card { @apply bg-dark-bg-secondary p-8 rounded-2xl text-center border border-transparent transition-all hover:-translate-y-1.5 hover:border-primary-accent; }
+  .value-card i { @apply text-4xl text-primary-accent mb-4; }
+  .value-card h3 { @apply font-headings text-xl font-bold text-white mb-2; }
+  /* ✅ CORRECCIÓN: El color del texto de la descripción de la tarjeta ahora se aplica directamente en el HTML */
+
+  .team-section { @apply bg-dark-bg-secondary rounded-3xl p-8 md:p-16 my-16; }
+  .team-section h2 { @apply font-headings text-3xl font-bold text-white text-center mb-12; }
+  .team-grid { @apply flex justify-center gap-8 flex-wrap; }
+  .team-member img { @apply w-32 h-32 rounded-full object-cover border-4 border-primary-accent mb-4; }
+  /* ✅ CORRECCIÓN: El centrado del texto se realiza con una div */
+  .team-member h3 { @apply text-xl font-semibold text-white mb-1; }
+  .team-member p { @apply text-sm text-primary-accent font-medium; }
+</style>

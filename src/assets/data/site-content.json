@@ -1,0 +1,20 @@
+{
+  "productStage": {
+    "backgroundUrl": "https://placehold.co/1920x800/000000/FFFFFF?text=Audio+Inmersivo",
+    "title": "La Inmersión es Total",
+    "paragraph": "Sumérgete en un sonido sin precedentes con cancelación de ruido activa y audio espacial. Diseñados para gamers y audiófilos.",
+    "buttonText": "Descubre los Audio Inmersivo X-1",
+    "buttonLink": "#"
+  },
+  "bundle": {
+    "sectionTitle": "Bundles Dinámicos",
+    "imageUrl": "https://placehold.co/1200x600/1a1d4a/FFFFFF?text=Escritorio+Gamer+Épico",
+    "overlayTitle": "El Escritorio Gamer Definitivo",
+    "overlayParagraph": "Crea tu estación de batalla perfecta con los periféricos más rápidos.",
+    "hotspots": [
+      { "x": "75%", "y": "50%", "title": "Teclado Void-Dasher", "price": "$85.00", "imageUrl": "https://placehold.co/100x100/0D1017/FFFFFF?text=Teclado", "linkUrl": "/product/teclado-mecanico-void-dasher" },
+      { "x": "40%", "y": "30%", "title": "Audio Inmersivo X-1", "price": "$69.00", "imageUrl": "https://placehold.co/100x100/0D1017/FFFFFF?text=Audífonos", "linkUrl": "/product/hyperion-x1-proyector-4k-inteligente" },
+      { "x": "45%", "y": "65%", "title": "Monitor Curvo 27\"", "price": "$350.00", "imageUrl": "https://placehold.co/100x100/0D1017/FFFFFF?text=Monitor", "linkUrl": "#" }
+    ]
+  }
+}

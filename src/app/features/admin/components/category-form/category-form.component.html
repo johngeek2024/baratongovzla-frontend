@@ -1,0 +1,53 @@
+<form [formGroup]="categoryForm" (ngSubmit)="handleSubmit()" class="space-y-6">
+  <div>
+    <label for="name" class="form-label">Nombre de la Categoría</label>
+    <input type="text" id="name" formControlName="name" class="form-input"
+           [class.border-danger]="name?.invalid && (name?.touched || name?.dirty)"
+           placeholder="Ej: Proyectores 4K">
+    <app-form-field-error [control]="name"></app-form-field-error>
+  </div>
+
+  <div>
+    <label for="icon" class="form-label">Clase del Icono (Font Awesome)</label>
+    <div class="relative">
+      <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-text-secondary">
+        <i [class]="icon?.value || 'fas fa-tag'"></i>
+      </span>
+      <input type="text" id="icon" formControlName="icon" class="form-input !pl-10" (input)="onIconInput()">
+    </div>
+    <app-form-field-error [control]="icon"></app-form-field-error>
+  </div>
+
+  <div>
+    <label for="slug" class="form-label">Slug (URL)</label>
+    <div class="relative">
+      <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-text-secondary">/</span>
+      <input type="text" id="slug" formControlName="slug" class="form-input pl-6"
+             [class.border-danger]="slug?.invalid && (slug?.touched || slug?.dirty)"
+             placeholder="ej: proyectores-4k">
+    </div>
+    <app-form-field-error [control]="slug"></app-form-field-error>
+  </div>
+
+  <div class="flex justify-end gap-4 pt-8">
+    <button type="button" class="btn btn-secondary" (click)="handleCancel()">Cancelar</button>
+    <button type="submit" class="btn flex items-center justify-center w-40" [disabled]="categoryForm.invalid || isSaving()">
+      @if (isSaving()) {
+        <i class="fas fa-spinner animate-spin mr-2"></i>
+        <span>Guardando...</span>
+      } @else {
+        <span>Guardar</span>
+      }
+    </button>
+  </div>
+</form>
+
+<style>
+  .form-label { @apply block text-sm font-medium text-text-primary mb-1; }
+  .form-input { @apply w-full bg-dark-bg border border-border-color rounded-lg px-3 py-2 text-white; @apply focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/50 transition-all duration-200; }
+  .btn { @apply bg-primary-accent text-dark-bg border-none px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 whitespace-nowrap; }
+  .btn:hover { @apply -translate-y-0.5 shadow-lg shadow-primary-accent/20; }
+  .btn:disabled { @apply opacity-50 bg-border-color cursor-not-allowed transform-none shadow-none; }
+  .btn.btn-secondary { @apply bg-border-color text-text-primary; }
+  .btn.btn-secondary:hover { @apply bg-text-secondary; }
+</style>

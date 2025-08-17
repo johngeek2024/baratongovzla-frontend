@@ -1,0 +1,88 @@
+<header class="content-header">
+  <h1>Gestión de Pedidos</h1>
+</header>
+
+<div class="admin-table-container mt-8">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Pedido #</th>
+        <th>Cliente</th>
+        <th>Fecha</th>
+        <th>Total</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @if (isLoading()) {
+        @for (_ of [1,2,3,4]; track $index) {
+          <tr>
+            @for (_ of [1,2,3,4,5,6]; track $index) {
+              <td><div class="skeleton-line"></div></td>
+            }
+          </tr>
+        }
+      } @else {
+        @for (order of orders(); track order.id) {
+          <tr>
+            <td class="font-semibold text-white">{{ order.id }}</td>
+            <td>{{ order.customerName }}</td>
+            <td>{{ order.date | date: 'dd MMM, yyyy' }}</td>
+            <td>${{ order.total.toFixed(2) }}</td>
+            <td>
+              <select class="status-select"
+                      [value]="order.status"
+                      (change)="onStatusChange($event, order)"
+                      [class.status-processing]="order.status === 'Procesando'"
+                      [class.status-shipped]="order.status === 'Enviado'"
+                      [class.status-delivered]="order.status === 'Entregado'"
+                      [class.status-cancelled]="order.status === 'Cancelado'">
+                @for (status of statusOptions; track status) {
+                  <option [value]="status">{{ status }}</option>
+                }
+              </select>
+            </td>
+            <td class="action-buttons">
+              <a [routerLink]="['/admin/orders', order.id]" class="action-btn" title="Ver Detalles del Pedido">
+                <i class="fas fa-eye"></i>
+              </a>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="text-center py-8 text-text-secondary">No se encontraron pedidos.</td>
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .content-header { @apply flex justify-between items-center; }
+  .content-header h1 { @apply text-2xl sm:text-3xl font-bold; }
+  .admin-table-container { @apply bg-dark-bg-secondary border border-border-color rounded-xl overflow-x-auto; }
+  .admin-table { @apply w-full border-collapse; }
+  .admin-table th, .admin-table td { @apply p-4 text-left border-b border-border-color; }
+  .admin-table th { @apply text-sm font-semibold text-text-secondary uppercase whitespace-nowrap; }
+  .admin-table tbody tr:last-child td { @apply border-none; }
+  .action-buttons button { @apply bg-transparent border-none text-text-secondary cursor-pointer text-lg p-2 transition-colors; }
+  .action-buttons button:hover { @apply text-primary-accent; }
+
+  /* Estilos para el select de estado */
+  .status-select {
+    @apply bg-transparent border-none font-bold text-xs rounded-full py-1 pl-3 pr-8 appearance-none cursor-pointer;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239CA3AF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.2rem center;
+    background-repeat: no-repeat;
+    background-size: 1.25em 1.25em;
+  }
+  .status-processing { @apply bg-warning/20 text-warning; }
+  .status-shipped { @apply bg-primary-accent/20 text-primary-accent; }
+  .status-delivered { @apply bg-success/20 text-success; }
+  .status-cancelled { @apply bg-danger/20 text-danger; }
+
+  /* Estilo para el skeleton de carga */
+  .skeleton-line { @apply w-full h-4 bg-border-color rounded animate-pulse; }
+</style>

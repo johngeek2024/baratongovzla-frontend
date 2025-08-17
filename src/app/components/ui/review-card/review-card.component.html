@@ -1,0 +1,24 @@
+<article class="bg-gray-50 p-6 rounded-2xl border border-gray-200 flex flex-col gap-4 shadow-lg transition-transform duration-300 hover:-translate-y-2 h-full">
+  <header class="flex items-center gap-4">
+    <span class="flex items-center justify-center w-12 h-12 rounded-full bg-dark-bg text-primary-accent font-bold text-xl">{{ review.author | slice:0:2 }}</span>
+    <div class="leading-tight">
+      <p class="font-bold text-dark-bg">{{ review.author }}</p>
+      <p class="text-sm text-green-600 font-medium">
+        <i class="fas fa-check-circle mr-1"></i> Compra Verificada
+      </p>
+    </div>
+  </header>
+
+  <div class="text-yellow-400 text-lg">
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+    <i class="fas fa-star"></i>
+  </div>
+
+  <blockquote class="relative mt-2 flex-grow">
+    <p class="text-gray-600 leading-relaxed pl-8">"{{ review.text }}"</p>
+    <i class="fas fa-quote-left absolute -left-1 -top-1 text-4xl text-primary-accent opacity-10"></i>
+  </blockquote>
+</article>

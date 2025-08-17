@@ -1,0 +1,29 @@
+<section class="relative h-screen w-full overflow-hidden">
+  <div #swiperContainer class="swiper-container h-full">
+    <div class="swiper-wrapper">
+
+      @for (banner of activeBanners(); track banner.id; let i = $index) {
+        <div class="swiper-slide">
+          <div class="relative h-full w-full flex flex-col justify-end items-center text-center text-white p-6 md:p-8 pb-24">
+            <img
+              [ngSrc]="banner.imageUrl"
+              [alt]="banner.title"
+              fill
+              [priority]="i === 0"
+              class="absolute inset-0 w-full h-full object-cover -z-10"
+            >
+            <div class="absolute bottom-0 left-0 w-full h-2/3 bg-gradient-to-t from-black/80 to-transparent"></div>
+            <div class="relative z-10 max-w-lg">
+              <span class="inline-block bg-primary-accent text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4">{{ banner.supertitle }}</span>
+              <h2 class="font-headings text-4xl md:text-5xl font-bold mb-3">{{ banner.title }}</h2>
+              <p class="text-text-on-dark mb-6">{{ banner.paragraph }}</p>
+              <a [routerLink]="banner.linkUrl" class="inline-block bg-secondary-accent text-dark-bg font-bold py-3 px-8 rounded-lg transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-neon-secondary">{{ banner.buttonText }}</a>
+            </div>
+          </div>
+        </div>
+      }
+
+    </div>
+    <div class="swiper-pagination"></div>
+  </div>
+</section>

@@ -1,0 +1,60 @@
+<div class="fixed inset-0 -z-10 bg-dark-bg">
+  <div
+    class="absolute inset-0 bg-[linear-gradient(to_right,rgba(55,65,81,0.2)_1px,transparent_1px),linear-gradient(to_bottom,rgba(55,65,81,0.2)_1px,transparent_1px)] bg-[size:40px_40px] [animation:move-grid_60s_linear_infinite]">
+  </div>
+</div>
+
+<div
+  class="relative w-full max-w-md bg-dark-bg-secondary/80 backdrop-blur-md border border-border-color rounded-2xl p-8 sm:p-12 shadow-2xl shadow-black/50">
+  <header class="text-center mb-10">
+    <img src="assets/isologo-blanco.svg" alt="Logo de BaratongoVzla" class="h-12 mx-auto mb-4">
+    <h1 class="text-xl text-text-primary">
+      Acceso al Panel de <span class="font-bold text-primary-accent">Administración</span>
+    </h1>
+  </header>
+
+  <form [formGroup]="loginForm" (ngSubmit)="handleLogin()" novalidate>
+    <div class="relative mb-6">
+      <i class="fas fa-user-shield absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"></i>
+      <input type="text"
+             class="input-field"
+             placeholder="ID de Administrador"
+             formControlName="adminId">
+    </div>
+
+    <div class="relative mb-6">
+      <i class="fas fa-key absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"></i>
+      <input type="password"
+             class="input-field"
+             placeholder="Contraseña"
+             formControlName="password">
+    </div>
+
+    @if (loginError()) {
+      <p class="text-red-500 text-sm text-center -mt-2 mb-4">ID de administrador o contraseña incorrectos.</p>
+    }
+
+    <button type="submit" [disabled]="loginForm.invalid" class="submit-btn">
+      Ingresar
+    </button>
+  </form>
+</div>
+
+<style>
+  :host {
+    @apply flex items-center justify-center min-h-screen p-4;
+  }
+  .input-field {
+    @apply w-full bg-dark-bg border border-border-color rounded-lg py-3 pr-4 pl-10 text-text-primary text-base;
+    @apply transition-all duration-200 focus:border-primary-accent focus:outline-none focus:ring-2 focus:ring-primary-accent/50;
+  }
+  .submit-btn {
+    @apply w-full bg-primary-accent text-dark-bg font-bold py-3 px-6 rounded-lg transition-all duration-300;
+    @apply hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-accent/30;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none;
+  }
+  @keyframes move-grid {
+    from { background-position: 0 0; }
+    to { background-position: 400px 400px; }
+  }
+</style>
