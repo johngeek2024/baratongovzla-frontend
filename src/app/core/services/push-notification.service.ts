@@ -1,10 +1,8 @@
-// src/app/core/services/push-notification.service.ts
 import { Injectable, inject } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
 import { HttpClient } from '@angular/common/http';
 import { EMPTY, catchError, take, tap } from 'rxjs';
 import { UiService } from './ui.service';
-// CORRECCIÓN: Se elimina la importación de 'secrets'.
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -15,7 +13,6 @@ export class PushNotificationService {
   private http = inject(HttpClient);
   private uiService = inject(UiService);
 
-  // CORRECCIÓN: La clave pública ahora se lee del archivo de entorno de Angular.
   private readonly VAPID_PUBLIC_KEY = environment.vapidPublicKey;
   private readonly API_URL = '/api/notifications';
 

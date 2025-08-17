@@ -1,3 +1,8 @@
+// CORRECCIÓN: Cargar variables de entorno locales desde el archivo .env
+// Debe ser lo primero que se ejecute en el servidor.
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import {
   AngularNodeAppEngine,
   createNodeRequestHandler,
@@ -10,10 +15,9 @@ import { DataStoreService } from './app/core/services/data-store.service';
 import { Product } from './app/core/models/product.model';
 import webpush from 'web-push';
 import bodyParser from 'body-parser';
-// CORRECCIÓN: Se importa 'environment' para la clave pública.
 import { environment } from './environments/environment';
 
-// CORRECCIÓN CRÍTICA: Añadir un chequeo para asegurar que la variable de entorno de la clave privada exista.
+// Chequeo crítico para la clave privada VAPID.
 if (!process.env['VAPID_PRIVATE_KEY']) {
   console.error('ERROR FATAL: La variable de entorno VAPID_PRIVATE_KEY no está definida.');
   process.exit(1); // Detiene el servidor si el secreto no está configurado.
@@ -27,18 +31,16 @@ const angularApp = new AngularNodeAppEngine();
 app.use(bodyParser.json());
 
 // =======================================================
-// LÓGICA DEL BACKEND PARA NOTIFICACIONES PUSH (CORREGIDA)
+// LÓGICA DEL BACKEND PARA NOTIFICACIONES PUSH
 // =======================================================
 
 const vapidKeys = {
-  // CORRECCIÓN: La clave pública se toma de la configuración de entorno de Angular.
   publicKey: environment.vapidPublicKey,
-  // CORRECCIÓN: La clave privada se toma de las variables de entorno del servidor.
   privateKey: process.env['VAPID_PRIVATE_KEY']
 };
 
 webpush.setVapidDetails(
-  'mailto:soporte@baratongovzla.com', // Un email de contacto real.
+  'mailto:soporte@baratongovzla.com',
   vapidKeys.publicKey,
   vapidKeys.privateKey
 );
@@ -78,7 +80,6 @@ app.post('/api/notifications/trigger', (req, res) => {
 // FIN DE LA LÓGICA DE NOTIFICACIONES
 // =======================================================
 
-// Ruta para el Sitemap Dinámico (sin cambios)
 app.get('/sitemap.xml', (req, res) => {
   const dataStore = new DataStoreService();
   const products: Product[] = dataStore.products();
