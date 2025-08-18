@@ -4,7 +4,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { UiService } from '../../../../core/services/ui.service';
-import { CartService } from '../../../../core/services/cart.service';
+import { CartStore } from '../../../cart/cart.store';
 import { Product } from '../../../../core/models/product.model';
 
 // Interfaz para un valor de celda enriquecido
@@ -31,7 +31,7 @@ interface ComparisonRow {
 })
 export class ComparePageComponent {
   private uiService = inject(UiService);
-  private cartService = inject(CartService);
+  private cartStore = inject(CartStore);
 
   public productsToCompare = this.uiService.compareList;
   public highlightDifferences = signal(false);
@@ -123,7 +123,7 @@ export class ComparePageComponent {
   });
 
   addToCart(event: MouseEvent, product: Product) {
-    this.cartService.addToCart(product);
+    this.cartStore.addToCart(product);
     const button = event.currentTarget as HTMLButtonElement;
     const originalText = button.innerHTML;
     button.innerHTML = '<i class="fas fa-check"></i> Añadido';

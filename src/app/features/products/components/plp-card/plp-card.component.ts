@@ -1,7 +1,7 @@
 import { Component, Input, inject } from '@angular/core';
 import { CommonModule, NgClass, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router'; // <-- AÑADE ESTA LÍNEA
-import { CartService } from '../../../../core/services/cart.service';
+import { CartStore } from '../../../cart/cart.store';
 import { Product } from '../../../../core/models/product.model';
 
 @Component({
@@ -15,7 +15,7 @@ export class PlpCardComponent {
   @Input() product!: Product;
   @Input() viewMode: 'grid' | 'list' = 'grid';
 
-  private cartService = inject(CartService);
+  private cartStore = inject(CartStore);
 
   // Método para añadir al carrito, deteniendo la navegación del enlace padre.
   addToCart(event: MouseEvent) {
@@ -26,6 +26,6 @@ export class PlpCardComponent {
       ...this.product,
       specs: this.product.specs.map(spec => ({ ...spec, delay: '0ms', iconPath: '' }))
     };
-    this.cartService.addToCart(productForCart);
+    this.cartStore.addToCart(productForCart);
   }
 }

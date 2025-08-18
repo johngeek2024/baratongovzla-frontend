@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideZonelessChangeDetection, isDevMode } from '@angular/core';
-import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { routes } from './app.routes';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
@@ -7,20 +7,25 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { provideServiceWorker } from '@angular/service-worker';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { CartStore } from './features/cart/cart.store'; // ✅ AÑADIDO: Importación del SignalStore
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // ✅ CONFIGURACIÓN MODERNA ZONELESS: Máximo rendimiento con signals
+    // --- Arquitectura de Aplicación ---
     provideZonelessChangeDetection(),
     provideAnimationsAsync(),
+
+    // --- Enrutamiento y Navegación ---
     provideRouter(
       routes,
       withInMemoryScrolling({
         scrollPositionRestoration: 'enabled',
         anchorScrolling: 'enabled',
-      })
+      }),
+      withViewTransitions() // Habilita animaciones de ruta nativas
     ),
-    // ✅ SIN HYDRATION: Apps zoneless modernas funcionan mejor con CSR puro
+
+    // --- Conectividad y APIs ---
     provideHttpClient(
       withFetch(),
       withInterceptors([
@@ -28,10 +33,16 @@ export const appConfig: ApplicationConfig = {
         errorInterceptor
       ])
     ),
+
+    // --- Estado y Lógica de Negocio ---
+    CartStore, // ✅ AÑADIDO: El SignalStore del carrito se provee globalmente
+
+    // --- Módulos y Librerías Externas ---
     provideCharts(withDefaultRegisterables()),
-    // ✅ CORRECCIÓN: Service Worker optimizado para apps zoneless
+
+    // --- Progressive Web App (PWA) ---
     provideServiceWorker('ngsw-config.json', {
-        enabled: !isDevMode(), // Se habilita cuando NO es modo de desarrollo.
+        enabled: !isDevMode(),
         registrationStrategy: 'registerImmediately'
     })
   ]

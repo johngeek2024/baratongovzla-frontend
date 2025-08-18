@@ -2,7 +2,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UiService } from '../../../core/services/ui.service';
-import { CartService } from '../../../core/services/cart.service';
+import { CartStore } from '../../../features/cart/cart.store';
 import { ScrollBackgroundDirective } from '../../../core/directives/scroll-background.directive';
 import { PushNotificationService } from '../../../core/services/push-notification.service';
 import { SwPush } from '@angular/service-worker';
@@ -15,7 +15,7 @@ import { SwPush } from '@angular/service-worker';
 })
 export class HeaderComponent {
   public uiService = inject(UiService);
-  public cartService = inject(CartService);
+  public cartStore = inject(CartStore);
   public pushService = inject(PushNotificationService);
   public swPush = inject(SwPush);
 

@@ -2,7 +2,7 @@
 import { Component, input, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Product } from '../../../../core/models/product.model';
-import { CartService } from '../../../../core/services/cart.service';
+import { CartStore } from '../../../cart/cart.store';
 
 interface Color {
   name: string;
@@ -17,7 +17,7 @@ interface Color {
 })
 export class PurchasePanelComponent {
   product = input.required<Product>();
-  private cartService = inject(CartService);
+  private cartStore = inject(CartStore);
 
   public quantity = signal(1);
   // Señal para el color seleccionado, se inicializa con el primer color disponible
@@ -40,7 +40,7 @@ export class PurchasePanelComponent {
 
   addToCart(): void {
     if (this.product()) {
-      this.cartService.addToCart(this.product(), this.quantity());
+      this.cartStore.addToCart(this.product(), this.quantity());
       console.log(`${this.quantity()} x ${this.product().name} añadido al carrito.`);
     }
   }

@@ -23,9 +23,9 @@
       CORRECCIÓN: Se añade el contador dinámico, idéntico al del header.
       Aparecerá solo si hay productos en el carrito.
     -->
-    @if (cartService.cartCount() > 0) {
+    @if (cartStore.cartCount() > 0) {
       <span class="absolute top-1 right-1 bg-flash-accent text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-dark-bg">
-        {{ cartService.cartCount() }}
+        {{ cartStore.cartCount() }}
       </span>
     }
   </button>

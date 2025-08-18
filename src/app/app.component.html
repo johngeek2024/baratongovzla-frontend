@@ -61,10 +61,10 @@
     (close)="uiService.closeAllPanels()"
     class="z-[120]">
 
-    @if (cartService.cartCount() > 0) {
+    @if (cartStore.cartCount() > 0) {
       <div class="flex flex-col h-full">
         <div class="flex-grow overflow-y-auto -mr-6 pr-6">
-          @for (item of cartService.items(); track item.product.id) {
+          @for (item of cartStore.items(); track item.product.id) {
             <div class="flex gap-4 py-6 border-b border-border-color">
               <img [src]="item.product.imageUrl" [alt]="item.product.name" class="w-24 h-24 rounded-lg object-contain bg-dark-bg flex-shrink-0">
               <div class="flex-grow flex flex-col">
@@ -74,13 +74,13 @@
                 <div class="flex justify-between items-center mt-auto pt-2">
                   <p class="text-primary-accent font-bold text-lg">${{ item.product.price }}</p>
                   <div class="flex items-center gap-3">
-                    <button (click)="cartService.updateQuantity(item.product.id, -1)" class="w-7 h-7 rounded-full bg-border-color text-white">-</button>
+                    <button (click)="cartStore.updateQuantity(item.product.id, -1)" class="w-7 h-7 rounded-full bg-border-color text-white">-</button>
                     <span class="font-bold w-5 text-center text-text-on-dark">{{ item.quantity }}</span>
-                    <button (click)="cartService.updateQuantity(item.product.id, 1)" class="w-7 h-7 rounded-full bg-border-color text-white">+</button>
+                    <button (click)="cartStore.updateQuantity(item.product.id, 1)" class="w-7 h-7 rounded-full bg-border-color text-white">+</button>
                   </div>
                 </div>
               </div>
-              <button (click)="cartService.removeFromCart(item.product.id)" class="text-text-secondary hover:text-flash-accent text-xl self-start pt-1">
+              <button (click)="cartStore.removeFromCart(item.product.id)" class="text-text-secondary hover:text-flash-accent text-xl self-start pt-1">
                 <i class="fas fa-trash"></i>
               </button>
             </div>
@@ -90,7 +90,7 @@
         <div class="flex-shrink-0 pt-6 border-t border-border-color">
           <div class="flex justify-between text-lg text-text-on-dark">
             <span>Subtotal</span>
-            <span class="font-bold">${{ cartService.totalPrice() }}</span>
+            <span class="font-bold">${{ cartStore.totalPrice() }}</span>
           </div>
 
           <a routerLink="/cart" (click)="uiService.closeAllPanels()" class="block text-center w-full mt-4 bg-primary-accent text-white font-bold py-3 rounded-lg hover:bg-white hover:text-dark-bg transition-colors">

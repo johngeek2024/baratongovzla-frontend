@@ -1,9 +1,9 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule, NgClass } from '@angular/common';
 import { Router } from '@angular/router';
 import { UiService } from '../../../core/services/ui.service';
-import { DataStoreService } from '../../../core/services/data-store.service';
-import { Product } from '../../../core/models/product.model';
+// ✅ CAMBIO: Se inyecta ProductService, que ahora es la fuente de la verdad para la búsqueda.
+import { ProductService } from '../../../core/services/product.service';
 
 @Component({
   selector: 'app-search-overlay',
@@ -13,43 +13,21 @@ import { Product } from '../../../core/models/product.model';
 })
 export class SearchOverlayComponent {
   public uiService = inject(UiService);
-  private dataStore = inject(DataStoreService);
+  // ✅ CAMBIO: Se inyecta ProductService para acceder al estado de búsqueda centralizado.
+  public productService = inject(ProductService);
   private router = inject(Router);
 
   // --- SEÑALES PARA LA LÓGICA DE BÚSQUEDA ---
-
-  // Almacena la consulta de búsqueda del usuario en tiempo real.
-  searchQuery = signal('');
-
-  // Señal computada que filtra los productos basándose en la consulta.
-  // Es declarativa y se recalcula automáticamente cuando `searchQuery` cambia.
-  searchResults = computed<Product[]>(() => {
-    const query = this.searchQuery().toLowerCase().trim();
-
-    // Si no hay consulta, no hay resultados.
-    if (!query) {
-      return [];
-    }
-
-    const allProducts = this.dataStore.products();
-
-    // Filtra el catálogo completo por nombre, categoría y etiquetas.
-    const results = allProducts.filter(product =>
-      product.name.toLowerCase().includes(query) ||
-      product.category.toLowerCase().includes(query) ||
-      product.tags?.some(tag => tag.toLowerCase().includes(query))
-    );
-
-    // Retorna un máximo de 7 resultados para mantener la UI limpia.
-    return results.slice(0, 7);
-  });
+  // ✅ CORRECCIÓN: Las señales 'searchQuery' y 'searchResults' han sido eliminadas.
+  // El componente ahora leerá estas señales directamente desde 'productService' en su plantilla.
 
   // --- MÉTODOS DE ACCIÓN ---
 
-  // Actualiza la señal `searchQuery` cada vez que el usuario escribe.
+  // Actualiza la consulta de búsqueda en el servicio central.
   onSearchInput(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.searchQuery.set(input.value);
+    // ✅ CORRECCIÓN: La acción del usuario ahora modifica el estado en el servicio.
+    this.productService.setSearchQuery(input.value);
   }
 
   // Navega a la página del producto seleccionado y cierra el overlay.
@@ -61,7 +39,7 @@ export class SearchOverlayComponent {
   // Cierra el overlay y resetea la búsqueda a su estado inicial.
   closeSearch(): void {
     this.uiService.closeAllPanels();
-    // Reseteamos la consulta para la próxima vez que se abra el overlay.
-    this.searchQuery.set('');
+    // ✅ CORRECCIÓN: Resetea la consulta en el servicio para la próxima vez.
+    this.productService.setSearchQuery('');
   }
 }

@@ -6,7 +6,7 @@ import { ProductService } from '../../../../core/services/product.service';
 import { PurchasePanelComponent } from '../../components/purchase-panel/purchase-panel.component';
 import { RelatedProductsComponent } from '../../components/related-products/related-products.component';
 import { StickyOnScrollDirective } from '../../../../core/directives/sticky-on-scroll.directive';
-import { CartService } from '../../../../core/services/cart.service';
+import { CartStore } from '../../../cart/cart.store';
 import { PdpViewerComponent } from '../../components/pdp-viewer/pdp-viewer.component';
 import { FeatureSectionComponent } from '../../components/feature-section/feature-section.component';
 import { SeoService } from '../../../../core/services/seo.service';
@@ -29,7 +29,7 @@ export class ProductDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private productService = inject(ProductService);
-  private cartService = inject(CartService);
+  private cartStore = inject(CartStore);
   private seoService = inject(SeoService);
 
   public product = signal<Product | undefined>(undefined);
@@ -55,7 +55,7 @@ export class ProductDetailComponent implements OnInit {
   }
 
   addToCartOnSticky(product: Product): void {
-    this.cartService.addToCart(product, 1);
+    this.cartStore.addToCart(product, 1);
   }
 
   setView(view: '2d' | '3d'): void {

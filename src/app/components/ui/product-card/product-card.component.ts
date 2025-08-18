@@ -3,7 +3,7 @@ import { CommonModule, NgClass, NgOptimizedImage } from '@angular/common'; // âœ
 import { RouterModule } from '@angular/router';
 import { IconComponent } from '../icon/icon.component';
 import { UiService } from '../../../core/services/ui.service';
-import { CartService } from '../../../core/services/cart.service';
+import { CartStore } from '../../../features/cart/cart.store';
 import { Product } from '../../../core/models/product.model';
 
 @Component({
@@ -16,7 +16,7 @@ export class ProductCardComponent {
   @Input() product!: Product;
 
   private uiService = inject(UiService);
-  private cartService = inject(CartService);
+  private cartStore = inject(CartStore);
 
   public isComparing = computed(() =>
     this.uiService.compareList().some(p => p.id === this.product.id)
@@ -27,6 +27,6 @@ export class ProductCardComponent {
   }
 
   addToCart(): void {
-    this.cartService.addToCart(this.product);
+    this.cartStore.addToCart(this.product);
   }
 }

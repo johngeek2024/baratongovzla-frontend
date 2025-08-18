@@ -13,7 +13,9 @@
           <i class="fas fa-filter"></i> Filtros
         </button>
         <h1 class="text-3xl md:text-5xl font-bold font-headings text-text-on-dark">Explorando: <span class="text-primary-accent">{{ activeCategoryName() }}</span></h1>
-        <p class="text-lg text-text-on-dark/70 mt-2">{{ filteredProducts().length }} productos encontrados</p>
+        @if (!isLoading()) {
+          <p class="text-lg text-text-on-dark/70 mt-2">{{ filteredProducts().length }} productos encontrados</p>
+        }
       </div>
 
       <div class="flex bg-dark-bg-secondary border border-border-color rounded-lg p-1 self-start">
@@ -26,20 +28,41 @@
       </div>
     </header>
 
-    <div class="grid gap-8"
-         [class.grid-cols-1]="viewMode() === 'list'"
-         [class.sm:grid-cols-2]="viewMode() === 'grid'"
-         [class.xl:grid-cols-3]="viewMode() === 'grid'">
-
-      @for(product of filteredProducts(); track product.id) {
-        <app-plp-card [product]="product" [viewMode]="viewMode()"></app-plp-card>
-      }
-    </div>
-
-    @if (filteredProducts().length === 0) {
-      <div class="text-center py-20">
-        <p class="text-text-secondary">No se encontraron productos con los filtros actuales.</p>
+    @if (isLoading()) {
+      <div class="grid gap-8"
+           [class.grid-cols-1]="viewMode() === 'list'"
+           [class.sm:grid-cols-2]="viewMode() === 'grid'"
+           [class.xl:grid-cols-3]="viewMode() === 'grid'">
+        @for (_ of [1,2,3,4,5,6]; track $index) {
+          @if (viewMode() === 'grid') {
+            <app-product-card-skeleton></app-product-card-skeleton>
+          } @else {
+            <div class="flex items-center gap-6 p-4 bg-dark-bg-secondary border border-border-color rounded-2xl animate-pulse">
+              <div class="h-36 w-36 bg-dark-bg rounded-xl flex-shrink-0"></div>
+              <div class="flex-grow space-y-4 w-full">
+                <div class="h-5 bg-border-color rounded w-3/4"></div>
+                <div class="h-4 bg-border-color rounded w-full"></div>
+                <div class="h-4 bg-border-color rounded w-2/3"></div>
+              </div>
+            </div>
+          }
+        }
       </div>
+    } @else {
+      <div class="grid gap-8"
+           [class.grid-cols-1]="viewMode() === 'list'"
+           [class.sm:grid-cols-2]="viewMode() === 'grid'"
+           [class.xl:grid-cols-3]="viewMode() === 'grid'">
+        @for(product of filteredProducts(); track product.id) {
+          <app-plp-card [product]="product" [viewMode]="viewMode()"></app-plp-card>
+        }
+      </div>
+
+      @if (filteredProducts().length === 0) {
+        <div class="text-center py-20">
+          <p class="text-text-secondary">No se encontraron productos con los filtros actuales.</p>
+        </div>
+      }
     }
   </main>
 </div>

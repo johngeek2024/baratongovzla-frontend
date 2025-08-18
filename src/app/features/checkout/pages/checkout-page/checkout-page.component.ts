@@ -3,7 +3,7 @@
 import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { CartService } from '../../../../core/services/cart.service';
+import { CartStore } from '../../../cart/cart.store';
 import { UiService } from '../../../../core/services/ui.service';
 // ✅ AÑADIDO: Se importan los servicios y modelos necesarios para el nuevo flujo.
 import { UserDataService, UserOrder } from '../../../../core/services/user-data.service';
@@ -25,7 +25,7 @@ interface DeliveryFees { [key: string]: ZoneFees; moto: ZoneFees; carro: ZoneFee
   templateUrl: './checkout-page.component.html',
 })
 export class CheckoutPageComponent {
-  public cartService = inject(CartService);
+  public cartStore = inject(CartStore);
   public uiService = inject(UiService);
   private router = inject(Router);
   // ✅ AÑADIDO: Inyección de los servicios para el flujo de compra.
@@ -46,7 +46,7 @@ export class CheckoutPageComponent {
   // ✅ ELIMINADO: customerName = signal<string>('Aura'); (Ahora es dinámico)
 
   // --- LÓGICA DE CÁLCULO ---
-  totalPrice = computed(() => this.cartService.totalPrice() + this.shippingCost());
+  totalPrice = computed(() => this.cartStore.totalPrice() + this.shippingCost());
 
   isDeliveryStepComplete = computed(() => {
     const method = this.deliveryMethod();
@@ -107,7 +107,7 @@ export class CheckoutPageComponent {
         date: new Date().toISOString(),
         total: this.totalPrice(),
         status: 'Procesando',
-        items: this.cartService.items().map(item => ({ product: item.product, quantity: item.quantity }))
+        items: this.cartStore.items().map(item => ({ product: item.product, quantity: item.quantity }))
     };
 
     this.userDataService.addNewOrder(newOrder);
@@ -115,7 +115,7 @@ export class CheckoutPageComponent {
 
     const missionData = {
       orderNumber: orderId,
-      subtotal: this.cartService.totalPrice(),
+      subtotal: this.cartStore.totalPrice(),
       shippingCost: this.shippingCost(),
       total: this.totalPrice(),
       customerName: currentUser.fullName,
@@ -130,7 +130,7 @@ export class CheckoutPageComponent {
     };
 
     this.router.navigate(['/order-confirmation'], { state: { missionData } });
-    this.cartService.clearCart();
+    this.cartStore.clearCart();
   }
 
   onPaymentReferenceChange(event: Event): void {

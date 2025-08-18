@@ -17,7 +17,7 @@ import { SearchOverlayComponent } from './components/ui/search-overlay/search-ov
 
 // Tus servicios
 import { UiService } from './core/services/ui.service';
-import { CartService } from './core/services/cart.service';
+import { CartStore } from './features/cart/cart.store';
 // ✅ ARQUITECTURA CORRECTA: Se importa el UserDataService.
 import { UserDataService } from './core/services/user-data.service';
 
@@ -40,7 +40,7 @@ import { UserDataService } from './core/services/user-data.service';
 })
 export class AppComponent implements OnInit, OnDestroy {
   public uiService = inject(UiService);
-  public cartService = inject(CartService);
+  public cartStore = inject(CartStore);
   // ✅ ARQUITECTURA CORRECTA: Se inyecta UserDataService aquí para garantizar
   // su inicialización al arranque de la aplicación. Su 'effect' interno comenzará
   // a observar los cambios en AuthService, rompiendo la dependencia circular.
