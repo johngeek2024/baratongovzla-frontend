@@ -39,16 +39,20 @@ export interface Product {
   status: 'Publicado' | 'Borrador';
   reviews?: { average: number; count: number; };
 
-  // ✅ INICIO: MODIFICACIÓN QUIRÚRGICA PARA NUEVOS BADGES
+  // ✅ INICIO: MODIFICACIÓN QUIRÚRGICA CORREGIDA
   /**
    * Propiedad opcional para marcar un producto como "Nuevo".
-   * Si es `true`, se mostrará el badge correspondiente.
    */
   isNew?: boolean;
 
-  // NOTA: No se necesitan más propiedades. La lógica para los otros badges
-  // se derivará de propiedades existentes:
-  // - Badge "Oferta": Se mostrará si `oldPrice` existe y es mayor que `price`.
-  // - Badge "Agotado": Se mostrará si `stock` es igual a 0.
-  // ✅ FIN: MODIFICACIÓN QUIRÚRGICA
+  /**
+   * Propiedad opcional para marcar un producto como el más vendido.
+   */
+  isBestseller?: boolean;
+
+  /**
+   * Propiedad opcional para marcar un producto como exclusivo.
+   */
+  isExclusive?: boolean;
+  // ✅ FIN: MODIFICACIÓN QUIRÚRGICA CORREGIDA
 }

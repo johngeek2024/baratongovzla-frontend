@@ -26,9 +26,9 @@ const config: Config = {
         'success': 'hsl(var(--color-success) / <alpha-value>)',
         'warning': 'hsl(var(--color-warning) / <alpha-value>)',
         'danger': 'hsl(var(--color-danger) / <alpha-value>)',
-        'badge-new': 'hsl(var(--color-badge-new) / <alpha-value>)',
-        'badge-deal': 'hsl(var(--color-badge-deal) / <alpha-value>)',
-        'badge-soldout': 'hsl(var(--color-badge-soldout) / <alpha-value>)',
+        'badge-new': '#0ea5e9',
+        'badge-exclusive': '#8b5cf6',
+        'badge-offer': '#ef4444',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
@@ -69,7 +69,6 @@ const config: Config = {
         md: '0 2px 10px rgba(0, 0, 0, 0.5)',
         lg: '0 4px 12px rgba(0, 0, 0, 0.5)',
       },
-      // ✅ CORRECCIÓN: Se añade la propiedad backgroundImage
       backgroundImage: {
         'select-arrow': `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239CA3AF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
       },
