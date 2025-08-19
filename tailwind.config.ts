@@ -26,6 +26,9 @@ const config: Config = {
         'success': 'hsl(var(--color-success) / <alpha-value>)',
         'warning': 'hsl(var(--color-warning) / <alpha-value>)',
         'danger': 'hsl(var(--color-danger) / <alpha-value>)',
+        'badge-new': 'hsl(var(--color-badge-new) / <alpha-value>)',
+        'badge-deal': 'hsl(var(--color-badge-deal) / <alpha-value>)',
+        'badge-soldout': 'hsl(var(--color-badge-soldout) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
