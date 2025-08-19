@@ -15,6 +15,7 @@ import { Product } from '../../../core/models/product.model';
 export class ProductCardComponent {
   // ✅ CORRECCIÓN: Se utiliza input.required para una API de componente más robusta y moderna.
   product = input.required<Product>();
+  viewMode = input<'grid' | 'list'>('grid');
 
   private uiService = inject(UiService);
   private cartStore = inject(CartStore);

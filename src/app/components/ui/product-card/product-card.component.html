@@ -1,38 +1,45 @@
 <article [routerLink]="['/product', product().slug]"
-   class="group relative flex flex-col mt-[80px] rounded-2xl border border-border-color/70 bg-dark-bg-secondary transition-all duration-300 ease-in-out hover:-translate-y-2 hover:border-primary-accent/50 hover:shadow-2xl hover:shadow-black/40">
+   class="group relative flex flex-col rounded-2xl border border-border-color/70 bg-dark-bg-secondary transition-all duration-300 ease-in-out hover:-translate-y-2 hover:border-primary-accent/50 hover:shadow-2xl hover:shadow-black/40 overflow-hidden">
 
-  <div
-    class="absolute -inset-px rounded-2xl border-2 border-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-    style="background: linear-gradient(145deg, hsl(var(--color-primary-accent)), transparent 30%, transparent 70%, hsl(var(--color-secondary-accent))) border-box;
-           -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-           mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-           -webkit-mask-composite: destination-out;
-           mask-composite: exclude;">
-  </div>
+  @if(product().isDealOfTheDay) {
+    <div class="absolute top-2 right-2 bg-secondary-accent text-dark-bg px-3 py-1 rounded-full text-xs font-bold z-10">
+      MAS VENDIDO
+    </div>
+  }
 
-  <div class="absolute -top-[80px] left-1/2 -translate-x-1/2 w-[90%] aspect-[3/2] flex items-center justify-center z-10">
+  <!-- Sección de imagen -->
+  <div class="relative bg-dark-bg p-6 flex items-center justify-center h-48">
     <img
       [ngSrc]="product().imageUrl"
       [alt]="'[Imagen de ' + product().name + ']'"
       width="400"
       height="267"
       priority="false"
-      class="max-w-full max-h-full object-contain transition-all duration-500 ease-in-out group-hover:scale-110 group-hover:-translate-y-2 group-hover:blur-sm h-auto drop-shadow-xl"
+      class="max-w-full max-h-full object-contain transition-all duration-500 ease-in-out group-hover:scale-105"
     >
   </div>
 
-  <div class="relative flex flex-col flex-grow text-center p-6 pt-[130px]">
-    <div class="flex justify-center gap-2 mb-2 min-h-[28px]">
-      @for(tag of product().tags; track tag) {
-        <span class="bg-white/10 text-text-on-dark text-xs font-semibold px-3 py-1 rounded-full">{{ tag }}</span>
+  <!-- Contenido de la tarjeta -->
+  <div class="flex flex-col flex-grow p-6">
+    <!-- Características visibles -->
+    <div class="flex justify-center gap-4 mb-4">
+      @for(spec of specsToShow(); track spec.name) {
+        <div class="flex items-center gap-1.5">
+          <div class="w-4 h-4 text-text-secondary flex-shrink-0">
+            <app-icon [path]="spec.iconPath ?? ''"></app-icon>
+          </div>
+          <span class="text-text-secondary text-xs font-medium">{{ spec.name }}</span>
+        </div>
       }
     </div>
 
-    <h3 class="text-white font-semibold text-lg leading-tight min-h-[50px]">{{ product().name }}</h3>
+    <!-- Nombre del producto -->
+    <h3 class="text-white font-semibold text-lg text-center leading-tight mb-4">{{ product().name }}</h3>
 
-    <div class="flex flex-col items-center mt-auto pt-2">
+    <!-- Precio -->
+    <div class="text-center mt-auto">
       @if(isDeal()) {
-        <span class="text-text-secondary text-base line-through">${{ product().oldPrice }}</span>
+        <span class="text-text-secondary text-base line-through block mb-1">${{ product().oldPrice }}</span>
       }
       <span class="text-secondary-accent text-3xl font-bold">${{ product().price.toFixed(2) }}</span>
     </div>
