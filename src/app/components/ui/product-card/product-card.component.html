@@ -1,5 +1,9 @@
 <article [routerLink]="['/product', product().slug]"
-  class="group relative flex flex-col w-full max-w-sm overflow-hidden rounded-2xl border border-border-color bg-dark-bg-secondary text-white transition-all duration-300 ease-in-out hover:-translate-y-2 hover:border-primary-accent hover:shadow-2xl hover:shadow-black/40">
+  class="group relative flex flex-col w-full max-w-sm overflow-hidden rounded-2xl border border-border-color bg-dark-bg-secondary text-white transition-all duration-300 ease-in-out hover:-translate-y-2"
+  [ngClass]="{
+    'hover:border-primary-accent hover:shadow-neon-primary': !product().isDealOfTheDay,
+    'hover:border-secondary-accent hover:shadow-neon-secondary': product().isDealOfTheDay
+  }">
 
   <div class="relative flex h-56 items-center justify-center overflow-hidden bg-black">
     @if (isBestseller()) {
@@ -17,10 +21,9 @@
         'bg-secondary-accent text-dark-bg border-secondary-accent': isComparing(),
         'bg-black/30 text-white border-border-color': !isComparing()
       }"
-      class="absolute right-3 top-3 z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border transition-all duration-300 hover:scale-110 hover:bg-primary-accent">
+      class="absolute right-3 top-3 z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border transition-all duration-300 hover:scale-110 hover:bg-secondary-accent hover:text-dark-bg hover:border-secondary-accent">
       <i class="fas fa-balance-scale"></i>
     </button>
-
     <img [ngSrc]="product().imageUrl" [alt]="'[Imagen de ' + product().name + ']'" width="400" height="300" priority="false"
       class="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110">
   </div>
