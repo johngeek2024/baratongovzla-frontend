@@ -32,9 +32,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
 
   formError = signal<string | null>(null);
 
-  // ✅ INICIO: MODIFICACIÓN QUIRÚRGICA
   public slugManuallyEdited = false;
-  // ✅ FIN: MODIFICACIÓN QUIRÚRGICA
 
   ngOnInit(): void {
     this.productForm = this.fb.group({

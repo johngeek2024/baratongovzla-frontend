@@ -58,10 +58,8 @@ export class AuthService {
         email: 'cliente@baratongo.com',
       };
       this.currentUser.set(mockUser);
-      // ✅ INICIO: MODIFICACIÓN QUIRÚRGICA
       // Se muestra un toast de bienvenida al iniciar sesión.
       this.uiService.showAchievement('¡Bienvenido de vuelta!');
-      // ✅ FIN: MODIFICACIÓN QUIRÚRGICA
       this.router.navigate(['/account']);
       return of(mockUser);
     }
@@ -69,9 +67,8 @@ export class AuthService {
     return this.http.post<User>(`${this.API_URL}/login`, credentials).pipe(
       tap(user => {
         this.currentUser.set(user);
-        // ✅ INICIO: MODIFICACIÓN QUIRÚRGICA (Para usuarios reales)
+        // Bienvenida para usuarios reales
         this.uiService.showAchievement(`¡Bienvenido de vuelta, ${user.fullName}!`);
-        // ✅ FIN: MODIFICACIÓN QUIRÚRGICA
         this.router.navigate(['/account']);
       })
     );

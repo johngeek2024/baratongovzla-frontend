@@ -15,10 +15,10 @@
       [alt]="'[Imagen de ' + product.name + ']'"
       width="400"
       height="267"
-      class="max-w-full max-h-full object-contain transition-all duration-500 ease-in-out group-hover:scale-110 group-hover:-translate-y-2 group-hover:blur-sm h-auto"
+      class="transform-gpu max-w-full max-h-full object-contain transition-all duration-500 ease-in-out group-hover:scale-110 group-hover:-translate-y-2 group-hover:blur-sm h-auto"
       style="filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));"
     >
-  </div>
+    </div>
 
   <div class="relative flex flex-col flex-grow text-center p-6 pt-[130px]">
     <div class="flex justify-center gap-2 mb-2">
@@ -37,8 +37,8 @@
     </div>
   </div>
 
-  <div class="absolute inset-0 z-20 bg-[#0f0f28]/60 backdrop-blur-md backdrop-saturate-120 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100 flex flex-col justify-center items-center p-6 pointer-events-none group-hover:pointer-events-auto">
-    <button
+  <div class="absolute inset-0 z-30 transform-gpu bg-[#0f0f28]/60 backdrop-blur-md backdrop-saturate-120 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100 flex flex-col justify-center items-center p-6 pointer-events-none group-hover:pointer-events-auto">
+  <button
       (click)="toggleCompare()"
       [ngClass]="{
         'bg-secondary-accent text-dark-bg': isComparing(),
