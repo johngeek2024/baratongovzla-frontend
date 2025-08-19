@@ -1,3 +1,5 @@
+// src/app/components/ui/product-card/product-card.component.ts
+
 import { Component, computed, inject, input } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -14,16 +16,16 @@ import { IconComponent } from '../icon/icon.component';
 })
 export class ProductCardComponent {
   product = input.required<Product>();
+  // ✅ CORRECCIÓN: Se añade el input para soportar el modo de vista.
+  viewMode = input<'grid' | 'list'>('grid');
+
   private uiService = inject(UiService);
   private cartStore = inject(CartStore);
-
-  // --- SEÑALES COMPUTADAS PARA LA LÓGICA DE LA UI ---
 
   public isComparing = computed(() =>
     this.uiService.compareList().some(p => p.id === this.product().id)
   );
 
-  // ✅ INICIO: Lógica reactiva corregida para las nuevas insignias
   public isBestseller = computed(() => this.product().isBestseller === true);
   public isNew = computed(() => this.product().isNew === true);
   public isExclusive = computed(() => this.product().isExclusive === true);
@@ -31,11 +33,8 @@ export class ProductCardComponent {
     const p = this.product();
     return p.oldPrice && p.oldPrice > p.price;
   });
-  // ✅ FIN: Lógica de insignias corregida
 
   public specsToShow = computed(() => this.product().specs.slice(0, 3));
-
-  // --- MÉTODOS DE ACCIÓN ---
 
   toggleCompare(event: MouseEvent): void {
     event.preventDefault();

@@ -54,7 +54,7 @@
            [class.sm:grid-cols-2]="viewMode() === 'grid'"
            [class.xl:grid-cols-3]="viewMode() === 'grid'">
         @for(product of filteredProducts(); track product.id) {
-          <app-plp-card [product]="product" [viewMode]="viewMode()"></app-plp-card>
+          <app-product-card [product]="product" [viewMode]="viewMode()"></app-product-card>
         }
       </div>
 

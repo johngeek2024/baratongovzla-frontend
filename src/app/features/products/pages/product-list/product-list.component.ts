@@ -1,3 +1,5 @@
+// src/app/features/products/pages/product-list/product-list.component.ts
+
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
@@ -5,15 +7,15 @@ import { ProductService } from '../../../../core/services/product.service';
 import { UiService } from '../../../../core/services/ui.service';
 import { DataStoreService } from '../../../../core/services/data-store.service';
 import { FilterSidebarComponent } from '../../components/filter-sidebar/filter-sidebar.component';
-import { PlpCardComponent } from '../../components/plp-card/plp-card.component';
-// ✅ AÑADIDO: Se importa el componente esqueleto. La advertencia que ves está en esta línea.
+// ✅ CORRECCIÓN: Se reemplaza PlpCardComponent por ProductCardComponent.
+import { ProductCardComponent } from '../../../../components/ui/product-card/product-card.component';
 import { ProductCardSkeletonComponent } from '../../../../components/ui/product-card-skeleton/product-card-skeleton.component';
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  // ✅ AÑADIDO: El componente se registra aquí.
-  imports: [CommonModule, FilterSidebarComponent, PlpCardComponent, ProductCardSkeletonComponent],
+  // ✅ CORRECCIÓN: Se actualiza el array de imports.
+  imports: [CommonModule, FilterSidebarComponent, ProductCardComponent, ProductCardSkeletonComponent],
   templateUrl: './product-list.component.html',
 })
 export class ProductListComponent implements OnInit {

@@ -1,67 +1,103 @@
-<article [routerLink]="['/product', product().slug]"
-  class="group relative flex flex-col w-full max-w-sm overflow-hidden rounded-2xl border border-border-color bg-dark-bg-secondary text-white transition-all duration-300 ease-in-out hover:-translate-y-2"
-  [ngClass]="{
-    'hover:border-primary-accent hover:shadow-neon-primary': !product().isDealOfTheDay,
-    'hover:border-secondary-accent hover:shadow-neon-secondary': product().isDealOfTheDay
-  }">
-
-  <div class="relative flex h-56 items-center justify-center overflow-hidden bg-black">
-    @if (isBestseller()) {
-      <span class="absolute left-3 top-3 z-10 rounded-full bg-secondary-accent px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-dark-bg shadow-lg shadow-secondary-accent/50">Más Vendido</span>
-    } @else if (isNew()) {
-      <span class="absolute left-3 top-3 z-10 rounded-full bg-badge-new px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-dark-bg shadow-lg shadow-badge-new/50">Nuevo</span>
-    } @else if (isExclusive()) {
-      <span class="absolute left-3 top-3 z-10 rounded-full bg-badge-exclusive px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg shadow-badge-exclusive/50">Exclusivo</span>
-    } @else if (isOffer()) {
-      <span class="absolute left-3 top-3 z-10 rounded-full bg-badge-offer px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg shadow-badge-offer/50">Oferta</span>
-    }
-
-    <button (click)="toggleCompare($event)"
-      [ngClass]="{
-        'bg-secondary-accent text-dark-bg border-secondary-accent': isComparing(),
-        'bg-black/30 text-white border-border-color': !isComparing()
-      }"
-      class="absolute right-3 top-3 z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border transition-all duration-300 hover:scale-110 hover:bg-secondary-accent hover:text-dark-bg hover:border-secondary-accent">
-      <i class="fas fa-balance-scale"></i>
-    </button>
-    <img [ngSrc]="product().imageUrl" [alt]="'[Imagen de ' + product().name + ']'" width="400" height="300" priority="false"
-      class="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110">
-  </div>
-
-  <div class="relative flex flex-grow flex-col p-6 text-center">
-    @if(product().tags && product().tags!.length > 0) {
-      <div class="mb-3 flex justify-center gap-2">
-        @for(tag of product().tags; track tag) {
-          <span class="rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold text-text-on-dark">{{ tag }}</span>
+@if (viewMode() === 'grid') {
+  <article [routerLink]="['/product', product().slug]"
+    class="group relative flex flex-col w-full max-w-sm overflow-hidden rounded-2xl border border-border-color bg-dark-bg-secondary text-white transition-all duration-300 ease-in-out hover:-translate-y-2"
+    [ngClass]="{
+      'hover:border-primary-accent hover:shadow-neon-primary': !product().isDealOfTheDay,
+      'hover:border-secondary-accent hover:shadow-neon-secondary': product().isDealOfTheDay
+    }">
+    <div class="relative flex h-56 items-center justify-center overflow-hidden bg-black">
+        @if (isBestseller()) {
+          <span class="absolute left-3 top-3 z-10 rounded-full bg-secondary-accent px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-dark-bg shadow-lg shadow-secondary-accent/50">Más Vendido</span>
+        } @else if (isNew()) {
+          <span class="absolute left-3 top-3 z-10 rounded-full bg-badge-new px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-dark-bg shadow-lg shadow-badge-new/50">Nuevo</span>
+        } @else if (isExclusive()) {
+          <span class="absolute left-3 top-3 z-10 rounded-full bg-badge-exclusive px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg shadow-badge-exclusive/50">Exclusivo</span>
+        } @else if (isOffer()) {
+          <span class="absolute left-3 top-3 z-10 rounded-full bg-badge-offer px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-white shadow-lg shadow-badge-offer/50">Oferta</span>
         }
+        <button (click)="toggleCompare($event)"
+          [ngClass]="{
+            'bg-secondary-accent text-dark-bg border-secondary-accent': isComparing(),
+            'bg-black/30 text-white border-border-color': !isComparing()
+          }"
+          class="absolute right-3 top-3 z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border transition-all duration-300 hover:scale-110 hover:bg-secondary-accent hover:text-dark-bg hover:border-secondary-accent">
+          <i class="fas fa-balance-scale"></i>
+        </button>
+        <img [ngSrc]="product().imageUrl" [alt]="'[Imagen de ' + product().name + ']'" width="400" height="300" priority="false"
+          class="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110">
       </div>
-    }
+      <div class="relative flex flex-grow flex-col p-6 text-center">
+        @if(product().tags && product().tags!.length > 0) {
+          <div class="mb-3 flex justify-center gap-2">
+            @for(tag of product().tags; track tag) {
+              <span class="rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold text-text-on-dark">{{ tag }}</span>
+            }
+          </div>
+        }
+        <h3 class="min-h-[46px] text-lg font-semibold leading-snug text-white">{{ product().name }}</h3>
+        <div class="mt-2 flex flex-col items-center">
+          @if(isOffer()) {
+            <span class="text-sm text-text-secondary line-through">${{ product().oldPrice }}</span>
+          }
+          <span class="text-3xl font-bold text-secondary-accent">${{ product().price.toFixed(2) }}</span>
+        </div>
+        <div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-dark-bg-secondary/80 opacity-0 backdrop-blur-sm transition-opacity duration-500 group-hover:pointer-events-auto group-hover:opacity-100 pointer-events-none">
+          <div class="mb-6 flex gap-4 text-white">
+            @for(spec of specsToShow(); track spec.name) {
+              <div class="flex w-20 flex-col items-center text-center opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100" [style.transform]="'translateY(15px)'" [style.transition-delay]="spec.delay ?? '0s'">
+                <div class="mb-2 h-6 w-6 text-text-secondary">
+                  <app-icon [path]="spec.iconPath ?? ''"></app-icon>
+                </div>
+                <span class="text-xs font-medium leading-tight">{{ spec.name }}</span>
+              </div>
+            }
+          </div>
+          <button (click)="addToCart($event)"
+            class="w-[80%] cursor-pointer rounded-lg border-none bg-primary-accent py-3 text-sm font-bold text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 hover:scale-105 hover:bg-primary-accent-darker hover:shadow-neon-primary"
+            [style.transform]="'translateY(15px)'" [style.transition-delay]="'0.2s'">
+            Añadir al Carrito
+          </button>
+        </div>
+      </div>
+  </article>
+} @else {
+  <a [routerLink]="['/product', product().slug]"
+    class="group relative flex items-center rounded-2xl p-4 text-text-primary no-underline transition-all duration-300 hover:-translate-y-2 bg-dark-bg-secondary border border-border-color"
+    [ngClass]="{
+      'hover:border-primary-accent hover:shadow-neon-primary': !product().isDealOfTheDay,
+      'hover:border-secondary-accent hover:shadow-neon-secondary': product().isDealOfTheDay
+    }">
 
-    <h3 class="min-h-[46px] text-lg font-semibold leading-snug text-white">{{ product().name }}</h3>
-
-    <div class="mt-2 flex flex-col items-center">
-      @if(isOffer()) {
-        <span class="text-sm text-text-secondary line-through">${{ product().oldPrice }}</span>
-      }
-      <span class="text-3xl font-bold text-secondary-accent">${{ product().price.toFixed(2) }}</span>
+    <div class="h-36 w-36 flex-shrink-0 rounded-xl bg-dark-bg p-4 flex items-center justify-center">
+      <img [ngSrc]="product().imageUrl" [alt]="product().name" width="400" height="267" class="h-full w-full object-contain">
     </div>
 
-    <div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-dark-bg-secondary/80 opacity-0 backdrop-blur-sm transition-opacity duration-500 group-hover:pointer-events-auto group-hover:opacity-100 pointer-events-none">
-      <div class="mb-6 flex gap-4 text-white">
+    <div class="grid w-full grid-cols-[1fr_auto] grid-rows-2 items-center gap-x-6 pl-6">
+      <div class="col-start-1">
+        <h3 class="text-xl font-semibold text-white transition-colors">{{ product().name }}</h3>
+        <p class="mt-2 h-10 overflow-hidden text-sm text-text-secondary">{{ product().description }}</p>
+      </div>
+
+      <div class="col-start-1 row-start-2 mt-4 flex gap-8 border-t border-border-color pt-4">
         @for(spec of specsToShow(); track spec.name) {
-          <div class="flex w-20 flex-col items-center text-center opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100" [style.transform]="'translateY(15px)'" [style.transition-delay]="spec.delay ?? '0s'">
-            <div class="mb-2 h-6 w-6 text-text-secondary">
-              <app-icon [path]="spec.iconPath ?? ''"></app-icon>
-            </div>
-            <span class="text-xs font-medium leading-tight">{{ spec.name }}</span>
+          <div>
+            <p class="font-semibold text-white">{{ spec.value || spec.name }}</p>
+            <p class="text-xs text-text-secondary">{{ spec.value ? spec.name : '' }}</p>
           </div>
         }
       </div>
-      <button (click)="addToCart($event)"
-        class="w-[80%] cursor-pointer rounded-lg border-none bg-primary-accent py-3 text-sm font-bold text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 hover:scale-105 hover:bg-primary-accent-darker hover:shadow-neon-primary"
-        [style.transform]="'translateY(15px)'" [style.transition-delay]="'0.2s'">
-        Añadir al Carrito
-      </button>
+
+      <div class="col-start-2 row-span-2 flex flex-col items-end justify-center">
+        <p class="mb-4 text-2xl font-bold text-secondary-accent">
+          ${{ product().price.toFixed(2) }}
+          @if(product().oldPrice) {
+            <span class="ml-2 text-base font-normal text-text-secondary line-through">${{ product().oldPrice }}</span>
+          }
+        </p>
+        <button (click)="addToCart($event)" class="rounded-lg bg-primary-accent px-6 py-3 font-bold text-dark-bg transition-colors hover:bg-white">
+          <i class="fas fa-shopping-cart"></i>
+        </button>
+      </div>
     </div>
-  </div>
-</article>
+  </a>
+}
