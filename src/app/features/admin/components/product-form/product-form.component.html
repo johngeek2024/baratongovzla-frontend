@@ -157,10 +157,13 @@
             <label for="slug" class="block text-sm font-medium text-text-primary mb-1">Slug (URL del producto) <span class="text-danger">*</span></label>
             <div class="flex items-center gap-2">
               <input type="text" id="slug" formControlName="slug" class="w-full bg-dark-bg border border-border-color rounded-lg px-3 py-2 text-white focus:border-primary-accent focus:ring-2 focus:ring-primary-accent/50 transition-all flex-grow" (input)="onSlugInput()" [class.border-danger]="slug?.invalid && slug?.touched">
-              <button type="button" (click)="regenerateSlug()" class="bg-border-color text-text-primary px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all inline-flex items-center justify-center gap-2 hover:bg-text-secondary" title="Sugerir slug a partir del nombre">
-                <i class="fas fa-magic-wand-sparkles"></i>
-              </button>
-            </div>
+
+              @if (slugManuallyEdited) {
+                <button type="button" (click)="regenerateSlug()" class="bg-border-color text-text-primary px-3 py-2.5 rounded-lg font-bold cursor-pointer transition-all inline-flex items-center justify-center gap-2 hover:bg-text-secondary flex-shrink-0" title="Sugerir slug a partir del nombre">
+                  <i class="fas fa-magic-wand-sparkles"></i>
+                </button>
+              }
+              </div>
             <app-form-field-error [control]="slug"></app-form-field-error>
             <p class="text-xs text-text-secondary mt-1">Debe ser texto en minúsculas sin espacios, ej: nombre-del-producto</p>
           </div>

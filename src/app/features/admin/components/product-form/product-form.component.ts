@@ -32,7 +32,9 @@ export class ProductFormComponent implements OnInit, OnChanges {
 
   formError = signal<string | null>(null);
 
-  private slugManuallyEdited = false;
+  // ✅ INICIO: MODIFICACIÓN QUIRÚRGICA
+  public slugManuallyEdited = false;
+  // ✅ FIN: MODIFICACIÓN QUIRÚRGICA
 
   ngOnInit(): void {
     this.productForm = this.fb.group({
@@ -96,7 +98,6 @@ export class ProductFormComponent implements OnInit, OnChanges {
       this.productToEdit.specs?.forEach(spec => this.specs.push(this.newSpecGroup(spec)));
 
     } else {
-      // ✅ CORRECCIÓN: Se usa patchValue en lugar de reset para no anular los FormArray.
       this.productForm.patchValue({ status: 'Publicado', stock: 0, isDealOfTheDay: false });
       this.features.clear();
       this.hotspots.clear();

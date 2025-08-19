@@ -5,6 +5,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap, catchError, of, Observable } from 'rxjs';
+import { UiService } from './ui.service';
 
 export interface User {
   id: string;
@@ -25,9 +26,7 @@ export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
-
-  // ✅ CORRECCIÓN QUIRÚRGICA: Se ha eliminado la inyección de UserDataService.
-  // Este servicio no debe conocer la existencia de UserDataService.
+  private uiService = inject(UiService);
 
   private readonly API_URL = '/api/auth';
 
@@ -59,6 +58,10 @@ export class AuthService {
         email: 'cliente@baratongo.com',
       };
       this.currentUser.set(mockUser);
+      // ✅ INICIO: MODIFICACIÓN QUIRÚRGICA
+      // Se muestra un toast de bienvenida al iniciar sesión.
+      this.uiService.showAchievement('¡Bienvenido de vuelta!');
+      // ✅ FIN: MODIFICACIÓN QUIRÚRGICA
       this.router.navigate(['/account']);
       return of(mockUser);
     }
@@ -66,6 +69,9 @@ export class AuthService {
     return this.http.post<User>(`${this.API_URL}/login`, credentials).pipe(
       tap(user => {
         this.currentUser.set(user);
+        // ✅ INICIO: MODIFICACIÓN QUIRÚRGICA (Para usuarios reales)
+        this.uiService.showAchievement(`¡Bienvenido de vuelta, ${user.fullName}!`);
+        // ✅ FIN: MODIFICACIÓN QUIRÚRGICA
         this.router.navigate(['/account']);
       })
     );
@@ -80,6 +86,7 @@ export class AuthService {
     };
 
     this.currentUser.set(mockNewUser);
+    this.uiService.showAchievement('¡Bienvenido al Núcleo!');
     this.router.navigate(['/account']);
     return of(mockNewUser);
   }
