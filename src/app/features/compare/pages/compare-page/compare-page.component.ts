@@ -1,5 +1,3 @@
-// src/app/features/compare/pages/compare-page/compare-page.component.ts
-
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -7,7 +5,6 @@ import { UiService } from '../../../../core/services/ui.service';
 import { CartStore } from '../../../cart/cart.store';
 import { Product } from '../../../../core/models/product.model';
 
-// Interfaz para un valor de celda enriquecido
 interface ComparisonValue {
   productId: string;
   displayValue: string;
@@ -17,7 +14,6 @@ interface ComparisonValue {
   barWidth?: number;
 }
 
-// Interfaz para una fila completa de la tabla
 interface ComparisonRow {
   specName: string;
   values: ComparisonValue[];
@@ -58,7 +54,6 @@ export class ComparePageComponent {
       const allNumericValues = products
         .map(p => {
             const spec = p.specs.find(s => s.name === specName);
-            // ✅ CORRECCIÓN: Maneja el caso donde una spec existe sin `value` (implícitamente `true`)
             const rawValue = spec ? (spec.hasOwnProperty('value') ? spec.value : true) : undefined;
             return this.normalizeSpecValue(rawValue);
         })
@@ -74,8 +69,6 @@ export class ComparePageComponent {
           };
         }
 
-        // ✅ INICIO: CORRECCIÓN DE LÓGICA DE TIPOS
-        // Si la spec existe pero no tiene la propiedad `value`, se asume que es `true`.
         const rawValue: string | boolean | undefined = spec.hasOwnProperty('value') ? spec.value : true;
         const currentNumericValue = this.normalizeSpecValue(rawValue);
 
@@ -97,7 +90,6 @@ export class ComparePageComponent {
         }
 
         const isWinner = products.length > 1 && currentNumericValue === maxNumericValue && maxNumericValue > 0 && typeof currentNumericValue === 'number';
-        // ✅ FIN: CORRECCIÓN DE LÓGICA DE TIPOS
 
         return { productId: product.id, displayValue, rawValue: rawValue ?? null, isWinner, type, barWidth };
       });
@@ -127,10 +119,10 @@ export class ComparePageComponent {
     const button = event.currentTarget as HTMLButtonElement;
     const originalText = button.innerHTML;
     button.innerHTML = '<i class="fas fa-check"></i> Añadido';
-    button.classList.add('added');
+    button.classList.add('bg-success', 'text-white');
     setTimeout(() => {
       button.innerHTML = originalText;
-      button.classList.remove('added');
+      button.classList.remove('bg-success', 'text-white');
     }, 2000);
   }
 

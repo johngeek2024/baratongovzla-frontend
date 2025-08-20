@@ -44,7 +44,7 @@
         }
         <span class="text-3xl font-bold text-secondary-accent">${{ product().price.toFixed(2) }}</span>
       </div>
-      <div class="absolute inset-0 z-10 flex flex-col items-center justify-center p-6 bg-dark-bg-secondary/80 opacity-0 backdrop-blur-sm transition-opacity duration-500 group-hover:pointer-events-auto group-hover:opacity-100 pointer-events-none">
+      <div class="absolute inset-0 z-10 flex flex-col items-center p-6 bg-dark-bg-secondary/80 opacity-0 backdrop-blur-sm transition-opacity duration-500 group-hover:pointer-events-auto group-hover:opacity-100 pointer-events-none">
         <div class="flex flex-grow items-center justify-center">
           <div class="flex gap-4 text-white">
             @for(spec of specsToShow(); track spec.name) {

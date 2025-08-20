@@ -29,16 +29,16 @@
       <div class="overflow-x-auto">
         <table class="w-full border-collapse min-w-[600px] lg:min-w-full">
           <thead>
-            <tr>
-              <th class="compare-cell sticky left-0 z-20 w-48 bg-dark-bg-secondary"></th>
+            <tr class="border-b border-border-color">
+              <th class="p-4 align-middle sticky left-0 z-20 w-48 bg-dark-bg-secondary"></th>
               @for (product of productsToCompare(); track product.id) {
-                <th class="compare-cell product-col" [class.is-winner]="product.id === winnerProductId()">
-                  <div class="product-header">
+                <th class="p-4 align-middle w-64 min-w-64" [ngClass]="{'bg-yellow-400/5': product.id === winnerProductId()}">
+                  <div class="sticky top-0 bg-dark-bg-secondary z-20 py-4">
                     <a [routerLink]="['/product', product.slug]">
-                      <img [ngSrc]="product.imageUrl" [alt]="product.name" width="100" height="100" class="product-image">
+                      <img [ngSrc]="product.imageUrl" [alt]="product.name" width="150" height="100" class="w-24 h-24 object-contain mx-auto mb-3 transition-transform duration-300 hover:scale-105">
                     </a>
-                    <h3 class="product-name">{{ product.name }}</h3>
-                    <p class="product-price" [class.is-winner-text]="product.id === winnerProductId()">${{ product.price.toFixed(2) }}</p>
+                    <h3 class="font-headings font-semibold text-white h-12 flex items-center justify-center text-center">{{ product.name }}</h3>
+                    <p class="text-lg font-bold text-text-secondary" [ngClass]="{'!text-yellow-400': product.id === winnerProductId()}">${{ product.price.toFixed(2) }}</p>
                   </div>
                 </th>
               }
@@ -46,39 +46,39 @@
           </thead>
           <tbody>
             @for (row of comparisonTable(); track row.specName) {
-              <tr class="compare-row" [class.is-dimmed]="highlightDifferences() && !isRowDifferent(row)">
-                <td class="compare-cell sticky left-0 z-10 bg-dark-bg-secondary text-left font-semibold text-text-primary">{{ row.specName }}</td>
+              <tr class="border-b border-border-color last:border-b-0" [ngClass]="{'opacity-40': highlightDifferences() && !isRowDifferent(row)}">
+                <td class="p-4 align-middle sticky left-0 z-10 bg-dark-bg-secondary text-left font-semibold text-text-primary">{{ row.specName }}</td>
                 @for (cell of row.values; track cell.productId) {
-                  <td class="compare-cell product-col" [class.is-winner]="cell.isWinner">
+                  <td class="p-4 align-middle w-64 min-w-64" [ngClass]="{'bg-yellow-400/5': cell.isWinner}">
                     @switch (cell.type) {
                       @case ('boolean') {
-                        <span class="spec-boolean">
-                          @if(cell.rawValue) { <i class="fas fa-check-circle text-success" [class.is-winner-text]="cell.isWinner"></i> }
+                        <span class="text-2xl">
+                          @if(cell.rawValue) { <i class="fas fa-check-circle text-success" [ngClass]="{'!text-yellow-400': cell.isWinner}"></i> }
                           @else { <i class="fas fa-times-circle text-danger"></i> }
                         </span>
                       }
                       @case ('bar') {
-                        <div class="spec-bar-container">
-                          <div class="spec-bar" [style.width.%]="cell.barWidth" [class.is-winner-bar]="cell.isWinner"></div>
+                        <div class="bg-dark-bg-tertiary rounded-full h-2 w-full max-w-[150px] mx-auto overflow-hidden">
+                          <div class="bg-primary-accent h-full rounded-full transition-all duration-700 ease-out" [style.width.%]="cell.barWidth" [ngClass]="{'!bg-yellow-400': cell.isWinner}"></div>
                         </div>
-                        <p class="spec-value">{{ cell.displayValue }}</p>
+                        <p class="text-xs text-text-secondary mt-1">{{ cell.displayValue }}</p>
                       }
                       @case ('text') {
-                        <p class="spec-value-text">{{ cell.displayValue }}</p>
+                        <p class="text-text-primary font-medium">{{ cell.displayValue }}</p>
                       }
                       @case ('missing') {
-                        <p class="spec-value-missing">{{ cell.displayValue }}</p>
+                        <p class="text-text-secondary">{{ cell.displayValue }}</p>
                       }
                     }
                   </td>
                 }
               </tr>
             }
-            <tr class="compare-row">
-              <td class="compare-cell sticky left-0 bg-dark-bg-secondary"></td>
+            <tr>
+              <td class="p-4 align-middle sticky left-0 bg-dark-bg-secondary"></td>
               @for (product of productsToCompare(); track product.id) {
-                <td class="compare-cell product-col" [class.is-winner]="product.id === winnerProductId()">
-                  <button class="add-to-cart-btn" (click)="addToCart($event, product)">
+                <td class="p-4 align-middle w-64 min-w-64" [ngClass]="{'bg-yellow-400/5': product.id === winnerProductId()}">
+                  <button class="bg-primary-accent text-white border-none px-5 py-2.5 rounded-lg cursor-pointer font-bold transition-all hover:bg-white hover:text-dark-bg" (click)="addToCart($event, product)">
                     <i class="fas fa-shopping-cart"></i> Añadir
                   </button>
                 </td>
@@ -89,36 +89,13 @@
       </div>
     </div>
   } @else {
-      <div class="text-center py-20 bg-dark-bg-secondary rounded-2xl border border-border-color">
-          <i class="fas fa-balance-scale text-6xl text-border-color"></i>
-          <h2 class="text-3xl font-headings font-bold text-text-on-dark mt-8">La Arena está Vacía</h2>
-          <p class="text-text-secondary mt-2">Añade productos desde las tarjetas para compararlos aquí.</p>
-          <a routerLink="/products" class="inline-block mt-8 bg-primary-accent text-dark-bg font-bold py-3 px-8 rounded-lg transition-transform hover:-translate-y-1">
-            Explorar productos
-          </a>
-      </div>
+    <div class="text-center py-20 bg-dark-bg-secondary rounded-2xl border border-border-color">
+      <i class="fas fa-balance-scale text-6xl text-border-color"></i>
+      <h2 class="text-3xl font-headings font-bold text-text-on-dark mt-8">La Arena está Vacía</h2>
+      <p class="text-text-secondary mt-2">Añade productos desde las tarjetas para compararlos aquí.</p>
+      <a routerLink="/products" class="inline-block mt-8 bg-primary-accent text-dark-bg font-bold py-3 px-8 rounded-lg transition-transform hover:-translate-y-1">
+        Explorar productos
+      </a>
+    </div>
   }
 </div>
-
-<style>
-  :host { display: block; }
-  .compare-row:not(:last-child) .compare-cell { @apply border-b border-border-color; }
-  .compare-cell { @apply p-4 align-middle; }
-  .product-col { @apply w-64 min-w-64; }
-  .product-header { @apply sticky top-0 bg-dark-bg-secondary z-20 py-4 border-b border-border-color; }
-  .product-image { @apply w-24 h-24 object-contain mx-auto mb-3 transition-transform duration-300 hover:scale-105; }
-  .product-name { @apply font-headings font-semibold text-white h-12 flex items-center justify-center text-center; }
-  .product-price { @apply text-lg font-bold text-text-secondary; }
-  .add-to-cart-btn { @apply bg-primary-accent text-white border-none px-5 py-2.5 rounded-lg cursor-pointer font-bold transition-all hover:bg-white hover:text-dark-bg; }
-  .add-to-cart-btn.added { @apply bg-success text-white; }
-  .spec-boolean .fas { @apply text-2xl; }
-  .is-winner { @apply bg-yellow-400/5; }
-  .is-winner-text { @apply !text-yellow-400; }
-  .is-winner-bar { @apply !bg-yellow-400; }
-  .is-dimmed { @apply opacity-40; }
-  .spec-bar-container { @apply bg-dark-bg-tertiary rounded-full h-2 w-full max-w-[150px] mx-auto overflow-hidden; }
-  .spec-bar { @apply bg-primary-accent h-full rounded-full transition-all duration-700 ease-out; }
-  .spec-value { @apply text-xs text-text-secondary mt-1; }
-  .spec-value-text { @apply text-text-primary font-medium; }
-  .spec-value-missing { @apply text-text-secondary; }
-</style>
