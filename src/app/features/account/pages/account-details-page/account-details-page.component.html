@@ -2,46 +2,45 @@
   <div class="content-header">
     <h2 class="text-3xl font-bold mb-6">Detalles de la Cuenta</h2>
   </div>
-  <div class="form-section">
+  <div class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 sm:p-8">
     <form [formGroup]="detailsForm" (ngSubmit)="saveChanges()">
-      <div class="input-group">
-        <label for="name">Nombre Completo</label>
-        <input type="text" id="name" class="input-field" formControlName="fullName">
+      <div class="mb-6">
+        <label for="name" class="block text-sm font-semibold text-text-primary mb-2">Nombre Completo</label>
+        <input type="text" id="name" class="w-full bg-dark-bg border border-border-color rounded-lg px-4 py-2 text-text-primary transition-colors focus:border-primary-accent focus:outline-none" formControlName="fullName">
       </div>
-      <div class="input-group">
-        <label for="email">Correo Electrónico</label>
-        <input type="email" id="email" class="input-field" formControlName="email">
+      <div class="mb-6">
+        <label for="email" class="block text-sm font-semibold text-text-primary mb-2">Correo Electrónico</label>
+        <input type="email" id="email" class="w-full bg-dark-bg border border-border-color rounded-lg px-4 py-2 text-text-primary transition-colors focus:border-primary-accent focus:outline-none" formControlName="email">
       </div>
-      <div class="input-group">
-        <label for="phone">Número de Celular</label>
-        <input type="tel" id="phone" class="input-field" formControlName="phone">
+      <div class="mb-6">
+        <label for="phone" class="block text-sm font-semibold text-text-primary mb-2">Número de Celular</label>
+        <input type="tel" id="phone" class="w-full bg-dark-bg border border-border-color rounded-lg px-4 py-2 text-text-primary transition-colors focus:border-primary-accent focus:outline-none" formControlName="phone">
       </div>
 
       <hr class="border-border-color my-8">
 
       <h3 class="text-xl font-bold mb-4">Cambiar Contraseña</h3>
-      <div class="input-group">
-        <label for="current-password">Contraseña Actual</label>
-        <input type="password" id="current-password" class="input-field" formControlName="currentPassword">
+      <div class="mb-6">
+        <label for="current-password" class="block text-sm font-semibold text-text-primary mb-2">Contraseña Actual</label>
+        <input type="password" id="current-password" class="w-full bg-dark-bg border border-border-color rounded-lg px-4 py-2 text-text-primary transition-colors focus:border-primary-accent focus:outline-none" formControlName="currentPassword">
       </div>
-      <div class="input-group">
-        <label for="new-password">Nueva Contraseña</label>
-        <input type="password" id="new-password" class="input-field" formControlName="newPassword">
+      <div class="mb-6">
+        <label for="new-password" class="block text-sm font-semibold text-text-primary mb-2">Nueva Contraseña</label>
+        <input type="password" id="new-password" class="w-full bg-dark-bg border border-border-color rounded-lg px-4 py-2 text-text-primary transition-colors focus:border-primary-accent focus:outline-none" formControlName="newPassword">
       </div>
-      <div class="input-group">
-        <label for="confirm-new-password">Confirmar Nueva Contraseña</label>
-        <input type="password" id="confirm-new-password" class="input-field" formControlName="confirmNewPassword">
+      <div class="mb-6">
+        <label for="confirm-new-password" class="block text-sm font-semibold text-text-primary mb-2">Confirmar Nueva Contraseña</label>
+        <input type="password" id="confirm-new-password" class="w-full bg-dark-bg border border-border-color rounded-lg px-4 py-2 text-text-primary transition-colors focus:border-primary-accent focus:outline-none" formControlName="confirmNewPassword">
       </div>
 
-      <button type="submit" class="btn-primary" [disabled]="detailsForm.invalid">Guardar Cambios</button>
+      <button type="submit" class="inline-block bg-primary-accent text-dark-bg font-bold py-3 px-6 rounded-lg transition-transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0" [disabled]="detailsForm.invalid || isSaving()">
+        @if (isSaving()) {
+          <i class="fas fa-spinner animate-spin mr-2"></i>
+          <span>Guardando...</span>
+        } @else {
+          <span>Guardar Cambios</span>
+        }
+      </button>
     </form>
   </div>
 </div>
-
-<style>
-  .form-section { @apply bg-dark-bg-secondary border border-border-color rounded-2xl p-6 sm:p-8; }
-  .input-group { @apply mb-6; }
-  .input-group label { @apply block text-sm font-semibold text-text-primary mb-2; }
-  .input-field { @apply w-full bg-dark-bg border border-border-color rounded-lg px-4 py-2 text-text-primary transition-colors focus:border-primary-accent focus:outline-none; }
-  .btn-primary { @apply inline-block bg-primary-accent text-dark-bg font-bold py-3 px-6 rounded-lg transition-transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0; }
-</style>
