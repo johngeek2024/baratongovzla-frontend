@@ -72,7 +72,7 @@
     @apply bg-primary-accent text-white;
   }
 
-  /* ✅ INICIO: NUEVA DIRECTIVA - Componente de enlace para navegación legal */
+  /* Componente de enlace para navegación legal */
   .nav-link-legal {
     @apply block px-4 py-3 text-text-secondary rounded-lg font-medium border-l-[3px] border-transparent transition-all whitespace-nowrap;
   }
@@ -82,5 +82,10 @@
   .nav-link-legal.active {
     @apply text-primary-accent border-primary-accent font-bold;
   }
-  /* ✅ FIN: NUEVA DIRECTIVA */
+  /* Estilos para tarjetas activas en el checkout */
+  .active-card {
+    border-color: hsl(var(--color-primary-accent)) !important;
+    box-shadow: 0 0 20px hsl(var(--color-primary-accent) / 0.4);
+    background-color: hsl(var(--color-primary-accent) / 0.1);
+  }
 }

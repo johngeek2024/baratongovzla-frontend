@@ -9,34 +9,40 @@
             <h2 class="text-2xl font-headings font-bold text-text-on-dark m-0">Método de Entrega</h2>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div (click)="selectDeliveryMethod('pickup')" class="option-card" [ngClass]="{'active-card': deliveryMethod() === 'pickup'}">
-              <i class="fas fa-store"></i>
-              <h4>Retirar en Puntos Gratuitos</h4>
-              <p>Gratis</p>
+            <div (click)="checkoutService.selectDeliveryMethod('pickup')"
+                 class="bg-dark-bg border-2 border-border-color rounded-xl p-6 text-center cursor-pointer transition-all duration-300 hover:border-primary-accent hover:-translate-y-1"
+                 [ngClass]="{'active-card': checkoutService.deliveryMethod() === 'pickup'}">
+              <i class="fas fa-store text-3xl text-primary-accent mb-4 block"></i>
+              <h4 class="font-semibold text-text-on-dark text-base m-0">Retirar en Puntos Gratuitos</h4>
+              <p class="text-xs text-text-secondary mt-1 m-0">Gratis</p>
             </div>
-            <div (click)="selectDeliveryMethod('delivery')" class="option-card" [ngClass]="{'active-card': deliveryMethod() === 'delivery'}">
-              <i class="fas fa-motorcycle"></i>
-              <h4>Delivery Local en Valencia</h4>
-              <p>Costo Adicional</p>
+            <div (click)="checkoutService.selectDeliveryMethod('delivery')"
+                 class="bg-dark-bg border-2 border-border-color rounded-xl p-6 text-center cursor-pointer transition-all duration-300 hover:border-primary-accent hover:-translate-y-1"
+                 [ngClass]="{'active-card': checkoutService.deliveryMethod() === 'delivery'}">
+              <i class="fas fa-motorcycle text-3xl text-primary-accent mb-4 block"></i>
+              <h4 class="font-semibold text-text-on-dark text-base m-0">Delivery Local en Valencia</h4>
+              <p class="text-xs text-text-secondary mt-1 m-0">Costo Adicional</p>
             </div>
-            <div (click)="selectDeliveryMethod('shipping')" class="option-card" [ngClass]="{'active-card': deliveryMethod() === 'shipping'}">
-              <i class="fas fa-truck"></i>
-              <h4>Envío Nacional</h4>
-              <p>Cobro a Destino</p>
+            <div (click)="checkoutService.selectDeliveryMethod('shipping')"
+                 class="bg-dark-bg border-2 border-border-color rounded-xl p-6 text-center cursor-pointer transition-all duration-300 hover:border-primary-accent hover:-translate-y-1"
+                 [ngClass]="{'active-card': checkoutService.deliveryMethod() === 'shipping'}">
+              <i class="fas fa-truck text-3xl text-primary-accent mb-4 block"></i>
+              <h4 class="font-semibold text-text-on-dark text-base m-0">Envío Nacional</h4>
+              <p class="text-xs text-text-secondary mt-1 m-0">Cobro a Destino</p>
             </div>
           </div>
-          @if(deliveryMethod()) {
+          @if(checkoutService.deliveryMethod()) {
             <div class="mt-6 pt-6 border-t border-border-color">
-              @switch (deliveryMethod()) {
+              @switch (checkoutService.deliveryMethod()) {
                 @case ('pickup') {
                   <div class="bg-dark-bg rounded-lg p-6 border border-border-color">
                     <div class="flex items-center gap-4">
                       <i class="fas fa-map-marked-alt text-2xl text-primary-accent flex-shrink-0"></i>
                       <div class="flex-grow">
-                        <label for="pickup-location" class="form-label">Selecciona uno de nuestros puntos de retiro gratuitos:</label>
-                        <select (change)="onPickupPointChange($event)" id="pickup-location" class="form-input">
+                        <label for="pickup-location" class="block text-sm font-medium text-text-on-dark mb-2">Selecciona uno de nuestros puntos de retiro gratuitos:</label>
+                        <select (change)="onPickupPointChange($event)" id="pickup-location" class="w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark focus:border-primary-accent focus:ring-0">
                           <option value="" disabled selected>-- Elige un punto --</option>
-                          <option value="colegio_luz">Colegio Luz de Carabobo (Trigal)</option>
+                          <option value="colegio_luz">Colegio Luz de Carabobo (Fundacion Mendoza)</option>
                           @if(cartStore.totalPrice() >= 10) {
                             <option value="metro_lara">Estación Metro Av. Lara (Salida Sur)</option>
                             <option value="metro_cedeno">Estación Metro Av. Cedeño (Salida Sur)</option>
@@ -54,7 +60,7 @@
                         <i class="fas fa-map-marker-alt text-2xl text-primary-accent mt-1 flex-shrink-0"></i>
                         <div class="flex-grow">
                           <p class="font-semibold text-text-on-dark">Dirección de Entrega:</p>
-                          <p class="text-text-secondary leading-tight">{{ shippingAddress() }}</p>
+                          <p class="text-text-secondary leading-tight">{{ checkoutService.shippingAddress() }}</p>
                           <button (click)="uiService.openAddressModal()" class="text-primary-accent text-sm font-semibold p-0 mt-2 bg-transparent border-none hover:underline">
                             Cambiar / Añadir otra dirección
                           </button>
@@ -62,17 +68,17 @@
                       </div>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div (click)="selectDeliveryVehicle('moto')" class="option-card !p-4" [ngClass]="{'active-card': selectedDeliveryVehicle() === 'moto'}">
-                        <i class="fas fa-motorcycle"></i><h4>Moto</h4>
+                      <div (click)="checkoutService.selectDeliveryVehicle('moto')" class="bg-dark-bg border-2 border-border-color rounded-xl p-4 text-center cursor-pointer transition-all duration-300 hover:border-primary-accent hover:-translate-y-1" [ngClass]="{'active-card': checkoutService.selectedDeliveryVehicle() === 'moto'}">
+                        <i class="fas fa-motorcycle text-3xl text-primary-accent mb-4 block"></i><h4 class="font-semibold text-text-on-dark text-base m-0">Moto</h4>
                       </div>
-                      <div (click)="selectDeliveryVehicle('carro')" class="option-card !p-4" [ngClass]="{'active-card': selectedDeliveryVehicle() === 'carro'}">
-                        <i class="fas fa-car"></i><h4>Carro</h4>
+                      <div (click)="checkoutService.selectDeliveryVehicle('carro')" class="bg-dark-bg border-2 border-border-color rounded-xl p-4 text-center cursor-pointer transition-all duration-300 hover:border-primary-accent hover:-translate-y-1" [ngClass]="{'active-card': checkoutService.selectedDeliveryVehicle() === 'carro'}">
+                        <i class="fas fa-car text-3xl text-primary-accent mb-4 block"></i><h4 class="font-semibold text-text-on-dark text-base m-0">Carro</h4>
                       </div>
                     </div>
-                    @if(selectedDeliveryVehicle()) {
+                    @if(checkoutService.selectedDeliveryVehicle()) {
                       <div class="bg-dark-bg rounded-lg p-4 border border-border-color">
-                        <label for="delivery-zone" class="form-label">Selecciona tu zona para calcular la tarifa:</label>
-                        <select (change)="onZoneChange($event)" id="delivery-zone" class="form-input">
+                        <label for="delivery-zone" class="block text-sm font-medium text-text-on-dark mb-2">Selecciona tu zona para calcular la tarifa:</label>
+                        <select (change)="onZoneChange($event)" id="delivery-zone" class="w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark focus:border-primary-accent focus:ring-0">
                           <option value="" disabled selected>-- Elige una zona --</option>
                           <option value="valencia_norte">Valencia Norte</option>
                           <option value="valencia_sur">Valencia Sur</option>
@@ -88,15 +94,15 @@
                   <div class="bg-dark-bg rounded-lg p-6 border border-border-color space-y-4">
                     <p class="text-text-secondary text-center">Completa los datos para tu envío nacional.</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div><label class="form-label">Nombre y Apellido</label><input type="text" class="form-input" placeholder="Ej: Aura Pérez"></div>
-                      <div><label class="form-label">Cédula</label><input type="text" class="form-input" placeholder="Ej: V-12345678"></div>
+                      <div><label class="block text-sm font-medium text-text-on-dark mb-2">Nombre y Apellido</label><input type="text" class="w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark focus:border-primary-accent focus:ring-0" placeholder="Ej: Aura Pérez"></div>
+                      <div><label class="block text-sm font-medium text-text-on-dark mb-2">Cédula</label><input type="text" class="w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark focus:border-primary-accent focus:ring-0" placeholder="Ej: V-12345678"></div>
                     </div>
-                    <div><label class="form-label">Celular</label><input type="tel" class="form-input" placeholder="Ej: 0412-1234567"></div>
-                    <div><label class="form-label">Agencia de Envío</label><select class="form-input"><option value="mrw">MRW</option><option value="zoom">Zoom</option><option value="tealca">Tealca</option></select></div>
-                    <div><label class="form-label">Dirección de la Agencia</label><input type="text" class="form-input" placeholder="Ej: Av. Bolívar, C.C. Global"></div>
+                    <div><label class="block text-sm font-medium text-text-on-dark mb-2">Celular</label><input type="tel" class="w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark focus:border-primary-accent focus:ring-0" placeholder="Ej: 0412-1234567"></div>
+                    <div><label class="block text-sm font-medium text-text-on-dark mb-2">Agencia de Envío</label><select class="w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark focus:border-primary-accent focus:ring-0"><option value="mrw">MRW</option><option value="zoom">Zoom</option><option value="tealca">Tealca</option></select></div>
+                    <div><label class="block text-sm font-medium text-text-on-dark mb-2">Dirección de la Agencia</label><input type="text" class="w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark focus:border-primary-accent focus:ring-0" placeholder="Ej: Av. Bolívar, C.C. Global"></div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div><label class="form-label">Estado</label><input type="text" class="form-input" placeholder="Ej: Carabobo"></div>
-                      <div><label class="form-label">Ciudad</label><input type="text" class="form-input" placeholder="Ej: Valencia"></div>
+                      <div><label class="block text-sm font-medium text-text-on-dark mb-2">Estado</label><input type="text" class="w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark focus:border-primary-accent focus:ring-0" placeholder="Ej: Carabobo"></div>
+                      <div><label class="block text-sm font-medium text-text-on-dark mb-2">Ciudad</label><input type="text" class="w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark focus:border-primary-accent focus:ring-0" placeholder="Ej: Valencia"></div>
                     </div>
                   </div>
                 }
@@ -112,14 +118,14 @@
               <h2 class="text-2xl font-headings font-bold text-text-on-dark m-0">Información de Contacto</h2>
             </div>
             <div class="bg-dark-bg rounded-lg p-6 border border-border-color">
-              <label for="customer-phone" class="form-label">
+              <label for="customer-phone" class="block text-sm font-medium text-text-on-dark mb-2">
                 Número de Teléfono (WhatsApp)
               </label>
               <input
                 (input)="onCustomerPhoneInput($event)"
                 type="tel"
                 id="customer-phone"
-                class="form-input"
+                class="w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark focus:border-primary-accent focus:ring-0"
                 placeholder="Ej: 0412-1234567"
               >
               <p class="text-xs text-text-secondary mt-2">
@@ -136,18 +142,18 @@
             <h2 class="text-2xl font-headings font-bold text-text-on-dark m-0">Método de Pago</h2>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            @for (method of availablePaymentMethods(); track method.id) {
-              <div (click)="selectPaymentMethod(method.id)"
-                   class="option-card"
-                   [ngClass]="{'active-card': paymentMethod() === method.id}">
-                <i [class]="method.icon"></i>
-                <h4 class="font-semibold text-text-on-dark">{{ method.name }}</h4>
+            @for (method of checkoutService.availablePaymentMethods(); track method.id) {
+              <div (click)="checkoutService.selectPaymentMethod(method.id)"
+                   class="bg-dark-bg border-2 border-border-color rounded-xl p-6 text-center cursor-pointer transition-all duration-300 hover:border-primary-accent hover:-translate-y-1"
+                   [ngClass]="{'active-card': checkoutService.paymentMethod() === method.id}">
+                <i [class]="method.icon + ' text-3xl text-primary-accent mb-4 block'"></i>
+                <h4 class="font-semibold text-text-on-dark text-base m-0">{{ method.name }}</h4>
               </div>
             }
           </div>
-          @if (paymentMethod()) {
+          @if (checkoutService.paymentMethod()) {
             <div class="mt-6 pt-6 border-t border-border-color">
-              @switch (paymentMethod()) {
+              @switch (checkoutService.paymentMethod()) {
                 @case ('pago_movil') {
                   <div class="bg-dark-bg rounded-lg p-6 border border-border-color">
                     <div class="flex flex-col gap-6">
@@ -161,8 +167,8 @@
                         </div>
                       </div>
                       <div class="border-t border-border-color pt-4">
-                        <label for="pago-movil-ref" class="form-label">Referencia de Pago:</label>
-                        <input (input)="onPaymentReferenceChange($event)" type="text" id="pago-movil-ref" class="form-input" placeholder="Ingresa el nro. de confirmación">
+                        <label for="pago-movil-ref" class="block text-sm font-medium text-text-on-dark mb-2">Referencia de Pago:</label>
+                        <input (input)="onPaymentReferenceChange($event)" type="text" id="pago-movil-ref" class="w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark focus:border-primary-accent focus:ring-0" placeholder="Ingresa el nro. de confirmación">
                       </div>
                       <div>
                         <button class="bg-border-color text-text-on-dark font-semibold py-2 px-4 rounded-lg hover:bg-text-secondary transition-colors text-sm">
@@ -185,8 +191,8 @@
                           <button class="text-text-secondary hover:text-white transition-colors"><i class="fas fa-copy"></i></button>
                         </div>
                         <div class="mt-4">
-                          <label for="binance-txid" class="form-label !text-left">ID de Transacción (TxID):</label>
-                          <input (input)="onPaymentReferenceChange($event)" type="text" id="binance-txid" class="form-input" placeholder="Pega el TxID aquí">
+                          <label for="binance-txid" class="block text-sm font-medium text-text-on-dark mb-2 !text-left">ID de Transacción (TxID):</label>
+                          <input (input)="onPaymentReferenceChange($event)" type="text" id="binance-txid" class="w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark focus:border-primary-accent focus:ring-0" placeholder="Pega el TxID aquí">
                         </div>
                       </div>
                     </div>
@@ -229,7 +235,7 @@
           </div>
           <div class="flex justify-between items-center text-text-secondary">
             <span>Envío</span>
-            <span class="font-semibold text-text-on-dark">${{ shippingCost() }}</span>
+            <span class="font-semibold text-text-on-dark">${{ checkoutService.shippingCost() }}</span>
           </div>
         </div>
         <div class="flex justify-between text-2xl font-bold text-text-on-dark mt-4 pt-4 border-t border-border-color">
@@ -245,32 +251,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  .option-card {
-    @apply bg-dark-bg border-2 border-border-color rounded-xl p-6 text-center cursor-pointer transition-all duration-300;
-  }
-  .option-card:hover {
-    @apply border-primary-accent -translate-y-1;
-  }
-  .option-card i {
-    @apply text-3xl text-primary-accent mb-4 block;
-  }
-  .option-card h4 {
-    @apply font-semibold text-text-on-dark text-base m-0;
-  }
-  .option-card p {
-    @apply text-xs text-text-secondary mt-1 m-0;
-  }
-  .option-card.active-card {
-    border-color: hsl(var(--color-primary-accent)) !important;
-    box-shadow: 0 0 20px hsl(var(--color-primary-accent) / 0.4);
-    background-color: hsl(var(--color-primary-accent) / 0.1);
-  }
-  .form-input {
-      @apply w-full bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark focus:border-primary-accent focus:ring-0;
-  }
-  .form-label {
-      @apply block text-sm font-medium text-text-on-dark mb-2;
-  }
-</style>

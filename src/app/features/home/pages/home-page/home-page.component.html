@@ -2,13 +2,21 @@
 <app-quick-categories></app-quick-categories>
 <app-delivery-banner></app-delivery-banner>
 
-@defer (on viewport) {
+@defer (on viewport; prefetch on idle) {
   <app-product-stage></app-product-stage>
   <app-product-showcase></app-product-showcase>
-    <app-bundle-showcase></app-bundle-showcase>
+} @placeholder {
+  <div class="h-[80vh] bg-dark-bg"></div>
+}
+
+@defer (on interaction(placeholder); on timer(2s); prefetch on viewport(placeholder)) {
+  <app-bundle-showcase></app-bundle-showcase>
   <app-reviews-section></app-reviews-section>
+  } @placeholder (minimum 1s) {
+  <div #placeholder class="h-[60vh] bg-dark-bg"></div>
+}
+
+@defer (on idle) {
   <app-flash-deals></app-flash-deals>
   <app-trust-badges></app-trust-badges>
-} @placeholder {
-  <div class="min-h-screen"></div>
 }
