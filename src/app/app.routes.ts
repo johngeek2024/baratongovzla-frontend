@@ -52,7 +52,6 @@ export const routes: Routes = [
     path: 'terms-and-conditions',
     loadComponent: () => import('./features/legal/pages/terms-and-conditions-page/terms-and-conditions-page.component').then(c => c.TermsAndConditionsPageComponent)
   },
-  // ✅ CORRECCIÓN QUIRÚRGICA: Se elimina 'loadComponent'. Una ruta no puede tener 'loadComponent' y 'loadChildren' a la vez.
   {
     path: 'account',
     loadChildren: () => import('./features/account/account.routes').then(r => r.ACCOUNT_ROUTES),
