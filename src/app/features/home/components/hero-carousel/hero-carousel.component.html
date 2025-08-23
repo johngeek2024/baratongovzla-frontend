@@ -7,7 +7,7 @@
           <div class="relative h-full w-full flex flex-col justify-end items-center text-center text-white p-6 md:p-8 pb-24">
             <img
               [ngSrc]="banner.imageUrl"
-              [alt]="banner.title"
+              [alt]="'[Banner de ' + banner.title + ']'"
               fill
               [priority]="i === 0"
               class="absolute inset-0 w-full h-full object-cover -z-10"
@@ -24,6 +24,16 @@
       }
 
     </div>
-    <div class="swiper-pagination"></div>
-  </div>
+
+    <div class="swiper-pagination
+                [&_.swiper-pagination-bullet]:bg-white/50
+                [&_.swiper-pagination-bullet]:w-2
+                [&_.swiper-pagination-bullet]:h-2
+                [&_.swiper-pagination-bullet]:opacity-100
+                [&_.swiper-pagination-bullet]:transition-all
+                [&_.swiper-pagination-bullet-active]:bg-secondary-accent
+                [&_.swiper-pagination-bullet-active]:w-6
+                [&_.swiper-pagination-bullet-active]:rounded-md
+    "></div>
+    </div>
 </section>

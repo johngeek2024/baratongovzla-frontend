@@ -10,7 +10,6 @@ import { DataStoreService } from '../../../../core/services/data-store.service';
   standalone: true,
   imports: [CommonModule, NgOptimizedImage, RouterModule],
   templateUrl: './hero-carousel.component.html',
-  styleUrls: ['./hero-carousel.component.css']
 })
 export class HeroCarouselComponent implements AfterViewInit {
   @ViewChild('swiperContainer') swiperContainer!: ElementRef;

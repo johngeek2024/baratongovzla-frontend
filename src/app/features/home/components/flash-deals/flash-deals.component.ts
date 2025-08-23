@@ -23,7 +23,6 @@ interface Timer {
   standalone: true,
   imports: [CommonModule, ScrollFadeInDirective],
   templateUrl: './flash-deals.component.html',
-  styleUrls: ['./flash-deals.component.css']
 })
 export class FlashDealsComponent implements AfterViewInit, OnDestroy {
   @ViewChild('swiperContainer') swiperContainer!: ElementRef;

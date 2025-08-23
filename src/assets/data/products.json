@@ -11,13 +11,13 @@
     "status": "Publicado",
     "category": "proyectores",
     "tags": ["4K", "Smart"],
-    "shortDescription": "Proyector 4K de alta definición para una experiencia de cine en casa.",
+    "shortDescription": "Transforma cualquier espacio en una sala de cine con 4K nativo, Android TV y un sonido envolvente de alta fidelidad.",
     "description": "Sumérgete en un nivel de detalle asombroso. Con una resolución 4K real y compatibilidad con HDR10+, el Hyperion X1 proyecta colores vibrantes y negros profundos que transforman tu sala en una experiencia cinematográfica.",
     "reviews": { "average": 4.5, "count": 150 },
     "specs": [
-      { "name": "Resolución 4K", "value": "4K Nativo", "iconPath": "M21,2H3C1.89,2 1,2.89 1,4V16A2,2 0 0,0,3,18H10V20H8V22H16V20H14V18H21A2,2 0 0,0,23,16V4C23,2.89 22.1,2 21,2Z", "delay": "150ms" },
-      { "name": "3200 Lúmenes", "value": "3200", "iconPath": "M12,6.5A5.5,5.5,0,0,0,6.5,12A5.5,5.5,0,0,0,12,17.5A5.5,5.5,0,0,0,17.5,12A5.5,5.5,0,0,0,12,6.5M12,2A10,10,0,0,0,2,12A10,10,0,0,0,12,22A10,10,0,0,0,22,12A10,10,0,0,0,12,2Z", "delay": "250ms" },
-      { "name": "Android TV", "iconPath": "M12,18H12.09C12.05,18.33 12,18.66 12,19C12,20.1 12.89,21 14,21C15.1,21 16,20.1 16,19C16,17.9 15.1,17 14,17C13.34,17 12.77,17.35 12.41,17.82L11.5,16.25C12.2,15.5 13.1,15 14,15C16.21,15 18,16.79 18,19C18,21.21 16.21,23 14,23C11.79,23 10,21.21 10,19C10,18.5 10.1,18.03 10.28,17.6L6,8.25V6.5C6,5.67 6.67,5 7.5,5H16.5C17.33,5 18,5.67 18,6.5V13H16V7H8L12,18Z", "delay": "350ms" }
+      { "name": "Resolución", "value": "4K Nativo", "iconPath": "M21,2H3C1.89,2 1,2.89 1,4V16A2,2 0 0,0,3,18H10V20H8V22H16V20H14V18H21A2,2 0 0,0,23,16V4C23,2.89 22.1,2 21,2Z", "delay": "150ms" },
+      { "name": "Lúmenes", "value": "3200", "iconPath": "M12,6.5A5.5,5.5,0,0,0,6.5,12A5.5,5.5,0,0,0,12,17.5A5.5,5.5,0,0,0,17.5,12A5.5,5.5,0,0,0,12,6.5M12,2A10,10,0,0,0,2,12A10,10,0,0,0,12,22A10,10,0,0,0,22,12A10,10,0,0,0,12,2Z", "delay": "250ms" },
+      { "name": "Sistema", "value": "Android TV", "iconPath": "M12,18H12.09C12.05,18.33 12,18.66 12,19C12,20.1 12.89,21 14,21C15.1,21 16,20.1 16,19C16,17.9 15.1,17 14,17C13.34,17 12.77,17.35 12.41,17.82L11.5,16.25C12.2,15.5 13.1,15 14,15C16.21,15 18,16.79 18,19C18,21.21 16.21,23 14,23C11.79,23 10,21.21 10,19C10,18.5 10.1,18.03 10.28,17.6L6,8.25V6.5C6,5.67 6.67,5 7.5,5H16.5C17.33,5 18,5.67 18,6.5V13H16V7H8L12,18Z", "delay": "350ms" }
     ],
     "features": [{ "subtitle": "CALIDAD DE IMAGEN", "title": "Tu propio cine en 4K nativo.", "text": "Con una resolución 4K real...", "imageUrl": "https://placehold.co/600x450/111827/9CA3AF?text=Escena+de+Película+4K", "imagePosition": "right" }, { "subtitle": "SONIDO ENVOLVENTE", "title": "Escucha cada detalle...", "text": "Equipado con dos altavoces de 15W...", "imageUrl": "https://placehold.co/600x450/111827/9CA3AF?text=Ondas+de+Sonido", "imagePosition": "left" }],
     "hotspots": [{ "x": "45%", "y": "48%", "title": "Lente Óptico de Zafiro", "description": "Claridad y resistencia a rayones..." }, { "x": "65%", "y": "20%", "title": "Conectividad Total", "description": "Puertos HDMI 2.1, USB-C y Bluetooth 5.2..." }, { "x": "15%", "y": "60%", "title": "Enfoque Automático Láser", "description": "Imagen nítida al instante..." }]
@@ -33,13 +33,13 @@
     "status": "Publicado",
     "category": "gaming",
     "tags": ["PC", "PS5", "RGB"],
-    "shortDescription": "Teclado mecánico RGB con switches de alta respuesta para gaming.",
+    "shortDescription": "Teclado mecánico RGB con switches de alta respuesta para gaming competitivo y una experiencia de escritura superior.",
     "description": "Diseñado para la victoria, el Void-Dasher ofrece una respuesta táctil precisa...",
     "reviews": { "average": 4.8, "count": 210 },
     "specs": [
-      { "name": "Switches Blue", "value": "Mecánico", "iconPath": "M2,17H22V19H2V17M20,9V11H4V9H20M4,13H11V15H4V13M13,13H20V15H13V13M4,5H20V7H4V5Z", "delay": "150ms"},
-      { "name": "RGB Completo", "value": "RGB Programable", "iconPath": "M12 2L9.6 7.4L14.4 7.4L12 2M11 9.4L12 8.4L13 9.4L12 11.5L11 9.4M12 22C16.42 22 20 18.42 20 14C20 9.58 16.42 6 12 6S4 9.58 4 14C4 18.42 7.58 22 12 22M12 8C15.31 8 18 10.69 18 14S15.31 20 12 20 6 17.31 6 14 8.69 8 12 8Z", "delay": "250ms" },
-      { "name": "Anti-Ghosting", "iconPath": "M22,6H20V4H4V6H2V2H22V6M22,18V22H2V18H4V20H20V18H22M15,8H17V16H15V8M7,8H9V16H7V8M11,8H13V16H11V8Z", "delay": "350ms" }
+      { "name": "Switches", "value": "Mecánico Blue", "iconPath": "M2,17H22V19H2V17M20,9V11H4V9H20M4,13H11V15H4V13M13,13H20V15H13V13M4,5H20V7H4V5Z", "delay": "150ms"},
+      { "name": "Iluminación", "value": "RGB Programable", "iconPath": "M12 2L9.6 7.4L14.4 7.4L12 2M11 9.4L12 8.4L13 9.4L12 11.5L11 9.4M12 22C16.42 22 20 18.42 20 14C20 9.58 16.42 6 12 6S4 9.58 4 14C4 18.42 7.58 22 12 22M12 8C15.31 8 18 10.69 18 14S15.31 20 12 20 6 17.31 6 14 8.69 8 12 8Z", "delay": "250ms" },
+      { "name": "Tecnología", "value": "Anti-Ghosting", "iconPath": "M22,6H20V4H4V6H2V2H22V6M22,18V22H2V18H4V20H20V18H22M15,8H17V16H15V8M7,8H9V16H7V8M11,8H13V16H11V8Z", "delay": "350ms" }
     ],
     "features": [{ "subtitle": "PRECISIÓN ABSOLUTA", "title": "Cada pulsación cuenta.", "text": "Los switches mecánicos avanzados garantizan una respuesta instantánea...", "imageUrl": "https://placehold.co/600x450/111827/9CA3AF?text=Switches+Mecánicos", "imagePosition": "right" }],
     "hotspots": [{ "x": "50%", "y": "50%", "title": "Switches Red Táctiles", "description": "Respuesta rápida y silenciosa..." }, { "x": "80%", "y": "40%", "title": "Rueda de Volumen Metálica", "description": "Control de audio preciso..." }]
@@ -56,12 +56,12 @@
     "status": "Publicado",
     "category": "smartwatches",
     "tags": ["Salud", "Deporte"],
-    "shortDescription": "Tu vida, conectada. Monitorea tu salud y mantente activo.",
+    "shortDescription": "Tu vida, conectada. Monitorea tu salud, mantente activo y no te pierdas ninguna notificación importante.",
     "description": "El Aura Watch Series 8 es tu compañero definitivo...",
     "reviews": { "average": 4.9, "count": 450 },
     "specs": [
-      { "name": "OLED Retina", "value": "OLED Retina", "iconPath": "M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z", "delay": "150ms" },
-      { "name": "Batería 2 Días", "value": "Hasta 2 días", "iconPath": "M16,20H8V6H16M18,4H6A2,2 0 0,0 4,6V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V6A2,2 0 0,0 18,4Z", "delay": "250ms" }
+      { "name": "Pantalla", "value": "OLED Retina", "iconPath": "M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z", "delay": "150ms" },
+      { "name": "Batería", "value": "Hasta 2 días", "iconPath": "M16,20H8V6H16M18,4H6A2,2 0 0,0 4,6V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V6A2,2 0 0,0 18,4Z", "delay": "250ms" }
     ],
     "features": [{ "subtitle": "MONITOREO AVANZADO", "title": "Tu salud, en tu muñeca.", "text": "Con sensores de última generación...", "imageUrl": "https://placehold.co/600x450/111827/9CA3AF?text=Gráfica+de+Salud", "imagePosition": "right" }],
     "hotspots": [{ "x": "50%", "y": "30%", "title": "Pantalla Retina Siempre Activa", "description": "Consulta la hora y tus notificaciones..." }, { "x": "75%", "y": "55%", "title": "Corona Digital con Feedback Háptico", "description": "Navegación precisa..." }]

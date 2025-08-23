@@ -13,15 +13,9 @@ import { AuthService } from '../../../../core/services/auth.service';
   ],
   templateUrl: './admin-login.component.html',
   // CORRECCIÓN: Se añaden los estilos del :host para centrar el componente en la pantalla.
-  styles: [`
-    :host {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 1rem;
-    }
-  `]
+  host: {
+    class: 'flex items-center justify-center min-h-screen p-4'
+  }
 })
 export class AdminLoginComponent {
   public authService = inject(AuthService);

@@ -1,8 +1,0 @@
-/* Usamos :host ::ng-deep para asegurarnos de que estos estilos se apliquen a los elementos de Swiper */
-:host ::ng-deep .swiper-pagination-bullet {
-  background-color: #6B7280; /* text-secondary */
-}
-
-:host ::ng-deep .swiper-pagination-bullet-active {
-  background-color: #0055ff; /* primary-accent */
-}
