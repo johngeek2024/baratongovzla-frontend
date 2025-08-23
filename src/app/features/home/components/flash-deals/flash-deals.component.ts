@@ -2,8 +2,6 @@ import { Component, AfterViewInit, OnDestroy, ElementRef, ViewChild, PLATFORM_ID
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import Swiper from 'swiper';
 import { Autoplay, Pagination } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/pagination';
 import { ScrollFadeInDirective } from '../../../../core/directives/scroll-fade-in.directive';
 
 interface FlashDeal {

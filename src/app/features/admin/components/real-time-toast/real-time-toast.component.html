@@ -1,0 +1,25 @@
+<div class="fixed bottom-8 right-8 z-[200] flex flex-col items-end gap-4">
+  @for (notification of notificationService.notifications(); track notification.id) {
+    <div
+      class="flex items-start gap-4 w-full max-w-sm p-4 rounded-xl border shadow-2xl shadow-black/50 bg-dark-bg-secondary/80 backdrop-blur-md animate-in fade-in-0 slide-in-from-bottom-5 duration-500"
+      [ngClass]="{
+        'border-success/50 text-success': notification.type === 'success',
+        'border-warning/50 text-warning': notification.type === 'warning',
+        'border-primary-accent/50 text-primary-accent': notification.type === 'info',
+        'border-danger/50 text-danger': notification.type === 'danger'
+      }"
+    >
+      <div class="text-xl pt-1">
+        <i [class]="notification.icon"></i>
+      </div>
+
+      <div class="flex-grow text-sm font-semibold text-text-primary">
+        {{ notification.message }}
+      </div>
+
+      <button (click)="notificationService.hide(notification.id)" class="text-xl text-text-secondary transition-colors hover:text-white">
+        &times;
+      </button>
+    </div>
+  }
+</div>

@@ -24,7 +24,7 @@
             ],
             "styles": [
               "src/styles.css",
-              "src/assets/swiper-styles.css"
+              "node_modules/swiper/swiper.min.css"
             ],
             "server": "src/main.server.ts",
             "outputMode": "server",
@@ -32,7 +32,9 @@
               "entry": "src/server.ts"
             },
             "allowedCommonJsDependencies": [
-              "papaparse"
+              "papaparse",
+              "debug",
+              "xmlhttprequest-ssl"
             ]
           },
           "configurations": {
@@ -62,6 +64,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "buildTarget": "baratongovzla-frontend:build:production"
@@ -87,7 +92,7 @@
             ],
             "styles": [
               "src/styles.css",
-              "src/assets/swiper-styles.css"
+              "node_modules/swiper/swiper.min.css"
             ]
           }
         }
