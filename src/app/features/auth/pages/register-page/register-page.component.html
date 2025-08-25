@@ -1,127 +1,98 @@
-<div class="register-container">
-  <div class="register-visual">
-    <div class="visual-bg"></div>
-    <div class="visual-content">
-      <h1>Únete al Núcleo BaratongoVzla</h1>
-      <p>Crea tu cuenta para acceder a ofertas exclusivas y la mejor selección de tecnología del país.</p>
-    </div>
-  </div>
-  <div class="register-form-panel">
-    <div class="form-wrapper">
-      <h2>Crear Cuenta</h2>
-      <form [formGroup]="registerForm" (ngSubmit)="handleRegister()" novalidate>
-        <div class="input-group">
-          <input type="text" id="name" class="input-field" placeholder="Nombre Completo" formControlName="fullName">
-          <i class="fas fa-user input-icon"></i>
-        </div>
-        <app-form-field-error [control]="registerForm.get('fullName')"></app-form-field-error>
-        @if (registerForm.get('fullName')?.hasError('pattern')) {
-          <p class="error-feedback">El nombre solo debe contener letras y espacios.</p>
-        }
+<div class="flex items-center justify-center min-h-screen p-4 sm:p-8 bg-dark-bg font-sans">
+  <div class="flex w-full max-w-6xl min-h-[700px] bg-dark-bg-secondary rounded-2xl overflow-hidden border border-border-color shadow-2xl shadow-black/30">
 
-        <div class="input-group">
-          <input type="email" id="email" class="input-field" placeholder="Correo Electrónico" formControlName="email">
-          <i class="fas fa-envelope input-icon"></i>
-        </div>
-        <app-form-field-error [control]="registerForm.get('email')"></app-form-field-error>
-        @if (registerForm.get('email')?.hasError('disallowedDomain')) {
-          <p class="error-feedback">El dominio de este correo no está permitido.</p>
-        }
-
-        @if (registerForm.get('email')?.hasError('emailExists')) {
-          <p class="error-feedback">Este correo electrónico ya está registrado.</p>
-        }
-        @if (registerForm.get('email')?.pending) {
-          <p class="text-xs text-text-secondary mt-1 animate-pulse">Verificando correo...</p>
-        }
-        <div class="input-group">
-          <input [type]="hidePassword() ? 'password' : 'text'" id="password" class="input-field" placeholder="Contraseña" formControlName="password">
-          <i class="fas fa-lock input-icon"></i>
-          <button type="button" (click)="hidePassword.set(!hidePassword())" class="password-toggle-btn" aria-label="Mostrar u ocultar contraseña">
-            <i class="fas" [class]="hidePassword() ? 'fa-eye' : 'fa-eye-slash'"></i>
-          </button>
-        </div>
-        <app-form-field-error [control]="registerForm.get('password')"></app-form-field-error>
-
-        <app-password-strength [passwordValue]="passwordValue"></app-password-strength>
-
-        <div class="input-group">
-          <input [type]="hideConfirmPassword() ? 'password' : 'text'" id="confirm-password" class="input-field" placeholder="Confirmar Contraseña" formControlName="confirmPassword">
-          <i class="fas fa-check-circle input-icon"></i>
-          <button type="button" (click)="hideConfirmPassword.set(!hideConfirmPassword())" class="password-toggle-btn" aria-label="Mostrar u ocultar contraseña de confirmación">
-            <i class="fas" [class]="hideConfirmPassword() ? 'fa-eye' : 'fa-eye-slash'"></i>
-          </button>
-        </div>
-        <app-form-field-error [control]="registerForm.get('confirmPassword')"></app-form-field-error>
-        @if (registerForm.get('confirmPassword')?.hasError('passwordMismatch')) {
-          <p class="error-feedback">Las contraseñas no coinciden.</p>
-        }
-
-        <div class="mt-6 mb-4">
-          <label class="flex items-start gap-3 cursor-pointer">
-            <input type="checkbox" formControlName="terms" class="mt-1 h-4 w-4 rounded border-border-color bg-dark-bg text-primary-accent focus:ring-primary-accent focus:ring-offset-dark-bg-secondary">
-            <span class="text-sm text-text-secondary">
-              He leído y acepto los <a routerLink="/terms-and-conditions" target="_blank" class="text-primary-accent hover:underline">Términos y Condiciones</a> de BaratongoVzla.
-            </span>
-          </label>
-          <app-form-field-error [control]="registerForm.get('terms')"></app-form-field-error>
-        </div>
-
-        <button type="submit" class="submit-btn" [disabled]="registerForm.invalid">Registrarse</button>
-      </form>
-      <div class="separator">o regístrate con</div>
-      <div class="social-login-group">
-        <button class="social-btn">
-          <i class="fab fa-google"></i> Google
-        </button>
-      </div>
-      <div class="form-footer">
-        <p>¿Ya tienes una cuenta? <a routerLink="/auth/login">Inicia sesión aquí</a></p>
+    <div class="hidden md:flex flex-1 relative items-end p-12 bg-black overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-t from-dark-bg via-dark-bg/50 to-transparent z-20"></div>
+      <div class="absolute inset-0 bg-gradient-to-br from-[#001f3f] via-dark-bg to-[#1f0a33] animate-[gradient-flow_15s_ease_infinite] bg-[400%_400%] z-10"></div>
+      <div class="relative z-30 text-white">
+        <h1 class="font-headings text-4xl leading-tight mb-4">Únete al Núcleo BaratongoVzla</h1>
+        <p class="text-lg text-text-secondary max-w-md">Crea tu cuenta para acceder a ofertas exclusivas y la mejor selección de tecnología del país.</p>
       </div>
     </div>
+
+    <div class="w-full md:w-1/2 flex items-center justify-center p-6 sm:p-12">
+      <div class="w-full max-w-md">
+        <h2 class="font-headings text-3xl text-center text-white mb-8">Crear Cuenta</h2>
+        <form [formGroup]="registerForm" (ngSubmit)="handleRegister()" novalidate>
+
+          <div class="relative mb-1">
+            <input type="text" id="name" class="w-full bg-dark-bg border border-border-color rounded-lg py-3 pl-12 pr-4 text-text-primary text-base transition-colors duration-300 focus:border-primary-accent outline-none" placeholder="Nombre Completo" formControlName="fullName">
+            <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"></i>
+          </div>
+          <app-form-field-error [control]="registerForm.get('fullName')"></app-form-field-error>
+          @if (registerForm.get('fullName')?.hasError('pattern')) {
+            <p class="text-danger text-xs mt-1 pl-1">El nombre solo debe contener letras y espacios.</p>
+          }
+
+          <div class="relative mt-4 mb-1">
+            <input type="email" id="email" class="w-full bg-dark-bg border border-border-color rounded-lg py-3 pl-12 pr-4 text-text-primary text-base transition-colors duration-300 focus:border-primary-accent outline-none" placeholder="Correo Electrónico" formControlName="email">
+            <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"></i>
+          </div>
+          <app-form-field-error [control]="registerForm.get('email')"></app-form-field-error>
+          @if (registerForm.get('email')?.hasError('disallowedDomain')) {
+            <p class="text-danger text-xs mt-1 pl-1">El dominio de este correo no está permitido.</p>
+          }
+          @if (registerForm.get('email')?.hasError('emailExists')) {
+            <p class="text-danger text-xs mt-1 pl-1">Este correo electrónico ya está registrado.</p>
+          }
+          @if (registerForm.get('email')?.pending) {
+            <p class="text-xs text-text-secondary mt-1 animate-pulse">Verificando correo...</p>
+          }
+
+          <div class="relative mt-4">
+            <input [type]="hidePassword() ? 'password' : 'text'" id="password" class="w-full bg-dark-bg border border-border-color rounded-lg py-3 pl-12 pr-12 text-text-primary text-base transition-colors duration-300 focus:border-primary-accent outline-none" placeholder="Contraseña" formControlName="password">
+            <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"></i>
+            <button type="button" (click)="hidePassword.set(!hidePassword())" class="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary cursor-pointer" aria-label="Mostrar u ocultar contraseña">
+              <i class="fas" [class]="hidePassword() ? 'fa-eye' : 'fa-eye-slash'"></i>
+            </button>
+          </div>
+          <app-form-field-error [control]="registerForm.get('password')"></app-form-field-error>
+          <app-password-strength [passwordValue]="passwordValue"></app-password-strength>
+
+          <div class="relative mt-4">
+              <input [type]="hideConfirmPassword() ? 'password' : 'text'" id="confirm-password" class="w-full bg-dark-bg border border-border-color rounded-lg py-3 pl-12 pr-12 text-text-primary text-base transition-colors duration-300 focus:border-primary-accent outline-none" placeholder="Confirmar Contraseña" formControlName="confirmPassword">
+              <i class="fas fa-check-circle absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary"></i>
+              <button type="button" (click)="hideConfirmPassword.set(!hideConfirmPassword())" class="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary cursor-pointer" aria-label="Mostrar u ocultar contraseña de confirmación">
+                  <i class="fas" [class]="hideConfirmPassword() ? 'fa-eye' : 'fa-eye-slash'"></i>
+              </button>
+          </div>
+          <app-form-field-error [control]="registerForm.get('confirmPassword')"></app-form-field-error>
+          @if (registerForm.get('confirmPassword')?.hasError('passwordMismatch')) {
+            <p class="text-danger text-xs mt-1 pl-1">Las contraseñas no coinciden.</p>
+          }
+
+          <div class="mt-6 mb-4">
+              <label class="flex items-start gap-3 cursor-pointer">
+                  <input type="checkbox" formControlName="terms" class="mt-1 h-4 w-4 rounded border-border-color bg-dark-bg text-primary-accent focus:ring-primary-accent focus:ring-offset-dark-bg-secondary">
+                  <span class="text-sm text-text-secondary">
+                      He leído y acepto los <a routerLink="/terms-and-conditions" target="_blank" class="text-primary-accent hover:underline">Términos y Condiciones</a> de BaratongoVzla.
+                  </span>
+              </label>
+              <app-form-field-error [control]="registerForm.get('terms')"></app-form-field-error>
+          </div>
+
+          <button type="submit" class="w-full bg-gradient-to-r from-primary-accent to-primary-accent-darker text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-accent/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none mt-6" [disabled]="registerForm.invalid">
+              Registrarse
+          </button>
+        </form>
+
+        <div class="flex items-center text-center text-text-secondary my-8 text-sm">
+          <span class="flex-1 border-b border-border-color"></span>
+          <span class="px-2">o regístrate con</span>
+          <span class="flex-1 border-b border-border-color"></span>
+        </div>
+
+        <div class="flex">
+            <button class="flex-1 flex items-center justify-center gap-3 py-3 bg-transparent border border-border-color rounded-lg text-text-primary font-semibold cursor-pointer transition-colors duration-200 hover:bg-border-color hover:text-white">
+                <i class="fab fa-google text-lg text-[#DB4437]"></i> Google
+            </button>
+        </div>
+
+        <div class="text-center mt-8 text-sm">
+            <p class="text-text-secondary">¿Ya tienes una cuenta? <a routerLink="/auth/login" class="text-primary-accent font-semibold hover:underline">Inicia sesión aquí</a></p>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
-
-<style>
-  :host { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 2rem 1rem; background-color: hsl(var(--color-dark-bg)); }
-  .register-container { display: flex; width: 100%; max-width: 1200px; min-height: 700px; background-color: hsl(var(--color-dark-bg-secondary)); border-radius: 24px; overflow: hidden; border: 1px solid hsl(var(--color-border)); box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
-  .register-visual { flex-basis: 50%; background-color: #000; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 3rem; }
-  .register-visual::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, hsl(var(--color-dark-bg)) 0%, hsla(var(--color-dark-bg)/0.5) 50%, transparent 100%); z-index: 2; }
-  .visual-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #001f3f 0%, hsl(var(--color-dark-bg)) 50%, #1f0a33 100%); background-size: 400% 400%; animation: gradient-flow 15s ease infinite; z-index: 1; }
-  .visual-content { position: relative; z-index: 3; color: hsl(var(--color-text-primary)); }
-  .visual-content h1 { font-size: 2.5rem; line-height: 1.3; margin: 0 0 1rem 0; }
-  .visual-content p { font-size: 1.1rem; color: hsl(var(--color-text-secondary)); max-width: 400px; }
-  .register-form-panel { flex-basis: 50%; display: flex; align-items: center; justify-content: center; padding: 3rem; }
-  .form-wrapper { width: 100%; max-width: 400px; }
-  .form-wrapper h2 { font-size: 2rem; text-align: center; margin-bottom: 2rem; }
-  .input-group { position: relative; margin-bottom: 0.5rem; margin-top: 1rem; }
-  .input-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: hsl(var(--color-text-secondary)); transition: color 0.3s ease; }
-  .input-field { width: 100%; background-color: hsl(var(--color-dark-bg)); border: 1px solid hsl(var(--color-border)); border-radius: 8px; padding: 1rem 3rem; color: hsl(var(--color-text-primary)); font-size: 1rem; outline: none; transition: border-color 0.3s ease; }
-  .input-field:focus { border-color: hsl(var(--color-primary-accent)); }
-  .input-field:focus ~ .input-icon { color: hsl(var(--color-primary-accent)); }
-  .password-toggle-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: hsl(var(--color-text-secondary)); cursor: pointer; }
-  .error-feedback { @apply text-danger text-xs mt-1 animate-in fade-in-0 duration-300 pl-1; }
-  .submit-btn { width: 100%; background: linear-gradient(90deg, hsl(var(--color-primary-accent)), hsl(var(--color-primary-accent-darker))); border: none; color: white; padding: 1rem; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; margin-top: 1.5rem; }
-  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px hsla(var(--color-primary-accent)/0.2); }
-  .submit-btn:disabled { @apply opacity-50 cursor-not-allowed transform-none shadow-none; }
-  .separator { display: flex; align-items: center; text-align: center; color: hsl(var(--color-text-secondary)); margin: 2rem 0; font-size: 0.9rem; }
-  .separator::before, .separator::after { content: ''; flex: 1; border-bottom: 1px solid hsl(var(--color-border)); }
-  .separator:not(:empty)::before { margin-right: .5em; }
-  .separator:not(:empty)::after { margin-left: .5em; }
-  .social-login-group { display: flex; gap: 1rem; }
-  .social-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 0.75rem; background-color: transparent; border: 1px solid hsl(var(--color-border)); border-radius: 8px; color: hsl(var(--color-text-primary)); font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
-  .social-btn:hover { background-color: hsl(var(--color-border)); color: white; }
-  .social-btn i { font-size: 1.2rem; }
-  .fa-google { color: #DB4437; }
-  .form-footer { text-align: center; margin-top: 2rem; font-size: 0.9rem; }
-  .form-footer a { color: hsl(var(--color-primary-accent)); text-decoration: none; font-weight: 600; }
-  @keyframes gradient-flow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-  @media (max-width: 991px) {
-    :host { align-items: flex-start; padding: 2rem 1rem; }
-    .register-container { flex-direction: column; min-height: auto; max-width: 500px; }
-    .register-visual { flex-basis: auto; min-height: 250px; padding: 2rem; }
-    .visual-content h1 { font-size: 2rem; }
-    .visual-content p { font-size: 1rem; }
-    .register-form-panel { padding: 2rem 1.5rem; }
-  }
-</style>
