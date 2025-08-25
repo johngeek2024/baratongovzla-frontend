@@ -58,6 +58,12 @@ export const productSchema = z.object({
   reviews: z.object({ average: z.number(), count: z.number() }).optional(),
 });
 
+// ✅ INICIO: MODIFICACIÓN QUIRÚRGICA
+// Exportamos el tipo inferido para usarlo en nuestros componentes y servicios.
+// Usamos .partial() para que todos los campos sean opcionales, ideal para formularios.
+export type ProductFormData = z.infer<ReturnType<typeof productSchema['partial']>>;
+// ✅ FIN: MODIFICACIÓN QUIRÚRGICA
+
 // Esquema para un array de Productos
 export const productsSchema = z.array(productSchema);
 

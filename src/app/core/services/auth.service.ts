@@ -1,10 +1,9 @@
-// src/app/core/services/auth.service.ts
-
 import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { tap, catchError, of, Observable } from 'rxjs';
+// ✅ Se añade 'delay' y 'map' para la simulación
+import { tap, catchError, of, Observable, delay, map } from 'rxjs';
 import { UiService } from './ui.service';
 
 export interface User {
@@ -47,6 +46,21 @@ export class AuthService {
       this.currentAdmin.set(status.admin);
     });
   }
+
+  // ✅ INICIO: MÉTODO NUEVO PARA VALIDACIÓN ASÍNCRONA
+  /**
+   * Simula una llamada a la API para verificar si un correo ya está registrado.
+   * @param email El correo a verificar.
+   * @returns Un Observable que emite `true` si el correo está en uso, `false` en caso contrario.
+   */
+  checkEmailAvailability(email: string): Observable<boolean> {
+    console.log(`[API MOCK] Verificando disponibilidad para: ${email}`);
+    // Simulación: El único correo "tomado" es el del cliente de prueba.
+    const isTaken = email.toLowerCase() === 'cliente@baratongo.com';
+    // Simula una latencia de red de 500ms para emular una llamada real.
+    return of(isTaken).pipe(delay(500));
+  }
+  // ✅ FIN: MÉTODO NUEVO
 
   // --- MÉTODOS PARA CLIENTES ---
   login(credentials: { email: string; password: any }): Observable<User> {

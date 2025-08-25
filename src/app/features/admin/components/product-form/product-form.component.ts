@@ -5,6 +5,8 @@ import { FormFieldErrorComponent } from '../../../../components/ui/form-field-er
 import { Product } from '../../../../core/models/product.model';
 import { DataStoreService } from '../../../../core/services/data-store.service';
 import { generateSlug } from '../../../../core/utils/form.utils';
+// ✅ NUEVO: Importamos el esquema y el tipo de Zod.
+import { productSchema, ProductFormData } from '../../../../core/models/validation.schemas';
 
 @Component({
   selector: 'app-product-form',
@@ -20,7 +22,8 @@ export class ProductFormComponent implements OnInit, OnChanges {
 
   @Input() productToEdit: Product | null = null;
   @Input() isSaving = signal(false);
-  @Output() save = new EventEmitter<{ productData: any; imageFile: File | null; }>();
+  // ✅ CAMBIO: El evento de salida ahora está fuertemente tipado con nuestro tipo Zod.
+  @Output() save = new EventEmitter<{ productData: ProductFormData; imageFile: File | null; }>();
   @Output() cancel = new EventEmitter<void>();
 
   productForm!: FormGroup;
@@ -153,9 +156,10 @@ export class ProductFormComponent implements OnInit, OnChanges {
     this.closeHotspotEditor();
     this.formError.set(null);
 
+    // 1. Validación de Angular Forms (existente)
     if (this.productForm.invalid) {
       this.productForm.markAllAsTouched();
-      this.formError.set('Misión abortada. Por favor, corrige los campos marcados en rojo.');
+      this.formError.set('Misión abortada. Corrige los campos marcados en rojo.');
       setTimeout(() => this.formError.set(null), 5000);
       return;
     }
@@ -170,8 +174,22 @@ export class ProductFormComponent implements OnInit, OnChanges {
       tags: formValue.tags ? formValue.tags.split(',').map((tag: string) => tag.trim()) : []
     };
 
-    const { image, ...finalProductData } = productData;
-    this.save.emit({ productData: finalProductData, imageFile: image });
+    // ✅ INICIO: MODIFICACIÓN QUIRÚRGICA - VALIDACIÓN CON ZOD
+    // 2. Validación de Zod (Nueva)
+    const validation = productSchema.partial().safeParse(productData);
+
+    if (!validation.success) {
+      const firstError = validation.error.errors[0];
+      const errorMessage = `Error de integridad en '${firstError.path.join('.')}': ${firstError.message}`;
+      this.formError.set(errorMessage);
+      console.error('[ProductFormComponent] Falló la validación Zod:', validation.error.errors);
+      return;
+    }
+    // ✅ FIN: MODIFICACIÓN QUIRÚRGICA
+
+    // Si ambas validaciones pasan, emitimos los datos validados por Zod.
+    const finalProductData = validation.data;
+    this.save.emit({ productData: finalProductData, imageFile: formValue.image as File | null });
   }
 
   handleCancel(): void {

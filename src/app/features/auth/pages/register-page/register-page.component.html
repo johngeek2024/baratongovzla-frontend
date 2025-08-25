@@ -28,6 +28,12 @@
           <p class="error-feedback">El dominio de este correo no está permitido.</p>
         }
 
+        @if (registerForm.get('email')?.hasError('emailExists')) {
+          <p class="error-feedback">Este correo electrónico ya está registrado.</p>
+        }
+        @if (registerForm.get('email')?.pending) {
+          <p class="text-xs text-text-secondary mt-1 animate-pulse">Verificando correo...</p>
+        }
         <div class="input-group">
           <input [type]="hidePassword() ? 'password' : 'text'" id="password" class="input-field" placeholder="Contraseña" formControlName="password">
           <i class="fas fa-lock input-icon"></i>

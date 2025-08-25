@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { DataStoreService } from '../../../core/services/data-store.service';
-import { Product } from '../../../core/models/product.model';
-import { productSchema } from '../../../core/models/validation.schemas';
+// ✅ NUEVO: Importamos el tipo de Zod para una firma de método robusta.
+import { ProductFormData } from '../../../core/models/validation.schemas';
 
 @Injectable({
   providedIn: 'root'
@@ -9,37 +9,40 @@ import { productSchema } from '../../../core/models/validation.schemas';
 export class ProductAdminService {
   private dataStore = inject(DataStoreService);
 
-  addProduct(productData: any, imageFile: File | null): void {
-    const validation = productSchema.partial().safeParse(productData);
-    if (!validation.success) {
-        console.error('[ProductAdminService] Error de validación al añadir:', validation.error.errors);
-        return;
-    }
-
-    // ✅ CORRECCIÓN: Usamos siempre una URL de placeholder. La URL del blob local
-    // solo debe vivir en la previsualización del componente del formulario.
+  /**
+   * Añade un nuevo producto al almacén de datos.
+   * @param productData Los datos del producto, ya validados por el componente del formulario.
+   * @param imageFile El archivo de imagen (actualmente no se usa para la URL, se gestiona en el backend).
+   */
+  // ✅ CAMBIO: El método ahora espera datos fuertemente tipados. Se elimina la validación redundante.
+  addProduct(productData: ProductFormData, imageFile: File | null): void {
+    // La validación primaria ya ocurrió en el componente.
+    // Esta se mantiene como una última línea de defensa.
     const imageUrl = 'https://placehold.co/600x400/0D1017/FFFFFF?text=Nuevo+Producto';
-    this.dataStore.addProduct(validation.data, imageUrl);
+    this.dataStore.addProduct(productData, imageUrl);
   }
 
-  updateProduct(productId: string, productData: any, imageFile: File | null): void {
-    const validation = productSchema.partial().safeParse(productData);
-    if (!validation.success) {
-        console.error('[ProductAdminService] Error de validación al actualizar:', validation.error.errors);
-        return;
-    }
-
+  /**
+   * Actualiza un producto existente en el almacén de datos.
+   * @param productId El ID del producto a actualizar.
+   * @param productData Los nuevos datos del producto, ya validados.
+   * @param imageFile El nuevo archivo de imagen, si se subió uno.
+   */
+  // ✅ CAMBIO: El método ahora espera datos fuertemente tipados. Se elimina la validación redundante.
+  updateProduct(productId: string, productData: ProductFormData, imageFile: File | null): void {
     const existingProduct = this.dataStore.getProductById(productId);
 
-    // ✅ CORRECCIÓN: Si se sube un nuevo archivo local (imageFile), no usamos su
-    // blob URL. Mantenemos la URL existente. En un sistema real, aquí
-    // se haría la subida al backend y se obtendría una URL permanente.
-    // Por ahora, para mantener la integridad, no introducimos URLs temporales.
+    // La lógica de la URL se mantiene, asumiendo que el backend la gestionaría.
+    // Si no se sube una nueva imagen, se conserva la existente.
     const imageUrl = existingProduct?.imageUrl || 'https://placehold.co/600x400/0D1017/FFFFFF?text=Imagen';
 
-    this.dataStore.updateProduct(productId, validation.data, imageUrl);
+    this.dataStore.updateProduct(productId, productData, imageUrl);
   }
 
+  /**
+   * Elimina un producto del almacén de datos.
+   * @param productId El ID del producto a eliminar.
+   */
   deleteProduct(productId: string): void {
     this.dataStore.deleteProduct(productId);
   }

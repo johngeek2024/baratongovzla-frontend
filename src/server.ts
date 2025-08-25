@@ -1,5 +1,3 @@
-// src/server.ts
-
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -47,12 +45,24 @@ io.on('connection', (socket) => {
 const apiRouter = express.Router();
 apiRouter.use(bodyParser.json());
 
-// ... (Aquí van todas sus rutas de API existentes)
-// Endpoints de Autenticación (simulados)
-apiRouter.post('/auth/login', (req, res) => res.sendStatus(401));
-apiRouter.post('/auth/admin/login', (req, res) => res.sendStatus(401));
+// ✅ INICIO: CORRECCIÓN DEFINITIVA DE ENDPOINTS DE AUTENTICACIÓN
+// Se añade el endpoint GET faltante para el chequeo de estado de la sesión.
+apiRouter.get('/auth/status', (req, res) => {
+  // Simula un usuario no autenticado por defecto.
+  res.status(200).json({ user: null, admin: null });
+});
 
-// Lógica de Notificaciones Push
+// Se corrigen los endpoints POST para devolver JSON en caso de error 401.
+apiRouter.post('/auth/login', (req, res) => {
+  res.status(401).json({ success: false, message: 'Credenciales inválidas' });
+});
+
+apiRouter.post('/auth/admin/login', (req, res) => {
+  res.status(401).json({ success: false, message: 'Credenciales de administrador inválidas' });
+});
+// ✅ FIN: CORRECCIÓN DEFINITIVA
+
+// Configuración de Notificaciones Push
 const vapidKeys = {
     publicKey: environment.vapidPublicKey,
     privateKey: process.env['VAPID_PRIVATE_KEY']!
@@ -89,23 +99,18 @@ apiRouter.post('/auth/register-notify', (req, res) => {
   io.emit('admin:new-customer', { fullName: user.fullName, email: user.email });
   res.status(201).json({ message: 'Cliente registrado y notificación enviada.' });
 });
-// ... fin de las rutas de API
 
 app.use('/api', apiRouter);
 
-// ✅ INICIO DE LA CORRECCIÓN QUIRÚRGICA
-// 2. Manejador explícito para el Service Worker.
-// Esta ruta garantiza que 'ngsw-worker.js' se sirva siempre con el tipo MIME correcto
-// y previene que la petición caiga al manejador de SSR de Angular.
+// 2. Manejador explícito para el Service Worker
 app.get('/ngsw-worker.js', (req, res) => {
   res.sendFile(join(browserDistFolder, 'ngsw-worker.js'));
 });
-// ✅ FIN DE LA CORRECCIÓN QUIRÚRGICA
 
-// 3. Servir el resto de archivos estáticos (JS, CSS, imágenes).
+// 3. Servir el resto de archivos estáticos (JS, CSS, imágenes)
 app.use(express.static(browserDistFolder, { maxAge: '1y', index: false }));
 
-// 4. Servir el Sitemap.
+// 4. Servir el Sitemap
 app.get('/sitemap.xml', (req, res) => {
     const products = getProductsFromDisk();
     const urls = products
@@ -116,7 +121,7 @@ app.get('/sitemap.xml', (req, res) => {
     res.header('Content-Type', 'application/xml').send(sitemap);
 });
 
-// 5. Manejador de Angular (Catch-All para SSR).
+// 5. Manejador de Angular (Catch-All para SSR)
 app.use((req, res, next) => {
   angularApp.handle(req).then((response) =>
     response ? writeResponseToNodeResponse(response, res) : next()

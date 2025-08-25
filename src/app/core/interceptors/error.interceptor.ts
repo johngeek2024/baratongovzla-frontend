@@ -3,11 +3,9 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 import { UiService } from '../services/ui.service';
-import { AuthService } from '../services/auth.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const uiService = inject(UiService);
-  const authService = inject(AuthService);
   const router = inject(Router);
 
   return next(req).pipe(
@@ -15,12 +13,19 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       const isLoginRoute = req.url.includes('/api/auth/login') || req.url.includes('/api/auth/admin/login');
       const isJsonParseError = error.name === 'HttpErrorResponse' && error.message.includes('Http failure during parsing');
 
-      // ✅ CORRECCIÓN REFORZADA: Si el error ocurre en una ruta de login y es un
-      // 401 (producción), un 404 (fallback de dev server), O un error de parsing de JSON
-      // (fallback de dev server con status 200), lo ignoramos a nivel global.
+      // ✅ INICIO: MODIFICACIÓN QUIRÚRGICA DEFINITIVA
+      // En lugar de simplemente re-lanzar el error original, que contiene el stream bloqueado,
+      // creamos un nuevo objeto de error limpio. Esto desacopla el error de la respuesta HTTP
+      // subyacente y previene el intento de doble lectura por parte del motor de SSR.
       if (isLoginRoute && (error.status === 401 || error.status === 404 || isJsonParseError)) {
-        return throwError(() => error);
+        const cleanError = {
+          status: error.status,
+          message: 'Credenciales inválidas', // Mensaje genérico para el consumidor
+          error: error.error, // Pasamos el cuerpo del error si fue parseado
+        };
+        return throwError(() => cleanError);
       }
+      // ✅ FIN: MODIFICACIÓN QUIRÚRGICA DEFINITIVA
 
       // --- El resto del manejo de errores globales permanece igual ---
       let errorMessage = 'Ocurrió un error inesperado. Por favor, intenta de nuevo.';

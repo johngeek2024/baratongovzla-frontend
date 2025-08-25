@@ -1,3 +1,5 @@
+// src/app/features/home/components/hero-carousel/hero-carousel.component.ts
+
 import { Component, AfterViewInit, ElementRef, ViewChild, PLATFORM_ID, Inject, inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -9,7 +11,7 @@ import { DataStoreService } from '../../../../core/services/data-store.service';
   selector: 'app-hero-carousel',
   standalone: true,
   imports: [CommonModule, NgOptimizedImage, RouterModule],
-  templateUrl: './hero-carousel.component.html',
+  templateUrl: './hero-carousel.component.html'
 })
 export class HeroCarouselComponent implements AfterViewInit {
   @ViewChild('swiperContainer') swiperContainer!: ElementRef;
@@ -22,7 +24,6 @@ export class HeroCarouselComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
-      // ✅ ZONELESS: Inicialización simple con setTimeout
       setTimeout(() => {
         this.initSwiper();
       }, 0);
@@ -30,11 +31,20 @@ export class HeroCarouselComponent implements AfterViewInit {
   }
 
   private initSwiper(): void {
+    // ✅ CORRECCIÓN: La opción 'loop' ahora es condicional al número de banners activos.
+    const isLoopingEnabled = this.activeBanners().length > 1;
+
     this.swiper = new Swiper(this.swiperContainer.nativeElement, {
       modules: [Pagination, Autoplay],
-      loop: true,
-      autoplay: { delay: 5000, disableOnInteraction: false },
-      pagination: { el: '.swiper-pagination', clickable: true },
+      loop: isLoopingEnabled, // Aplicación de la lógica condicional
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false
+      },
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true
+      },
     });
   }
 }
