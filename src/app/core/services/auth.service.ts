@@ -4,9 +4,11 @@ import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { tap, catchError, of, Observable, delay } from 'rxjs';
+import { tap, catchError, of, Observable, delay, map } from 'rxjs';
 import { UiService } from './ui.service';
 import { AvatarService } from './avatar.service';
+// ✅ Se importa el objeto 'environment' para diferenciar entre desarrollo y producción.
+import { environment } from '../../../environments/environment';
 
 export interface User {
   id: string;
@@ -33,7 +35,7 @@ export class AuthService {
 
   private readonly API_URL = '/api/auth';
 
-  // ✅ CORRECCIÓN: Lista simulada de correos ya registrados.
+  // Lista simulada que SOLO se usará en desarrollo.
   private registeredEmails = [
     'cliente@baratongo.com',
     'test@example.com',
@@ -47,7 +49,6 @@ export class AuthService {
     this.checkAuthStatus();
   }
 
-  // ... checkAuthStatus, login, y register sin cambios ...
   checkAuthStatus(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
@@ -63,7 +64,9 @@ export class AuthService {
   }
 
   login(credentials: { email: string; password: any }): Observable<User> {
-    if (credentials.email === 'cliente@baratongo.com' && credentials.password === 'password') {
+    // ✅ Lógica de Desarrollo (Mock)
+    if (!environment.production && credentials.email === 'cliente@baratongo.com' && credentials.password === 'password') {
+      console.warn('[DEV MOCK] Usando login de prueba.');
       const mockUser: User = {
         id: 'user-test-123',
         fullName: 'Cliente de Prueba',
@@ -75,6 +78,8 @@ export class AuthService {
       this.router.navigate(['/account']);
       return of(mockUser);
     }
+
+    // ✅ Lógica de Producción (Real)
     return this.http.post<User>(`${this.API_URL}/login`, credentials).pipe(
       tap(user => {
         if (user && !user.avatarUrl) {
@@ -88,34 +93,52 @@ export class AuthService {
   }
 
   register(userInfo: { fullName: string, email: string, password: any }): Observable<User> {
-    const mockNewUser: User = {
-      id: `user-local-${Date.now()}`,
-      fullName: userInfo.fullName,
-      email: userInfo.email,
-      avatarUrl: this.avatarService.generateAvatarUrl(userInfo.fullName),
-    };
-    this.currentUser.set(mockNewUser);
-    this.uiService.showAchievement('¡Bienvenido al Núcleo!');
-    this.router.navigate(['/account']);
-    return of(mockNewUser);
+    // ✅ Lógica de Desarrollo (Mock)
+    if (!environment.production) {
+      console.warn('[DEV MOCK] Simulando registro de nuevo usuario.');
+      const mockNewUser: User = {
+        id: `user-local-${Date.now()}`,
+        fullName: userInfo.fullName,
+        email: userInfo.email,
+        avatarUrl: this.avatarService.generateAvatarUrl(userInfo.fullName),
+      };
+      this.currentUser.set(mockNewUser);
+      this.uiService.showAchievement('¡Bienvenido al Núcleo!');
+      this.router.navigate(['/account']);
+      return of(mockNewUser);
+    }
+
+    // ✅ Lógica de Producción (Real)
+    return this.http.post<User>(`${this.API_URL}/register`, userInfo).pipe(
+      tap(user => {
+        if (user && !user.avatarUrl) {
+          user.avatarUrl = this.avatarService.generateAvatarUrl(user.fullName);
+        }
+        this.currentUser.set(user);
+        this.uiService.showAchievement('¡Bienvenido al Núcleo!');
+        this.router.navigate(['/account']);
+      })
+    );
   }
 
-  // ✅ INICIO: MODIFICACIÓN QUIRÚRGICA
-  /**
-   * Simula una llamada a la API para verificar si un correo ya está en uso.
-   * @param email El correo a verificar.
-   * @returns Un observable que emite 'true' si el correo está disponible, 'false' si no.
-   */
   checkEmailAvailability(email: string): Observable<boolean> {
-    console.log(`[API MOCK] Verificando disponibilidad para: ${email}`);
+    // ✅ Lógica de Desarrollo (Mock)
+    if (!environment.production) {
+      console.warn(`[DEV MOCK] Verificando disponibilidad para: ${email}`);
+      const isTaken = this.registeredEmails.includes(email.toLowerCase());
+      return of(!isTaken).pipe(delay(500));
+    }
 
-    // La búsqueda ahora es contra una lista, haciéndola más realista.
-    const isTaken = this.registeredEmails.includes(email.toLowerCase());
-
-    // Simula la latencia de la red
-    return of(!isTaken).pipe(delay(500));
+    // ✅ Lógica de Producción (Real)
+    // Se espera que el backend reciba { email: "correo@ejemplo.com" }
+    // y devuelva { isAvailable: true } o { isAvailable: false }
+    return this.http.post<{ isAvailable: boolean }>(`${this.API_URL}/check-email`, { email }).pipe(
+      map(response => response.isAvailable),
+      catchError(() => {
+        return of(false);
+      })
+    );
   }
-  // ✅ FIN: MODIFICACIÓN QUIRÚRGICA
 
   logout() {
     return this.http.post(`${this.API_URL}/logout`, {}).pipe(
@@ -128,7 +151,9 @@ export class AuthService {
 
   // --- MÉTODOS PARA ADMINISTRADORES ---
   adminLogin(credentials: { adminId: string; password: any }): Observable<AdminUser> {
-    if (credentials.adminId === 'admin-test' && credentials.password === 'password') {
+    // ✅ Lógica de Desarrollo (Mock)
+    if (!environment.production && credentials.adminId === 'admin-test' && credentials.password === 'password') {
+      console.warn('[DEV MOCK] Usando login de administrador de prueba.');
       const mockAdmin: AdminUser = {
         id: 'admin-test-001',
         fullName: 'Admin de Prueba',
@@ -138,6 +163,8 @@ export class AuthService {
       this.router.navigate(['/admin/dashboard']);
       return of(mockAdmin);
     }
+
+    // ✅ Lógica de Producción (Real)
     return this.http.post<AdminUser>(`${this.API_URL}/admin/login`, credentials).pipe(
       tap(admin => {
         this.currentAdmin.set(admin);
