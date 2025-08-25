@@ -5,7 +5,7 @@
 @if (!isAdminRoute()) {
 
   @if(uiService.isMenuPanelOpen() || uiService.isCartPanelOpen() || uiService.isFilterSidebarOpen() || uiService.isAddressModalOpen()){
-    <div (click)="uiService.closeAllPanels()" class="fixed inset-0 bg-black/60 z-[90] backdrop-blur-sm"></div>
+    <div (click)="uiService.closeAllPanels()" class="fixed inset-0 bg-black/60 z-[90] backdrop-blur-sm animate-in fade-in-0 duration-300"></div>
   }
 
   <app-header></app-header>
@@ -16,37 +16,36 @@
     title="Menú"
     position="left"
     [isOpen]="uiService.isMenuPanelOpen()"
-    (close)="uiService.closeAllPanels()"
-    class="z-[120]">
+    (close)="uiService.closeAllPanels()">
     <nav>
-      <ul class="flex flex-col">
+      <ul class="flex flex-col gap-2">
        <li>
-          <a routerLink="/" (click)="uiService.closeAllPanels()" class="flex items-center gap-4 p-4 my-1 rounded-xl text-lg font-semibold text-text-on-dark transition-colors hover:bg-primary-accent hover:text-white">
-            <i class="fas fa-home text-[1.2rem] w-[25px] text-center"></i>
+          <a routerLink="/" (click)="uiService.closeAllPanels()" class="flex items-center gap-4 p-4 rounded-xl text-lg font-semibold text-text-on-dark transition-colors duration-300 hover:bg-primary-accent hover:text-white">
+            <i class="fas fa-home text-xl w-6 text-center"></i>
             <span>Inicio</span>
           </a>
         </li>
         <li>
-          <a routerLink="/products" (click)="uiService.closeAllPanels()" class="flex items-center gap-4 p-4 my-1 rounded-xl text-lg font-semibold text-text-on-dark transition-colors hover:bg-primary-accent hover:text-white">
-            <i class="fas fa-box-open text-[1.2rem] w-[25px] text-center"></i>
+          <a routerLink="/products" (click)="uiService.closeAllPanels()" class="flex items-center gap-4 p-4 rounded-xl text-lg font-semibold text-text-on-dark transition-colors duration-300 hover:bg-primary-accent hover:text-white">
+            <i class="fas fa-box-open text-xl w-6 text-center"></i>
             <span>Productos</span>
           </a>
         </li>
         <li>
-          <a routerLink="/compare" (click)="uiService.closeAllPanels()" class="flex items-center gap-4 p-4 my-1 rounded-xl text-lg font-semibold text-text-on-dark transition-colors hover:bg-primary-accent hover:text-white">
-            <i class="fas fa-balance-scale text-[1.2rem] w-[25px] text-center"></i>
+          <a routerLink="/compare" (click)="uiService.closeAllPanels()" class="flex items-center gap-4 p-4 rounded-xl text-lg font-semibold text-text-on-dark transition-colors duration-300 hover:bg-primary-accent hover:text-white">
+            <i class="fas fa-balance-scale text-xl w-6 text-center"></i>
             <span>Comparar</span>
           </a>
         </li>
         <li>
-          <a routerLink="/account" (click)="uiService.closeAllPanels()" class="flex items-center gap-4 p-4 my-1 rounded-xl text-lg font-semibold text-text-on-dark transition-colors hover:bg-primary-accent hover:text-white">
-            <i class="fas fa-user text-[1.2rem] w-[25px] text-center"></i>
+          <a routerLink="/account" (click)="uiService.closeAllPanels()" class="flex items-center gap-4 p-4 rounded-xl text-lg font-semibold text-text-on-dark transition-colors duration-300 hover:bg-primary-accent hover:text-white">
+            <i class="fas fa-user text-xl w-6 text-center"></i>
             <span>Mi Cuenta</span>
           </a>
         </li>
         <li>
-          <a routerLink="/about" (click)="uiService.closeAllPanels()" class="flex items-center gap-4 p-4 my-1 rounded-xl text-lg font-semibold text-text-on-dark transition-colors hover:bg-primary-accent hover:text-white">
-            <i class="fas fa-info-circle text-[1.2rem] w-[25px] text-center"></i>
+          <a routerLink="/about" (click)="uiService.closeAllPanels()" class="flex items-center gap-4 p-4 rounded-xl text-lg font-semibold text-text-on-dark transition-colors duration-300 hover:bg-primary-accent hover:text-white">
+            <i class="fas fa-info-circle text-xl w-6 text-center"></i>
             <span>Sobre Nosotros</span>
           </a>
         </li>
@@ -58,8 +57,7 @@
     title="Tu Carrito"
     position="left"
     [isOpen]="uiService.isCartPanelOpen()"
-    (close)="uiService.closeAllPanels()"
-    class="z-[120]">
+    (close)="uiService.closeAllPanels()">
 
     @if (cartStore.cartCount() > 0) {
       <div class="flex flex-col h-full">
@@ -72,7 +70,7 @@
                 <p class="text-sm text-text-on-dark/70 capitalize">{{ item.product.category }}</p>
 
                 <div class="flex justify-between items-center mt-auto pt-2">
-                  <p class="text-primary-accent font-bold text-lg">${{ item.product.price }}</p>
+                  <p class="text-primary-accent font-bold text-lg">${{ item.product.price.toFixed(2) }}</p>
                   <div class="flex items-center gap-3">
                     <button (click)="cartStore.updateQuantity(item.product.id, -1)" class="w-7 h-7 rounded-full bg-border-color text-white">-</button>
                     <span class="font-bold w-5 text-center text-text-on-dark">{{ item.quantity }}</span>
@@ -80,7 +78,7 @@
                   </div>
                 </div>
               </div>
-              <button (click)="cartStore.removeFromCart(item.product.id)" class="text-text-secondary hover:text-flash-accent text-xl self-start pt-1">
+              <button (click)="cartStore.removeFromCart(item.product.id)" class="text-text-secondary hover:text-danger text-xl self-start pt-1">
                 <i class="fas fa-trash"></i>
               </button>
             </div>
@@ -90,10 +88,10 @@
         <div class="flex-shrink-0 pt-6 border-t border-border-color">
           <div class="flex justify-between text-lg text-text-on-dark">
             <span>Subtotal</span>
-            <span class="font-bold">${{ cartStore.totalPrice() }}</span>
+            <span class="font-bold">${{ cartStore.totalPrice().toFixed(2) }}</span>
           </div>
 
-          <a routerLink="/cart" (click)="uiService.closeAllPanels()" class="block text-center w-full mt-4 bg-primary-accent text-white font-bold py-3 rounded-lg hover:bg-white hover:text-dark-bg transition-colors">
+          <a routerLink="/cart" (click)="uiService.closeAllPanels()" class="block text-center w-full mt-4 bg-primary-accent text-dark-bg font-bold py-3 rounded-lg hover:bg-white hover:text-dark-bg transition-colors">
             Ir al Carrito y Pagar
           </a>
         </div>
@@ -130,7 +128,7 @@
             </div>
             <div class="flex justify-end gap-4 mt-6">
               <button type="button" (click)="uiService.closeAllPanels()" class="bg-border-color text-text-on-dark font-bold py-2 px-4 rounded-md hover:bg-text-secondary transition-colors">Cancelar</button>
-              <button type="submit" (click)="uiService.closeAllPanels()" class="bg-primary-accent text-white font-bold py-2 px-6 rounded-md hover:bg-opacity-80 transition-colors">Guardar Dirección</button>
+              <button type="submit" (click)="uiService.closeAllPanels()" class="bg-primary-accent text-dark-bg font-bold py-2 px-6 rounded-md hover:bg-opacity-80 transition-colors">Guardar Dirección</button>
             </div>
           </form>
         </div>
