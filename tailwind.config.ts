@@ -77,6 +77,8 @@ const config: Config = {
   plugins: [
     plugin(function ({ addVariant, matchUtilities, theme }) {
       addVariant('is-active', '&.is-active');
+      addVariant('open', '&.open');
+      addVariant('active', '&.active');
 
       matchUtilities(
         {

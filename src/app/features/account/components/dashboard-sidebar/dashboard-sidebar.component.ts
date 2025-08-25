@@ -1,5 +1,3 @@
-// src/app/features/account/components/dashboard-sidebar/dashboard-sidebar.component.ts
-
 import { Component, inject, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -14,7 +12,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 })
 export class DashboardSidebarComponent {
   public uiService = inject(UiService);
-  // ✅ CORRECCIÓN: Se cambia de 'private' a 'public' para el acceso desde la plantilla.
+  // La propiedad 'authService' es pública para permitir el acceso a 'currentUser' desde la plantilla.
   public authService = inject(AuthService);
 
   @HostBinding('class.open')
@@ -23,8 +21,8 @@ export class DashboardSidebarComponent {
   }
 
   handleLogout(): void {
-    // Se usa el observable del servicio, pero como no necesitamos hacer nada
-    // después, una simple suscripción es suficiente.
+    // Se invoca el método de logout del servicio.
+    // La redirección y limpieza de estado se manejan dentro del propio servicio.
     this.authService.logout().subscribe();
   }
 }

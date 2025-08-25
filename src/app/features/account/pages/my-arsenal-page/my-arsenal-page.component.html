@@ -2,50 +2,27 @@
   <div class="content-header">
     <h2 class="text-3xl font-bold mb-6">Mi Arsenal</h2>
   </div>
-  <div class="arsenal-grid">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     @for (item of arsenalItems(); track item.name) {
-      <figure class="arsenal-card">
-        <img [src]="item.imageUrl" [alt]="item.name">
-        <figcaption>{{ item.name }}</figcaption>
+      <figure class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 text-center transition-all duration-300 hover:border-primary-accent hover:shadow-[0_0_25px_theme(colors.primary-accent/20)] hover:-translate-y-2">
+        <img [src]="item.imageUrl" [alt]="item.name" class="h-40 object-contain mx-auto mb-4">
+        <figcaption class="font-semibold text-text-primary">{{ item.name }}</figcaption>
       </figure>
     }
   </div>
 
-  <div class="achievements-section">
+  <div class="mt-12 bg-dark-bg-secondary border border-border-color rounded-2xl p-6">
     <h3 class="text-xl font-bold mb-6">Logros Desbloqueados</h3>
-    <div class="achievements-grid">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       @for (achievement of achievements(); track achievement.title) {
-        <div class="achievement-badge" [class.unlocked]="achievement.unlocked">
-          <i class="fas {{ achievement.icon }}"></i>
-          <div class="badge-info">
-            <span class="badge-title">{{ achievement.title }}</span>
+        <div class="bg-dark-bg border border-border-color p-4 rounded-lg flex items-center gap-4 text-text-secondary opacity-50 transition-all"
+             [class.unlocked]="achievement.unlocked">
+          <i class="fas {{ achievement.icon }} text-2xl w-8 text-center"></i>
+          <div class="font-semibold">
+            <span class="text-text-primary" [class.unlocked-title]="achievement.unlocked">{{ achievement.title }}</span>
           </div>
         </div>
       }
     </div>
   </div>
 </div>
-
-<style>
-  .arsenal-grid { @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6; }
-  .arsenal-card {
-    @apply bg-dark-bg-secondary border border-border-color rounded-2xl p-6 text-center transition-all duration-300;
-    /* Efecto neón azul cian */
-    @apply hover:border-primary-accent hover:shadow-[0_0_25px_theme(colors.primary-accent/20)] hover:-translate-y-2;
-  }
-  .arsenal-card img { @apply h-40 object-contain mx-auto mb-4; }
-  .arsenal-card figcaption { @apply font-semibold text-text-primary; }
-
-  .achievements-section { @apply mt-12 bg-dark-bg-secondary border border-border-color rounded-2xl p-6; }
-  .achievements-grid { @apply grid grid-cols-1 sm:grid-cols-2 gap-4; }
-  .achievement-badge { @apply bg-dark-bg border border-border-color p-4 rounded-lg flex items-center gap-4 text-text-secondary opacity-50 transition-all; }
-  .achievement-badge.unlocked {
-    @apply bg-secondary-accent/5 border-secondary-accent/30 text-secondary-accent opacity-100;
-    /* Efecto neón dorado para logros */
-    @apply hover:shadow-[0_0_15px_theme(colors.secondary-accent/20)];
-  }
-  .achievement-badge i { @apply text-2xl w-8 text-center; }
-  .badge-info { @apply font-semibold; }
-  .badge-title { @apply text-text-primary; }
-  .achievement-badge.unlocked .badge-title { @apply text-secondary-accent; }
-</style>
