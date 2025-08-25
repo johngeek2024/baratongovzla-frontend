@@ -1,19 +1,21 @@
 import { ApplicationConfig, provideZonelessChangeDetection, isDevMode } from '@angular/core';
-import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideRouter, withInMemoryScrolling, withViewTransitions, withComponentInputBinding } from '@angular/router';
+// ✅ ESTA ES LA IMPORTACIÓN CORRECTA PARA TU PROYECTO
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app.routes';
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideServiceWorker } from '@angular/service-worker';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
-import { CartStore } from './features/cart/cart.store'; // ✅ AÑADIDO: Importación del SignalStore
+import { CartStore } from './features/cart/cart.store';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     // --- Arquitectura de Aplicación ---
     provideZonelessChangeDetection(),
-    provideAnimationsAsync(),
+    // ✅ ESTE ES EL PROVEEDOR CORRECTO. El tachado es una advertencia de obsolescencia futura.
+    provideAnimations(),
 
     // --- Enrutamiento y Navegación ---
     provideRouter(
@@ -22,7 +24,8 @@ export const appConfig: ApplicationConfig = {
         scrollPositionRestoration: 'enabled',
         anchorScrolling: 'enabled',
       }),
-      withViewTransitions() // Habilita animaciones de ruta nativas
+      withViewTransitions(),
+      withComponentInputBinding()
     ),
 
     // --- Conectividad y APIs ---
@@ -35,7 +38,7 @@ export const appConfig: ApplicationConfig = {
     ),
 
     // --- Estado y Lógica de Negocio ---
-    CartStore, // ✅ AÑADIDO: El SignalStore del carrito se provee globalmente
+    CartStore,
 
     // --- Módulos y Librerías Externas ---
     provideCharts(withDefaultRegisterables()),
