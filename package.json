@@ -32,6 +32,8 @@
     "@angular/router": "^20.1.7",
     "@angular/service-worker": "^20.1.7",
     "@angular/ssr": "^20.1.6",
+    "@dicebear/avatars": "^4.10.8",
+    "@dicebear/collection": "^9.2.4",
     "@ngrx/signals": "^20.0.0",
     "body-parser": "^2.2.0",
     "chart.js": "^4.5.0",

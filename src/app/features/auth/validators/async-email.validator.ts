@@ -1,29 +1,23 @@
-// src/app/features/auth/validators/async-email.validator.ts
-import { AbstractControl, ValidationErrors, AsyncValidatorFn } from '@angular/forms';
+import { AbstractControl, AsyncValidatorFn, ValidationErrors } from '@angular/forms';
 import { Observable, of } from 'rxjs';
-import { map, catchError, switchMap, delay, first } from 'rxjs/operators';
+import { map, catchError, delay } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
 
-/**
- * ✅ SOLUCIÓN DEFINITIVA:
- * Esta es una función fábrica que toma el AuthService como un argumento explícito.
- * Elimina CUALQUIER uso de inject() dentro del validador, resolviendo el problema de contexto de forma permanente.
- * El componente será el responsable de pasar la instancia del servicio.
- *
- * @param authService La instancia del servicio de autenticación.
- * @returns Una función de validación asíncrona.
- */
 export function existingEmailValidator(authService: AuthService): AsyncValidatorFn {
   return (control: AbstractControl): Observable<ValidationErrors | null> => {
-    if (!control.value || control.errors) {
+    // No disparamos el validador si el campo está vacío o ya tiene otros errores (como formato inválido).
+    if (!control.value || control.hasError('required') || control.hasError('email')) {
       return of(null);
     }
 
-    return of(control.value).pipe(
-      delay(300), // Debounce para no saturar con peticiones
-      switchMap(email => authService.checkEmailAvailability(email)),
-      map(isTaken => (isTaken ? { emailExists: true } : null)),
-      first(), // El validador debe completarse
+    // Llamamos al servicio para verificar la disponibilidad.
+    return authService.checkEmailAvailability(control.value).pipe(
+      // El servicio devuelve `true` si el email está disponible.
+      // Si está disponible (isAvailable === true), el validador debe devolver `null` (sin error).
+      // Si NO está disponible (isAvailable === false), devolvemos un objeto de error.
+      map(isAvailable => (isAvailable ? null : { emailExists: true })),
+
+      // En caso de un error en la llamada a la API, no bloqueamos el formulario.
       catchError(() => of(null))
     );
   };

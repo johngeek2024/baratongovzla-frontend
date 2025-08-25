@@ -1,15 +1,18 @@
+// src/app/core/services/auth.service.ts
+
 import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-// ✅ Se añade 'delay' y 'map' para la simulación
-import { tap, catchError, of, Observable, delay, map } from 'rxjs';
+import { tap, catchError, of, Observable, delay } from 'rxjs';
 import { UiService } from './ui.service';
+import { AvatarService } from './avatar.service';
 
 export interface User {
   id: string;
   fullName: string;
   email: string;
+  avatarUrl?: string;
 }
 
 export interface AdminUser {
@@ -26,8 +29,16 @@ export class AuthService {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
   private uiService = inject(UiService);
+  private avatarService = inject(AvatarService);
 
   private readonly API_URL = '/api/auth';
+
+  // ✅ CORRECCIÓN: Lista simulada de correos ya registrados.
+  private registeredEmails = [
+    'cliente@baratongo.com',
+    'test@example.com',
+    'admin@baratongo.com'
+  ];
 
   currentUser = signal<User | null>(null);
   currentAdmin = signal<AdminUser | null>(null);
@@ -36,52 +47,40 @@ export class AuthService {
     this.checkAuthStatus();
   }
 
+  // ... checkAuthStatus, login, y register sin cambios ...
   checkAuthStatus(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
     this.http.get<{ user: User | null, admin: AdminUser | null }>(`${this.API_URL}/status`).pipe(
       catchError(() => of({ user: null, admin: null }))
     ).subscribe(status => {
+      if (status.user && !status.user.avatarUrl) {
+        status.user.avatarUrl = this.avatarService.generateAvatarUrl(status.user.fullName);
+      }
       this.currentUser.set(status.user);
       this.currentAdmin.set(status.admin);
     });
   }
 
-  // ✅ INICIO: MÉTODO NUEVO PARA VALIDACIÓN ASÍNCRONA
-  /**
-   * Simula una llamada a la API para verificar si un correo ya está registrado.
-   * @param email El correo a verificar.
-   * @returns Un Observable que emite `true` si el correo está en uso, `false` en caso contrario.
-   */
-  checkEmailAvailability(email: string): Observable<boolean> {
-    console.log(`[API MOCK] Verificando disponibilidad para: ${email}`);
-    // Simulación: El único correo "tomado" es el del cliente de prueba.
-    const isTaken = email.toLowerCase() === 'cliente@baratongo.com';
-    // Simula una latencia de red de 500ms para emular una llamada real.
-    return of(isTaken).pipe(delay(500));
-  }
-  // ✅ FIN: MÉTODO NUEVO
-
-  // --- MÉTODOS PARA CLIENTES ---
   login(credentials: { email: string; password: any }): Observable<User> {
-    // Lógica de prueba para cliente
     if (credentials.email === 'cliente@baratongo.com' && credentials.password === 'password') {
       const mockUser: User = {
         id: 'user-test-123',
         fullName: 'Cliente de Prueba',
         email: 'cliente@baratongo.com',
+        avatarUrl: this.avatarService.generateAvatarUrl('Cliente de Prueba'),
       };
       this.currentUser.set(mockUser);
-      // Se muestra un toast de bienvenida al iniciar sesión.
       this.uiService.showAchievement('¡Bienvenido de vuelta!');
       this.router.navigate(['/account']);
       return of(mockUser);
     }
-    // Flujo normal de producción
     return this.http.post<User>(`${this.API_URL}/login`, credentials).pipe(
       tap(user => {
+        if (user && !user.avatarUrl) {
+          user.avatarUrl = this.avatarService.generateAvatarUrl(user.fullName);
+        }
         this.currentUser.set(user);
-        // Bienvenida para usuarios reales
         this.uiService.showAchievement(`¡Bienvenido de vuelta, ${user.fullName}!`);
         this.router.navigate(['/account']);
       })
@@ -89,18 +88,34 @@ export class AuthService {
   }
 
   register(userInfo: { fullName: string, email: string, password: any }): Observable<User> {
-    console.log('Simulando registro para:', userInfo.email);
     const mockNewUser: User = {
       id: `user-local-${Date.now()}`,
       fullName: userInfo.fullName,
       email: userInfo.email,
+      avatarUrl: this.avatarService.generateAvatarUrl(userInfo.fullName),
     };
-
     this.currentUser.set(mockNewUser);
     this.uiService.showAchievement('¡Bienvenido al Núcleo!');
     this.router.navigate(['/account']);
     return of(mockNewUser);
   }
+
+  // ✅ INICIO: MODIFICACIÓN QUIRÚRGICA
+  /**
+   * Simula una llamada a la API para verificar si un correo ya está en uso.
+   * @param email El correo a verificar.
+   * @returns Un observable que emite 'true' si el correo está disponible, 'false' si no.
+   */
+  checkEmailAvailability(email: string): Observable<boolean> {
+    console.log(`[API MOCK] Verificando disponibilidad para: ${email}`);
+
+    // La búsqueda ahora es contra una lista, haciéndola más realista.
+    const isTaken = this.registeredEmails.includes(email.toLowerCase());
+
+    // Simula la latencia de la red
+    return of(!isTaken).pipe(delay(500));
+  }
+  // ✅ FIN: MODIFICACIÓN QUIRÚRGICA
 
   logout() {
     return this.http.post(`${this.API_URL}/logout`, {}).pipe(
