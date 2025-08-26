@@ -13,6 +13,12 @@ export class UiService {
   isAddressModalOpen = signal(false);
   isMobileSidebarOpen = signal(false);
 
+  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
+  // Se añade el estado para la nueva modal de Misión Completada.
+  isMissionCompleteModalOpen = signal(false);
+  missionCompleteOrderId = signal<string | null>(null);
+  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
+
   // --- ACCIONES PARA CONTROLAR LOS PANELES ---
   openMenuPanel() { this.closeAllPanels(); this.isMenuPanelOpen.set(true); }
   openCartPanel() { this.closeAllPanels(); this.isCartPanelOpen.set(true); }
@@ -21,7 +27,20 @@ export class UiService {
   openAddressModal() { this.closeAllPanels(); this.isAddressModalOpen.set(true); }
   openMobileSidebar() { this.closeAllPanels(); this.isMobileSidebarOpen.set(true); }
 
-  // ✅ MÉTODO AÑADIDO: Implementación del método faltante.
+  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
+  // Métodos para controlar la nueva modal.
+  openMissionCompleteModal(orderId: string): void {
+    this.closeAllPanels(); // Asegura que solo una modal esté abierta
+    this.missionCompleteOrderId.set(orderId);
+    this.isMissionCompleteModalOpen.set(true);
+  }
+
+  closeMissionCompleteModal(): void {
+    this.isMissionCompleteModalOpen.set(false);
+    this.missionCompleteOrderId.set(null);
+  }
+  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
+
   closeMobileSidebar(): void {
     this.isMobileSidebarOpen.set(false);
   }
@@ -32,8 +51,11 @@ export class UiService {
     this.isSearchOverlayOpen.set(false);
     this.isFilterSidebarOpen.set(false);
     this.isAddressModalOpen.set(false);
-    this.isMobileSidebarOpen.set(false); // Esta línea ya estaba correcta.
+    this.isMobileSidebarOpen.set(false);
+    this.isMissionCompleteModalOpen.set(false); // ✅ Se añade al cierre global
   }
+
+  // --- El resto del servicio permanece sin cambios ---
 
   // --- LÓGICA DE NOTIFICACIONES DE LOGROS ---
   public achievementMessage = signal<string | null>(null);

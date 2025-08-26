@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, computed, inject, signal, OnInit, OnDestroy, effect, Renderer2, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { UserDataService, UserOrder } from '../../../../core/services/user-data.service';
@@ -12,7 +12,6 @@ interface MissionLog {
 
 type OrderStatus = 'Confirmado' | 'Procesando' | 'En Ruta' | 'Entregado';
 
-
 @Component({
   selector: 'app-order-detail-page',
   standalone: true,
@@ -23,11 +22,17 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private userDataService = inject(UserDataService);
 
+  // --- State Signals ---
   public order = signal<UserOrder | undefined>(undefined);
   public missionLog = signal<MissionLog[]>([]);
   private timer: any;
   public status = signal<OrderStatus>('Confirmado');
   public statusSteps: OrderStatus[] = ['Confirmado', 'Procesando', 'En Ruta', 'Entregado'];
+
+  // ✅ INICIO: SEÑALES PARA EL NUEVO FLUJO INTERACTIVO
+  public isRewardModalOpen = signal(false);
+  public rewardAnimationStep = signal<'initial' | 'crate' | 'reward'>('initial');
+  // ✅ FIN: SEÑALES PARA EL NUEVO FLUJO INTERACTIVO
 
   public progressWidth = computed(() => {
     const currentIndex = this.statusSteps.indexOf(this.status());
@@ -36,7 +41,6 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
 
   public subtotal = computed(() => this.order()?.items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0) ?? 0);
   public total = computed(() => this.subtotal() + (this.order()?.total ?? 0) - this.subtotal());
-
 
   ngOnInit(): void {
     this.route.paramMap.pipe(
@@ -91,6 +95,43 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
         }
       }, 1500);
   }
+
+  // ✅ INICIO: MÉTODOS PARA CONTROLAR EL MODAL INTERACTIVO
+  openRewardModal(): void {
+    this.isRewardModalOpen.set(true);
+    this.rewardAnimationStep.set('crate');
+
+    // Simulación de la animación de la caja
+    setTimeout(() => {
+      this.rewardAnimationStep.set('reward');
+    }, 2000); // Duración de la animación de la caja (drop, shake, burst)
+  }
+
+  closeRewardModal(): void {
+    this.isRewardModalOpen.set(false);
+    // Resetea el estado de la animación para la próxima vez
+    setTimeout(() => {
+        this.rewardAnimationStep.set('initial');
+    }, 300); // Espera que la animación de salida del modal termine
+  }
+
+  copyCoupon(event: MouseEvent): void {
+    const couponElement = event.currentTarget as HTMLElement;
+    const couponCode = couponElement.querySelector('span')?.textContent;
+    if (couponCode) {
+      navigator.clipboard.writeText(couponCode).then(() => {
+        const span = couponElement.querySelector('span');
+        if (span) {
+          const originalText = span.textContent;
+          span.textContent = '¡Copiado!';
+          setTimeout(() => {
+            span.textContent = originalText;
+          }, 1500);
+        }
+      });
+    }
+  }
+  // ✅ FIN: MÉTODOS PARA CONTROLAR EL MODAL INTERACTIVO
 
   getIconForStatus(status: string): string {
     if (status.includes('Procesando')) return 'fa-cogs';

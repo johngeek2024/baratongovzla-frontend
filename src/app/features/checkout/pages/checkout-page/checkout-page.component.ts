@@ -1,5 +1,3 @@
-// src/app/features/checkout/pages/checkout-page/checkout-page.component.ts
-
 import { Component, inject, computed, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -95,13 +93,19 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     }
 
     const orderId = `BTV-${Date.now()}`;
+
+    // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
+    // Se añade la propiedad 'shippingAddress', ahora obligatoria, al crear el objeto newOrder.
+    // Obtenemos el objeto UserAddress directamente desde el checkoutService.
     const newOrder: UserOrder = {
       id: orderId,
       date: new Date().toISOString(),
       total: this.totalPrice(),
       status: 'Procesando',
       items: this.cartStore.items().map(item => ({ product: item.product, quantity: item.quantity })),
+      shippingAddress: this.checkoutService.shippingAddress() // <-- CAMBIO CLAVE
     };
+    // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
     this.userDataService.addNewOrder(newOrder);
     this.orderProcessingService.processNewOrder(newOrder);
@@ -113,7 +117,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       total: this.totalPrice(),
       customerName: currentUser.fullName,
       customerPhone: this.checkoutService.customerPhone(),
-      shippingAddress: this.checkoutService.shippingAddress(),
+      // Ahora pasamos el objeto de dirección completo
+      shippingAddress: this.checkoutService.shippingAddress().line1,
       deliveryMethod: this.checkoutService.deliveryMethod(),
       paymentMethod: this.checkoutService.paymentMethod(),
       paymentReference: this.checkoutService.paymentReference(),

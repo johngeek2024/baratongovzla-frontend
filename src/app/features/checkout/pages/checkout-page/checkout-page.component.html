@@ -60,7 +60,9 @@
                         <i class="fas fa-map-marker-alt text-2xl text-primary-accent mt-1 flex-shrink-0"></i>
                         <div class="flex-grow">
                           <p class="font-semibold text-text-on-dark">Dirección de Entrega:</p>
-                          <p class="text-text-secondary leading-tight">{{ checkoutService.shippingAddress() }}</p>
+                          <p class="text-text-secondary leading-tight">
+                            {{ checkoutService.shippingAddress().line1 }}, {{ checkoutService.shippingAddress().city }}
+                          </p>
                           <button (click)="uiService.openAddressModal()" class="text-primary-accent text-sm font-semibold p-0 mt-2 bg-transparent border-none hover:underline">
                             Cambiar / Añadir otra dirección
                           </button>

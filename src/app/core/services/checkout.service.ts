@@ -1,5 +1,6 @@
-// src/app/core/services/checkout.service.ts
 import { Injectable, signal, computed, inject } from '@angular/core';
+// ✅ Se importa la interfaz UserAddress para una arquitectura consistente
+import { UserAddress } from './user-data.service';
 
 // --- TIPOS ---
 export type DeliveryMethod = 'pickup' | 'delivery' | 'shipping' | null;
@@ -21,7 +22,19 @@ export class CheckoutService {
   public selectedPickupPoint = signal<string | null>(null);
   public selectedDeliveryVehicle = signal<DeliveryVehicle>(null);
   public selectedDeliveryZone = signal<string | null>(null);
-  public shippingAddress = signal<string>('Urb. Prebo, Calle 123, Edificio Tech, Valencia, Carabobo');
+
+  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
+  // La dirección de envío ahora es un objeto UserAddress completo, no un simple string.
+  // Esto asegura la integridad y consistencia del modelo de datos en toda la aplicación.
+  public shippingAddress = signal<UserAddress>({
+    name: 'Dirección Principal',
+    recipient: 'Usuario Actual', // En un futuro, se cargará del perfil del usuario
+    line1: 'Urb. Prebo, Calle 123, Edificio Tech',
+    city: 'Valencia',
+    state: 'Carabobo'
+  });
+  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
+
   public paymentReference = signal<string>('');
   public customerPhone = signal<string>('');
 
@@ -32,10 +45,6 @@ export class CheckoutService {
   };
 
   // --- SEÑALES COMPUTADAS (ESTADO DERIVADO) ---
-
-  /**
-   * Calcula el costo de envío basado en el método y las selecciones.
-   */
   public shippingCost = computed<number>(() => {
     const method = this.deliveryMethod();
     const vehicle = this.selectedDeliveryVehicle();
@@ -48,9 +57,6 @@ export class CheckoutService {
     return 0;
   });
 
-  /**
-   * Determina los métodos de pago disponibles según el método de entrega.
-   */
   public availablePaymentMethods = computed(() => {
     const delivery = this.deliveryMethod();
     const vehicle = this.selectedDeliveryVehicle();
@@ -66,7 +72,6 @@ export class CheckoutService {
   });
 
   // --- MÉTODOS PÚBLICOS (ACCIONES) ---
-
   public selectDeliveryMethod(method: DeliveryMethod): void {
     this.deliveryMethod.set(method);
     this.resetSubOptions();
@@ -79,9 +84,9 @@ export class CheckoutService {
 
   public selectDeliveryVehicle(vehicle: DeliveryVehicle): void {
     this.selectedDeliveryVehicle.set(vehicle);
-    this.selectedDeliveryZone.set(null); // Resetea la zona al cambiar de vehículo
+    this.selectedDeliveryZone.set(null);
     if (this.paymentMethod() === 'cash' && vehicle === 'moto') {
-      this.paymentMethod.set(null); // Invalida el efectivo si se cambia a moto
+      this.paymentMethod.set(null);
     }
   }
 
@@ -101,17 +106,11 @@ export class CheckoutService {
     this.paymentReference.set(ref);
   }
 
-  /**
-   * Resetea el estado completo del checkout.
-   */
   public resetCheckoutState(): void {
     this.deliveryMethod.set(null);
     this.resetSubOptions();
   }
 
-  /**
-   * Resetea las sub-opciones al cambiar el método de entrega principal.
-   */
   private resetSubOptions(): void {
     this.paymentMethod.set(null);
     this.selectedPickupPoint.set(null);
