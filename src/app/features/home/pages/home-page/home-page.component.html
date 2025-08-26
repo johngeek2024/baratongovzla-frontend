@@ -1,4 +1,8 @@
-<app-hero-carousel></app-hero-carousel>
+@defer (on immediate) {
+  <app-hero-carousel></app-hero-carousel>
+} @placeholder {
+  <div class="h-screen w-full bg-dark-bg"></div>
+}
 
 @defer (on viewport) {
   <app-quick-categories></app-quick-categories>
