@@ -1,63 +1,108 @@
-<div class="content-panel active">
-  <div class="order-detail-header">
-    <a routerLink="/account/orders" class="back-link">
-      <i class="fas fa-arrow-left"></i> Volver a Mis Pedidos
-    </a>
-    <h2>Detalles del Pedido #{{ id() }}</h2>
-  </div>
-  <div class="order-detail-grid">
-    <div class="order-items-list">
-      <h3 class="text-xl font-bold mb-4">Artículos del Pedido</h3>
-      <div class="item-card">
-        <img src="https://placehold.co/80x80/111827/FFFFFF?text=P" alt="Producto 1" class="item-card-img">
-        <div class="item-info">
-          <h4 class="font-semibold">Hyperion X1 - Proyector 4K</h4>
-          <p class="text-text-secondary">Cantidad: 1</p>
-        </div>
-        <p class="item-price">$499.00</p>
-      </div>
-      <div class="item-card">
-        <img src="https://placehold.co/80x80/111827/FFFFFF?text=T" alt="Producto 2" class="item-card-img">
-        <div class="item-info">
-          <h4 class="font-semibold">Teclado Mecánico Void-Dasher</h4>
-          <p class="text-text-secondary">Cantidad: 1</p>
-        </div>
-        <p class="item-price">$85.00</p>
-      </div>
-    </div>
-    <div class="order-summary-card">
-      <h3 class="text-xl font-bold mb-4">Resumen</h3>
-      <div class="summary-row">
-        <span>Subtotal:</span>
-        <span>$584.00</span>
-      </div>
-      <div class="summary-row">
-        <span>Envío:</span>
-        <span>$0.00</span>
-      </div>
-      <div class="summary-row total">
-        <span>Total:</span>
-        <span>$584.00</span>
-      </div>
-      <h3 class="text-xl font-bold mt-8 mb-4">Dirección de Envío</h3>
-      <div class="shipping-address">
-        <p class="font-semibold">Aura</p>
-        <p>Urb. Prebo, Calle 123, Edificio Tech</p>
-        <p>Valencia, Carabobo, Venezuela</p>
-      </div>
-    </div>
-  </div>
-</div>
+@if(order(); as currentOrder) {
+<div class="container mx-auto p-4 md:p-8 max-w-7xl animate-fade-in-up">
 
-<style>
-  .order-detail-grid { @apply grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8; }
-  .order-summary-card { @apply bg-dark-bg-secondary border border-border-color rounded-2xl p-6 h-fit sticky top-28; }
-  .item-card { @apply flex flex-col sm:flex-row items-center gap-4 py-4 border-b border-border-color; }
-  .item-card:last-child { @apply border-none; }
-  .item-card-img { @apply w-20 h-20 object-contain bg-dark-bg rounded-lg; }
-  .item-info { @apply flex-grow text-center sm:text-left; }
-  .item-price { @apply font-semibold text-lg; }
-  .summary-row { @apply flex justify-between mb-4; }
-  .total { @apply text-xl font-bold border-t border-border-color pt-4 mt-4; }
-  .back-link { @apply inline-flex items-center gap-2 text-text-secondary hover:text-primary-accent transition-colors mb-4; }
-</style>
+    <header class="mb-8">
+        <a routerLink="/account/orders" class="text-primary-accent hover:opacity-80 transition-opacity duration-300 mb-2 inline-block">
+            <i class="fas fa-arrow-left mr-2"></i>Volver a Mis Misiones
+        </a>
+        <h1 class="font-headings text-4xl md:text-5xl font-bold">Misión #{{ currentOrder.id }}</h1>
+        <p class="text-text-secondary text-lg">Estado Actual:
+            <span class="font-semibold transition-colors duration-500" [ngClass]="{
+                'text-success': status() === 'Entregado',
+                'text-warning': status() !== 'Entregado'
+            }">
+                {{ status() }}
+            </span>
+        </p>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+            <div class="bg-dark-bg-secondary rounded-xl shadow-lg p-6">
+                <h2 class="font-headings text-2xl font-bold mb-4">Progreso de la Misión</h2>
+                <div class="relative pt-1">
+                    <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-border-color">
+                        <div [style.width]="progressWidth()" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary-accent transition-all duration-1000 ease-out"></div>
+                    </div>
+                </div>
+                <div class="flex justify-between text-xs text-text-secondary">
+                    @for(step of statusSteps; track step) {
+                    <span>{{ step }}</span>
+                    }
+                </div>
+            </div>
+
+            <div class="bg-dark-bg-secondary rounded-xl shadow-lg p-6">
+                <h2 class="font-headings text-2xl font-bold mb-4">Contenido del Paquete</h2>
+                <ul class="divide-y divide-border-color">
+                    @for(item of currentOrder.items; track item.product.id) {
+                    <li class="flex items-center py-4">
+                        <img [src]="item.product.imageUrl" [alt]="item.product.name" class="w-20 h-20 rounded-md object-cover mr-4 bg-dark-bg">
+                        <div class="flex-grow">
+                            <h3 class="font-bold text-lg text-text-primary">{{ item.product.name }}</h3>
+                            <p class="text-sm text-text-secondary">SKU: {{ item.product.sku }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-lg text-text-primary">{{ item.product.price | currency:'USD' }}</p>
+                            <p class="text-sm text-text-secondary">Cant: {{ item.quantity }}</p>
+                        </div>
+                    </li>
+                    }
+                </ul>
+            </div>
+
+            <div class="bg-dark-bg-secondary rounded-xl shadow-lg p-6">
+                <div class="flex items-center gap-4 mb-4">
+                    <i class="fas fa-satellite-dish text-primary-accent text-xl"></i>
+                    <h2 class="font-headings text-2xl font-bold">Bitácora de Misión</h2>
+                </div>
+                <ul class="space-y-4 font-mono text-sm">
+                    @for(entry of missionLog(); track entry.time) {
+                    <li class="flex items-start gap-4 animate-fade-in-up">
+                        <span class="text-primary-accent pt-1"><i class="fas" [ngClass]="getIconForStatus(entry.status)"></i></span>
+                        <div>
+                            <p class="text-text-primary">{{ entry.status }}</p>
+                            <p class="text-xs text-text-secondary">{{ entry.time | date:'yyyy-MM-dd HH:mm' }}</p>
+                        </div>
+                    </li>
+                    } @empty {
+                        <li class="text-text-secondary">Recibiendo transmisión de la bitácora...</li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <div class="lg:col-span-1 space-y-8">
+            <div class="bg-dark-bg-secondary rounded-xl shadow-lg p-6">
+                <h2 class="font-headings text-2xl font-bold mb-4">Resumen Financiero</h2>
+                <div class="space-y-2 text-text-secondary">
+                    <div class="flex justify-between"><span>Subtotal:</span> <span class="text-text-primary">{{ subtotal() | currency:'USD' }}</span></div>
+                    <div class="flex justify-between"><span>Envío:</span> <span class="text-text-primary">$0.00</span></div>
+                    <hr class="border-border-color my-2">
+                    <div class="flex justify-between font-bold text-xl">
+                        <span class="text-text-primary">Total:</span>
+                        <span class="text-primary-accent">{{ currentOrder.total | currency:'USD' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-dark-bg-secondary rounded-xl shadow-lg p-6">
+                <h2 class="font-headings text-2xl font-bold mb-4">Punto de Entrega</h2>
+                <address class="not-italic text-text-secondary">
+                    <strong class="text-text-primary">Aura</strong><br>
+                    Urb. Prebo, Edificio Tech<br>
+                    Valencia, Carabobo
+                </address>
+            </div>
+        </div>
+    </main>
+</div>
+} @else {
+<div class="text-center p-8">
+    <h1 class="font-headings text-4xl text-danger">Misión No Encontrada</h1>
+    <p class="text-text-secondary mt-4">No se pudieron recuperar los datos de esta misión.</p>
+    <a routerLink="/account/orders" class="mt-8 inline-block bg-primary-accent text-dark-bg-text font-bold py-3 px-6 rounded-lg">
+        Volver a Mis Misiones
+    </a>
+</div>
+}
