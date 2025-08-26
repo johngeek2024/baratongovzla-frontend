@@ -5,6 +5,8 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { WebSocketService } from '../../../../core/services/websocket.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { RealTimeToastComponent } from '../../components/real-time-toast/real-time-toast.component';
+import { AdminOrderDetail } from '../../models/order.model';
+import { OrderAdminService } from '../../services/order-admin.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -17,6 +19,7 @@ export class AdminLayoutComponent implements OnInit {
   public router = inject(Router);
   private webSocketService = inject(WebSocketService);
   public notificationService = inject(NotificationService);
+  private orderAdminService = inject(OrderAdminService);
 
   navLinks = [
     { id: 'dashboard', icon: 'fas fa-tachometer-alt', label: 'Dashboard' },
@@ -34,12 +37,13 @@ export class AdminLayoutComponent implements OnInit {
   }
 
   private setupAdminListeners(): void {
-    this.webSocketService.listen<{ orderId: string; customerName: string; total: number }>('admin:new-order').subscribe(data => {
+    this.webSocketService.listen<AdminOrderDetail>('admin:new-order').subscribe(data => {
       this.notificationService.show({
         type: 'success',
         icon: 'fas fa-receipt',
         message: `Nuevo pedido de ${data.customerName} por $${data.total.toFixed(2)}.`
       });
+      this.orderAdminService.addNewOrder(data);
     });
 
     this.webSocketService.listen<{ productName: string; newStock: number }>('admin:stock-alert').subscribe(data => {
@@ -63,6 +67,7 @@ export class AdminLayoutComponent implements OnInit {
     this.authService.adminLogout();
   }
 
+  // ✅ CORRECCIÓN QUIRÚRGICA: Se añade el método faltante que la plantilla necesita.
   navigateToAddProduct(): void {
     this.router.navigate(['/admin/products/new']);
   }

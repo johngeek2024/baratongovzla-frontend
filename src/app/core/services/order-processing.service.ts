@@ -1,25 +1,26 @@
 // src/app/core/services/order-processing.service.ts
 
 import { Injectable, inject } from '@angular/core';
-import { UserDataService, UserOrder } from './user-data.service';
+import { HttpClient } from '@angular/common/http';
+import { tap } from 'rxjs';
+import { AdminOrderDetail } from '../../features/admin/models/order.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrderProcessingService {
-  private userDataService = inject(UserDataService);
+  private http = inject(HttpClient);
 
   /**
-   * ✅ REFACTORIZACIÓN: Este método se llama al confirmar un pedido.
-   * La lógica de actualización automática de estado ha sido eliminada.
-   * El estado del pedido ahora deberá ser gestionado manualmente
-   * desde el panel de administración.
-   * @param order El pedido recién creado.
+   * ✅ REFACTORIZACIÓN: Procesa el nuevo pedido y lo envía al backend para notificar al admin.
+   * @param order El objeto completo del pedido con formato para el admin.
    */
-  public processNewOrder(order: UserOrder): void {
-    // La simulación de procesamiento ha sido desactivada.
-    // El pedido permanecerá en estado 'Procesando' hasta su modificación manual.
-    console.log(`[LOGÍSTICA] Pedido ${order.id} aceptado. Esperando gestión manual.`);
-    // Al no haber tareas asíncronas de larga duración, la hidratación no será bloqueada.
+  public processNewOrder(order: AdminOrderDetail): void {
+    console.log(`[LOGÍSTICA] Pedido ${order.id} aceptado. Notificando al panel de admin...`);
+
+    // Envía el pedido al endpoint del servidor, que a su vez emitirá el evento de WebSocket.
+    this.http.post('/api/orders/create', order).pipe(
+      tap(() => console.log(`[API] Notificación para pedido ${order.id} enviada.`))
+    ).subscribe();
   }
 }

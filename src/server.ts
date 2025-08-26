@@ -45,22 +45,16 @@ io.on('connection', (socket) => {
 const apiRouter = express.Router();
 apiRouter.use(bodyParser.json());
 
-// ✅ INICIO: CORRECCIÓN DEFINITIVA DE ENDPOINTS DE AUTENTICACIÓN
-// Se añade el endpoint GET faltante para el chequeo de estado de la sesión.
+// Endpoints de Autenticación
 apiRouter.get('/auth/status', (req, res) => {
-  // Simula un usuario no autenticado por defecto.
   res.status(200).json({ user: null, admin: null });
 });
-
-// Se corrigen los endpoints POST para devolver JSON en caso de error 401.
 apiRouter.post('/auth/login', (req, res) => {
   res.status(401).json({ success: false, message: 'Credenciales inválidas' });
 });
-
 apiRouter.post('/auth/admin/login', (req, res) => {
   res.status(401).json({ success: false, message: 'Credenciales de administrador inválidas' });
 });
-// ✅ FIN: CORRECCIÓN DEFINITIVA
 
 // Configuración de Notificaciones Push
 const vapidKeys = {
@@ -81,8 +75,13 @@ apiRouter.post('/orders/create', (req, res) => {
   io.emit('admin:new-order', { orderId: order.id, customerName: order.customerName, total: order.total });
 
   const allProducts = getProductsFromDisk();
-  order.items.forEach((item: { product: Product, quantity: number }) => {
-    const product = allProducts.find(p => p.id === item.product.id);
+
+  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
+  // Se ajusta la lógica para que coincida con el payload real que envía el frontend.
+  // El payload de 'items' es un array de { productId, name, quantity, price }.
+  order.items.forEach((item: { productId: string, quantity: number }) => {
+    // Se busca el producto usando item.productId directamente.
+    const product = allProducts.find(p => p.id === item.productId);
     if (product) {
       const newStock = product.stock - item.quantity;
       io.to(product.id).emit('product:stock-update', { productId: product.id, newStock });
@@ -91,6 +90,8 @@ apiRouter.post('/orders/create', (req, res) => {
       }
     }
   });
+  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
+
   res.status(201).json({ message: 'Pedido creado y notificaciones enviadas.' });
 });
 
@@ -107,7 +108,7 @@ app.get('/ngsw-worker.js', (req, res) => {
   res.sendFile(join(browserDistFolder, 'ngsw-worker.js'));
 });
 
-// 3. Servir el resto de archivos estáticos (JS, CSS, imágenes)
+// 3. Servir el resto de archivos estáticos
 app.use(express.static(browserDistFolder, { maxAge: '1y', index: false }));
 
 // 4. Servir el Sitemap

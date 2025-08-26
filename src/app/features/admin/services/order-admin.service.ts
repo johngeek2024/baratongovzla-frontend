@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
-import { Observable, of, delay } from 'rxjs';
-import { AdminOrder, OrderStatus, AdminOrderDetail } from '../models/order.model';
+import { inject, Injectable } from '@angular/core';
+import { Observable, of, delay, BehaviorSubject } from 'rxjs';
+import { AdminOrderDetail, OrderStatus } from '../models/order.model';
+import { UserDataService, UserOrderStatus } from '../../../core/services/user-data.service';
 
 const mockOrders: AdminOrderDetail[] = [
   { id: '#BTV-1058', customerName: 'Aura', date: '2025-07-12', total: 39.00, status: 'Procesando', items: [{ productId: 'prod-1', name: 'Cable HDMI 2.1', quantity: 1, price: 39.00 }], shippingAddress: 'Urb. La Viña, Valencia', customerEmail: 'aura.designer@email.com' },
@@ -13,23 +14,38 @@ const mockOrders: AdminOrderDetail[] = [
   providedIn: 'root'
 })
 export class OrderAdminService {
-  private apiUrl = 'https://baratongovzla.com/api/admin/orders';
+  private userDataService = inject(UserDataService);
+  private orders$ = new BehaviorSubject<AdminOrderDetail[]>(mockOrders);
 
-  // ✅ CORRECCIÓN: El método ahora devuelve la lista con el detalle completo.
   getOrders(): Observable<AdminOrderDetail[]> {
-    return of(mockOrders).pipe(delay(700));
+    return this.orders$.asObservable().pipe(delay(500));
+  }
+
+  addNewOrder(order: AdminOrderDetail): void {
+    const currentOrders = this.orders$.getValue();
+    this.orders$.next([order, ...currentOrders]);
   }
 
   getOrderById(orderId: string): Observable<AdminOrderDetail | undefined> {
-    const order = mockOrders.find(o => o.id === orderId);
+    const order = this.orders$.getValue().find(o => o.id === orderId);
     return of(order).pipe(delay(400));
   }
 
   updateOrderStatus(orderId: string, status: OrderStatus): Observable<{ success: boolean }> {
-    const order = mockOrders.find(o => o.id === orderId);
-    if (order) {
-      order.status = status;
+    const currentOrders = this.orders$.getValue();
+    const orderIndex = currentOrders.findIndex(o => o.id === orderId);
+
+    if (orderIndex > -1) {
+      const updatedOrders = [...currentOrders];
+      const orderToUpdate = { ...updatedOrders[orderIndex], status: status };
+      updatedOrders[orderIndex] = orderToUpdate;
+
+      this.orders$.next(updatedOrders);
+
+      // ✅ CORRECCIÓN: Se asegura que el ID se envíe sin el '#' y el estado sea compatible.
+      this.userDataService.updateOrderStatus(orderId.replace('#', ''), status as UserOrderStatus);
     }
+
     return of({ success: true }).pipe(delay(500));
   }
 }

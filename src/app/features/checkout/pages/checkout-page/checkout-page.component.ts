@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { CartStore } from '../../../cart/cart.store';
 import { UiService } from '../../../../core/services/ui.service';
-import { UserDataService, UserOrder } from '../../../../core/services/user-data.service';
+import { UserDataService, UserOrder, UserOrderStatus } from '../../../../core/services/user-data.service';
 import { OrderProcessingService } from '../../../../core/services/order-processing.service';
 import { AuthService } from '../../../../core/services/auth.service';
-import { CheckoutService } from '../../../../core/services/checkout.service'; // ¡IMPORTADO!
+import { CheckoutService } from '../../../../core/services/checkout.service';
+import { AdminOrderDetail } from '../../../admin/models/order.model';
 
 @Component({
   selector: 'app-checkout-page',
@@ -15,16 +16,14 @@ import { CheckoutService } from '../../../../core/services/checkout.service'; //
   templateUrl: './checkout-page.component.html',
 })
 export class CheckoutPageComponent implements OnInit, OnDestroy {
-  // --- INYECCIÓN DE DEPENDENCIAS ---
   public cartStore = inject(CartStore);
   public uiService = inject(UiService);
-  public checkoutService = inject(CheckoutService); // ¡INYECCIÓN DEL NUEVO SERVICIO!
+  public checkoutService = inject(CheckoutService);
   private router = inject(Router);
   private userDataService = inject(UserDataService);
   private orderProcessingService = inject(OrderProcessingService);
   private authService = inject(AuthService);
 
-  // --- SEÑALES COMPUTADAS PARA VALIDACIÓN DE PASOS ---
   public totalPrice = computed(() => this.cartStore.totalPrice() + this.checkoutService.shippingCost());
 
   public isDeliveryStepComplete = computed(() => {
@@ -51,16 +50,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
-    // Resetea el estado al iniciar por si el usuario navegó hacia atrás
     this.checkoutService.resetCheckoutState();
   }
 
   ngOnDestroy(): void {
-    // Opcional: Resetea el estado al salir de la página
     this.checkoutService.resetCheckoutState();
   }
-
-  // --- MANEJADORES DE EVENTOS (DELEGAN AL SERVICIO) ---
 
   onZoneChange(event: Event): void {
     const zone = (event.target as HTMLSelectElement).value;
@@ -82,8 +77,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     this.checkoutService.updatePaymentReference(ref);
   }
 
-  // --- LÓGICA DE CONFIRMACIÓN DE ORDEN ---
-
   confirmOrder(): void {
     if (!this.isContactStepComplete() || !this.isPaymentStepComplete()) return;
     const currentUser = this.authService.currentUser();
@@ -93,22 +86,46 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     }
 
     const orderId = `BTV-${Date.now()}`;
+    const newOrderDate = new Date().toISOString();
+    const newOrderStatus: UserOrderStatus = 'Procesando';
 
-    // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
-    // Se añade la propiedad 'shippingAddress', ahora obligatoria, al crear el objeto newOrder.
-    // Obtenemos el objeto UserAddress directamente desde el checkoutService.
-    const newOrder: UserOrder = {
+    // ✅ CORRECCIÓN: Se formatea el objeto de dirección a un string antes de usarlo.
+    const shippingAddressValue = this.checkoutService.shippingAddress();
+    // Se asume que shippingAddressValue es un objeto UserAddress o un string.
+    // Esta lógica maneja ambos casos para máxima robustez.
+    const formattedAddress = typeof shippingAddressValue === 'string'
+      ? shippingAddressValue
+      : `${shippingAddressValue.line1}, ${shippingAddressValue.city}, ${shippingAddressValue.state}`;
+
+    // 1. Objeto para el estado del cliente
+    const newUserOrder: UserOrder = {
       id: orderId,
-      date: new Date().toISOString(),
+      date: newOrderDate,
       total: this.totalPrice(),
-      status: 'Procesando',
+      status: newOrderStatus,
       items: this.cartStore.items().map(item => ({ product: item.product, quantity: item.quantity })),
-      shippingAddress: this.checkoutService.shippingAddress() // <-- CAMBIO CLAVE
+      shippingAddress: formattedAddress,
     };
-    // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
-    this.userDataService.addNewOrder(newOrder);
-    this.orderProcessingService.processNewOrder(newOrder);
+    // 2. Payload completo para notificar al admin
+    const adminOrderPayload: AdminOrderDetail = {
+      id: `#${orderId}`,
+      date: newOrderDate,
+      total: this.totalPrice(),
+      status: newOrderStatus,
+      customerName: currentUser.fullName,
+      customerEmail: currentUser.email,
+      shippingAddress: formattedAddress,
+      items: this.cartStore.items().map(item => ({
+        productId: item.product.id,
+        name: item.product.name,
+        quantity: item.quantity,
+        price: item.product.price
+      })),
+    };
+
+    this.userDataService.addNewOrder(newUserOrder);
+    this.orderProcessingService.processNewOrder(adminOrderPayload);
 
     const missionData = {
       orderNumber: orderId,
@@ -117,8 +134,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       total: this.totalPrice(),
       customerName: currentUser.fullName,
       customerPhone: this.checkoutService.customerPhone(),
-      // Ahora pasamos el objeto de dirección completo
-      shippingAddress: this.checkoutService.shippingAddress().line1,
+      shippingAddress: formattedAddress, // Usamos la variable formateada
       deliveryMethod: this.checkoutService.deliveryMethod(),
       paymentMethod: this.checkoutService.paymentMethod(),
       paymentReference: this.checkoutService.paymentReference(),

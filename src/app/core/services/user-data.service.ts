@@ -1,3 +1,5 @@
+// src/app/core/services/user-data.service.ts
+
 import { Injectable, signal, inject, effect } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Product } from '../models/product.model';
@@ -15,18 +17,16 @@ export interface UserAddress {
   state: string;
 }
 
-// ✅ INICIO: CORRECCIÓN QUIRÚRGICA
 export interface UserOrder {
   id: string;
   date: string;
   total: number;
   status: UserOrderStatus;
   items: { product: Product, quantity: number }[];
-  shippingAddress: UserAddress; // Propiedad añadida
-  shippingCost?: number;        // Propiedad añadida
-  taxes?: number;               // Propiedad añadida
+  shippingAddress: string;
+  shippingCost?: number;
+  taxes?: number;
 }
-// ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +35,7 @@ export class UserDataService {
   private authService = inject(AuthService);
   private dataStore = inject(DataStoreService);
 
+  // --- Señales que contendrán los datos del usuario ---
   public orders = signal<UserOrder[]>([]);
   public addresses = signal<UserAddress[]>([]);
   public wishlist = signal<Product[]>([]);
@@ -51,7 +52,12 @@ export class UserDataService {
     });
   }
 
-  // Método público para obtener una orden por ID, crucial para la página de detalles.
+  // ✅ CORRECCIÓN: Se implementa el método faltante.
+  /**
+   * Busca y devuelve una orden específica por su ID.
+   * @param id El ID del pedido a buscar.
+   * @returns La orden encontrada o 'undefined' si no existe.
+   */
   public getOrderById(id: string): UserOrder | undefined {
     return this.orders().find(o => o.id === id);
   }
@@ -88,29 +94,18 @@ export class UserDataService {
     );
   }
 
-  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
-  /**
-   * Añade una lista de productos al arsenal del usuario actual, evitando duplicados.
-   * Esta es la lógica final que se conectará a la base de datos en producción.
-   * @param productsToAdd Array de productos a añadir.
-   */
   public addProductsToArsenal(productsToAdd: Product[]): void {
     this.arsenal.update(currentArsenal => {
       const currentArsenalIds = new Set(currentArsenal.map(p => p.id));
       const newProducts = productsToAdd.filter(p => !currentArsenalIds.has(p.id));
-
       if (newProducts.length > 0) {
         console.log('[UserDataService] Añadiendo nuevos productos al arsenal:', newProducts.map(p => p.name));
       }
-
-      // Retorna un nuevo array con los productos existentes y los nuevos.
       return [...currentArsenal, ...newProducts];
     });
   }
-  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
   // --- Métodos de simulación de datos (Mock) ---
-  // ✅ CORRECCIÓN: Se añaden los datos de envío y items a los mocks.
   private getMockOrdersAura(): UserOrder[] {
     const products = this.dataStore.products();
     if (products.length < 3) return [];
@@ -121,7 +116,7 @@ export class UserDataService {
           { product: products[0], quantity: 1 },
           { product: products[1], quantity: 1 }
         ],
-        shippingAddress: { name: 'Casa', recipient: 'Aura', line1: 'Urb. Prebo, Edificio Tech', city: 'Valencia', state: 'Carabobo' },
+        shippingAddress: 'Urb. Prebo, Edificio Tech, Valencia, Carabobo',
         shippingCost: 0,
         taxes: 0
       }
@@ -134,10 +129,9 @@ export class UserDataService {
       {
         id: 'BTV-1060', date: '2025-08-01', total: 399.00, status: 'Procesando',
         items: [
-          // Este es el producto que se añadirá al arsenal para las pruebas.
-          { product: products[2], quantity: 1 } // Aura Watch Series 8
+          { product: products[2], quantity: 1 }
         ],
-        shippingAddress: { name: 'Oficina', recipient: 'Cliente de Prueba', line1: 'Torre Empresarial, Piso 10', city: 'Valencia', state: 'Carabobo' },
+        shippingAddress: 'Torre Empresarial, Piso 10, Valencia, Carabobo',
         shippingCost: 10.00,
         taxes: 31.20
       }
