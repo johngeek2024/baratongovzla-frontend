@@ -88,13 +88,26 @@ export class UserDataService {
     );
   }
 
+  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
+  /**
+   * Añade una lista de productos al arsenal del usuario actual, evitando duplicados.
+   * Esta es la lógica final que se conectará a la base de datos en producción.
+   * @param productsToAdd Array de productos a añadir.
+   */
   public addProductsToArsenal(productsToAdd: Product[]): void {
     this.arsenal.update(currentArsenal => {
       const currentArsenalIds = new Set(currentArsenal.map(p => p.id));
       const newProducts = productsToAdd.filter(p => !currentArsenalIds.has(p.id));
+
+      if (newProducts.length > 0) {
+        console.log('[UserDataService] Añadiendo nuevos productos al arsenal:', newProducts.map(p => p.name));
+      }
+
+      // Retorna un nuevo array con los productos existentes y los nuevos.
       return [...currentArsenal, ...newProducts];
     });
   }
+  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
   // --- Métodos de simulación de datos (Mock) ---
   // ✅ CORRECCIÓN: Se añaden los datos de envío y items a los mocks.
@@ -121,7 +134,8 @@ export class UserDataService {
       {
         id: 'BTV-1060', date: '2025-08-01', total: 399.00, status: 'Procesando',
         items: [
-          { product: products[2], quantity: 1 }
+          // Este es el producto que se añadirá al arsenal para las pruebas.
+          { product: products[2], quantity: 1 } // Aura Watch Series 8
         ],
         shippingAddress: { name: 'Oficina', recipient: 'Cliente de Prueba', line1: 'Torre Empresarial, Piso 10', city: 'Valencia', state: 'Carabobo' },
         shippingCost: 10.00,

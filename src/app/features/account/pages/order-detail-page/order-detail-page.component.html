@@ -153,8 +153,24 @@
         <p class="font-mono bg-dark-bg rounded p-2 my-4 text-secondary-accent tracking-widest cursor-pointer relative overflow-hidden coupon-shimmer-effect" (click)="copyCoupon($event)" title="Click para copiar">
             <span class="relative z-10">BARATONGO-ELITE-15</span>
         </p>
-        <button class="bg-primary-accent hover:opacity-80 text-dark-bg font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 w-full mt-4">
-            <i class="fas fa-star mr-2"></i>Añadir a Mi Arsenal
+        <button
+            (click)="handleAddToArsenal()"
+            [disabled]="isAddingToArsenal() || successfullyAddedToArsenal()"
+            class="bg-primary-accent text-dark-bg font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 w-full mt-4 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+
+            @if(isAddingToArsenal()) {
+                <i class="fas fa-spinner animate-spin mr-2"></i>
+                <span>Añadiendo...</span>
+            } @else if (successfullyAddedToArsenal()) {
+                <i class="fas fa-check mr-2"></i>
+                <span>¡Añadido al Arsenal!</span>
+            } @else {
+                <i class="fas fa-star mr-2"></i>
+                <span>Añadir a Mi Arsenal</span>
+            }
+        </button>
+        <button (click)="closeRewardModal()" class="absolute top-4 right-4 text-2xl text-text-secondary transition-transform hover:rotate-90 hover:text-white">
+            &times;
         </button>
     </div>
     }

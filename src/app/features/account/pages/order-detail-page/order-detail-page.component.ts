@@ -34,6 +34,11 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
   public rewardAnimationStep = signal<'initial' | 'crate' | 'reward'>('initial');
   // ✅ FIN: SEÑALES PARA EL NUEVO FLUJO INTERACTIVO
 
+    // ✅ INICIO: SEÑALES PARA FEEDBACK DEL USUARIO
+  public isAddingToArsenal = signal(false);
+  public successfullyAddedToArsenal = signal(false);
+  // ✅ FIN: SEÑALES PARA FEEDBACK DEL USUARIO
+
   public progressWidth = computed(() => {
     const currentIndex = this.statusSteps.indexOf(this.status());
     return `${(currentIndex / (this.statusSteps.length - 1)) * 100}%`;
@@ -131,6 +136,33 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
       });
     }
   }
+
+  // ✅ INICIO: MÉTODO PARA AÑADIR PRODUCTOS AL ARSENAL
+  /**
+   * Se invoca al hacer clic en el botón del modal de recompensa.
+   * Añade los productos del pedido actual al arsenal del usuario.
+   */
+  handleAddToArsenal(): void {
+    const currentOrder = this.order();
+    if (!currentOrder || currentOrder.items.length === 0) return;
+
+    this.isAddingToArsenal.set(true);
+
+    // Simula una llamada asíncrona y proporciona feedback
+    setTimeout(() => {
+      const productsFromOrder = currentOrder.items.map(item => item.product);
+      this.userDataService.addProductsToArsenal(productsFromOrder);
+      this.isAddingToArsenal.set(false);
+      this.successfullyAddedToArsenal.set(true);
+
+      // Cierra el modal después de un breve instante para que el usuario vea el cambio.
+      setTimeout(() => {
+        this.closeRewardModal();
+      }, 1500);
+    }, 700);
+  }
+  // ✅ FIN: MÉTODO PARA AÑADIR PRODUCTOS AL ARSENAL
+
   // ✅ FIN: MÉTODOS PARA CONTROLAR EL MODAL INTERACTIVO
 
   getIconForStatus(status: string): string {
