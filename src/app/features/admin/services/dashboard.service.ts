@@ -9,7 +9,6 @@ import { AdminCustomer } from '../components/customers-panel/customers-panel.com
 import { SettingsService } from './../../../core/services/settings.service';
 import { Product } from '../../../core/models/product.model';
 import { AnalyticsService } from './analytics.service';
-// ✅ CORRECCIÓN QUIRÚRGICA: Se importa la interfaz desde su modelo canónico.
 import { StatCard } from '../models/dashboard.model';
 
 @Injectable({
@@ -22,19 +21,15 @@ export class DashboardService {
   private settingsService = inject(SettingsService);
   private analyticsService = inject(AnalyticsService);
 
-  // ✅ CORRECCIÓN: La interfaz StatCard duplicada ha sido eliminada.
+  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
+  // Se consume directamente la señal reactiva del OrderAdminService.
+  private orders = this.orderAdminService.orders;
+  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
-  private orders: import("@angular/core").Signal<AdminOrderDetail[]>;
-  private customers: import("@angular/core").Signal<AdminCustomer[]>;
+  private customers = toSignal(this.customerAdminService.getCustomers(), { initialValue: [] });
   private products = this.dataStore.products;
   private settings = this.settingsService.settings;
-  private uniqueVisitors: import("@angular/core").Signal<number>;
-
-  constructor() {
-    this.orders = toSignal(this.orderAdminService.getOrders(), { initialValue: [] });
-    this.customers = toSignal(this.customerAdminService.getCustomers(), { initialValue: [] });
-    this.uniqueVisitors = toSignal(this.analyticsService.getUniqueVisitors('daily'), { initialValue: 0 });
-  }
+  private uniqueVisitors = toSignal(this.analyticsService.getUniqueVisitors('daily'), { initialValue: 0 });
 
   public dailySalesGoal = computed(() => {
     const goals = this.settings().dailyGoals;
@@ -45,10 +40,10 @@ export class DashboardService {
 
   public salesToday = computed(() => {
     const today = new Date();
-    const threeDaysAgo = new Date().setDate(today.getDate() - 3);
+    today.setHours(0, 0, 0, 0); // Establece la hora al inicio del día
     return this.orders().reduce((total: number, order: AdminOrder) => {
       const orderDate = new Date(order.date);
-      if (orderDate.getTime() >= threeDaysAgo) {
+      if (orderDate >= today) {
         return total + order.total;
       }
       return total;
@@ -64,8 +59,8 @@ export class DashboardService {
 
   public newOrdersCount = computed(() => {
     const today = new Date();
-    const threeDaysAgo = new Date().setDate(today.getDate() - 3);
-    return this.orders().filter((o: AdminOrder) => new Date(o.date).getTime() >= threeDaysAgo).length;
+    today.setHours(0, 0, 0, 0);
+    return this.orders().filter((o: AdminOrder) => new Date(o.date) >= today).length;
   });
 
   public conversionRate = computed(() => {
@@ -165,7 +160,7 @@ export class DashboardService {
 
   public hotProducts = computed(() => {
     const salesCount: { [productId: string]: number } = {};
-    this.orders().forEach(order => {
+    this.orders().forEach((order: AdminOrderDetail) => {
       order.items.forEach(item => {
         salesCount[item.productId] = (salesCount[item.productId] || 0) + item.quantity;
       });
@@ -186,7 +181,7 @@ export class DashboardService {
     sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
     const soldProductIds = new Set<string>();
-    this.orders().forEach(order => {
+    this.orders().forEach((order: AdminOrderDetail) => {
       if (new Date(order.date) > sixtyDaysAgo) {
         order.items.forEach(item => soldProductIds.add(item.productId));
       }

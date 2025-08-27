@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZonelessChangeDetection, isDevMode, LOCALE_ID } from '@angular/core';
+import { ApplicationConfig, provideZonelessChangeDetection, isDevMode, LOCALE_ID, APP_INITIALIZER, inject } from '@angular/core';
 import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { routes } from './app.routes';
@@ -9,25 +9,37 @@ import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { CartStore } from './features/cart/cart.store';
 
-// ✅ INICIO: CORRECCIÓN QUIRÚRGICA
-// 1. Importaciones necesarias para la localización.
 import { registerLocaleData } from '@angular/common';
 import localeEsVE from '@angular/common/locales/es-VE';
+import { AuthService } from './core/services/auth.service';
+import { firstValueFrom } from 'rxjs';
 
-// 2. Se registra el locale para español de Venezuela a nivel global.
 registerLocaleData(localeEsVE);
+
+// ✅ INICIO: CORRECCIÓN QUIRÚRGICA
+// Función factory para el APP_INITIALIZER.
+function initializeAuthFactory(authService: AuthService): () => Promise<any> {
+  return () => firstValueFrom(authService.checkAuthStatus());
+}
 // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // --- Arquitectura de Aplicación ---
     provideZonelessChangeDetection(),
     provideAnimationsAsync(),
-
-    // ✅ CORRECCIÓN QUIRÚRGICA: 3. Se provee el LOCALE_ID para que sea el defecto en toda la app.
     { provide: LOCALE_ID, useValue: 'es-VE' },
 
-    // --- Enrutamiento y Navegación ---
+    // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
+    // Se añade el proveedor que retrasa el arranque de la app
+    // hasta que la autenticación inicial se resuelva.
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeAuthFactory,
+      deps: [AuthService],
+      multi: true
+    },
+    // ✅ FIN: CORRECCIÓN QUIRÚRGICA
+
     provideRouter(
       routes,
       withInMemoryScrolling({
@@ -37,7 +49,6 @@ export const appConfig: ApplicationConfig = {
       withViewTransitions()
     ),
 
-    // --- Conectividad y APIs ---
     provideHttpClient(
       withFetch(),
       withInterceptors([
@@ -46,13 +57,9 @@ export const appConfig: ApplicationConfig = {
       ])
     ),
 
-    // --- Estado y Lógica de Negocio ---
     CartStore,
-
-    // --- Módulos y Librerías Externas ---
     provideCharts(withDefaultRegisterables()),
 
-    // --- Progressive Web App (PWA) ---
     provideServiceWorker('ngsw-config.json', {
         enabled: !isDevMode(),
         registrationStrategy: 'registerImmediately'

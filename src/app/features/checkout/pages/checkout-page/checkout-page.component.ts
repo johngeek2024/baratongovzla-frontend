@@ -89,15 +89,13 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     const newOrderDate = new Date().toISOString();
     const newOrderStatus: UserOrderStatus = 'Procesando';
 
-    // ✅ CORRECCIÓN: Se formatea el objeto de dirección a un string antes de usarlo.
     const shippingAddressValue = this.checkoutService.shippingAddress();
-    // Se asume que shippingAddressValue es un objeto UserAddress o un string.
-    // Esta lógica maneja ambos casos para máxima robustez.
     const formattedAddress = typeof shippingAddressValue === 'string'
       ? shippingAddressValue
       : `${shippingAddressValue.line1}, ${shippingAddressValue.city}, ${shippingAddressValue.state}`;
 
-    // 1. Objeto para el estado del cliente
+    // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
+    // Se añaden las propiedades 'customerName' y 'customerEmail' que faltaban.
     const newUserOrder: UserOrder = {
       id: orderId,
       date: newOrderDate,
@@ -105,9 +103,11 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       status: newOrderStatus,
       items: this.cartStore.items().map(item => ({ product: item.product, quantity: item.quantity })),
       shippingAddress: formattedAddress,
+      customerName: currentUser.fullName, // <-- Propiedad añadida
+      customerEmail: currentUser.email,   // <-- Propiedad añadida
     };
+    // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
-    // 2. Payload completo para notificar al admin
     const adminOrderPayload: AdminOrderDetail = {
       id: `#${orderId}`,
       date: newOrderDate,
@@ -134,7 +134,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       total: this.totalPrice(),
       customerName: currentUser.fullName,
       customerPhone: this.checkoutService.customerPhone(),
-      shippingAddress: formattedAddress, // Usamos la variable formateada
+      shippingAddress: formattedAddress,
       deliveryMethod: this.checkoutService.deliveryMethod(),
       paymentMethod: this.checkoutService.paymentMethod(),
       paymentReference: this.checkoutService.paymentReference(),

@@ -27,15 +27,13 @@ export class AnalyticsService {
   private dataStore = inject(DataStoreService);
   private orderAdminService = inject(OrderAdminService);
 
-  // Convierte el stream de órdenes en una señal para reactividad
-  private orders = toSignal(this.orderAdminService.getOrders(), { initialValue: [] });
+  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
+  // Se consume directamente la señal reactiva del OrderAdminService.
+  private orders = this.orderAdminService.orders;
+  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
-  /**
-   * KPI #1: Análisis de Cohorts de Retención
-   * Agrupa clientes por mes de su primera compra y calcula qué porcentaje
-   * de ellos vuelve a comprar en los meses siguientes.
-   */
   public cohortAnalysis = computed<CohortData[]>(() => {
+    // La señal 'orders' ahora es directamente accesible y está tipada.
     const orders = this.orders();
     if (orders.length === 0) return [];
 
@@ -56,16 +54,17 @@ export class AnalyticsService {
 
     const cohortData: CohortData[] = Object.keys(cohorts).sort().map(month => {
       const customersInCohort = cohorts[month];
-      const retention = Array(6).fill(null); // Analizar 6 meses de retención
+      const retention = Array(6).fill(null);
 
-      retention[0] = 100; // Mes 0 siempre es 100%
+      retention[0] = 100;
 
       for (let i = 1; i < 6; i++) {
         const targetDate = new Date(month + '-01');
         targetDate.setMonth(targetDate.getMonth() + i);
 
         const retainedCustomers = new Set();
-        orders.forEach(order => {
+        // ✅ CORRECCIÓN: Se añade el tipo explícito a 'order'.
+        orders.forEach((order: AdminOrderDetail) => {
           const orderDate = new Date(order.date);
           if (
             customersInCohort.includes(order.customerName) &&
@@ -85,15 +84,13 @@ export class AnalyticsService {
         retention
       };
     });
-    return cohortData.reverse(); // Mostrar los meses más recientes primero
+    return cohortData.reverse();
   });
 
-  /**
-   * KPI #2: Top 5 Clientes por Gasto Total
-   */
   public topCustomers = computed<TopCustomer[]>(() => {
     const customerData: { [key: string]: { totalSpent: number; orderCount: number } } = {};
-    this.orders().forEach(order => {
+    // ✅ CORRECCIÓN: Se añade el tipo explícito a 'order'.
+    this.orders().forEach((order: AdminOrderDetail) => {
       if (!customerData[order.customerName]) {
         customerData[order.customerName] = { totalSpent: 0, orderCount: 0 };
       }
@@ -107,12 +104,10 @@ export class AnalyticsService {
       .slice(0, 5);
   });
 
-  /**
-   * KPI #3: Distribución de Ventas por Categoría (para el gráfico)
-   */
   public salesByCategory = computed(() => {
     const categorySales: { [key: string]: number } = {};
-    this.orders().forEach(order => {
+    // ✅ CORRECCIÓN: Se añade el tipo explícito a 'order' e 'item'.
+    this.orders().forEach((order: AdminOrderDetail) => {
       order.items.forEach(item => {
         const product = this.dataStore.getProductById(item.productId);
         if (product) {
@@ -124,9 +119,6 @@ export class AnalyticsService {
     return Object.entries(categorySales).sort((a,b) => b[1] - a[1]);
   });
 
-  /**
-   * Método original para visitantes únicos, se mantiene por compatibilidad.
-   */
   getUniqueVisitors(period: 'daily'): Observable<number> {
     const mockVisitorCount = 250;
     return of(mockVisitorCount).pipe(delay(250));
