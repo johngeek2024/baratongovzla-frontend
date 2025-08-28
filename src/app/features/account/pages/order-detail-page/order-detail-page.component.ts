@@ -1,3 +1,4 @@
+// src/app/features/account/pages/order-detail-page/order-detail-page.component.ts
 import { Component, computed, inject, signal, OnInit, OnDestroy, effect } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -20,23 +21,18 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private userDataService = inject(UserDataService);
 
-  // ✅ INICIO: MODIFICACIÓN ARQUITECTÓNICA - REACTIVIDAD TOTAL
-  // 1. Convertimos el ID de la ruta en una señal reactiva.
   private orderId = toSignal(this.route.paramMap.pipe(map(params => params.get('id'))));
 
-  // 2. 'order' ahora es una señal COMPUTADA que reacciona a los cambios en el ID o en la lista de pedidos.
   public readonly order = computed(() => {
     const id = this.orderId();
     if (!id) return undefined;
-    // Busca en la fuente de verdad CADA VEZ que algo cambia.
     return this.userDataService.getOrderById(id);
   });
-  // ✅ FIN: MODIFICACIÓN ARQUITECTÓNICA
 
   public missionLog = signal<MissionLog[]>([]);
-  public readonly statusSteps: UserOrderStatus[] = ['Procesando', 'Enviado', 'Entregado', 'Cancelado'];
   private timer: any;
 
+  // --- Estado para el modal y sus animaciones ---
   public isRewardModalOpen = signal(false);
   public rewardAnimationStep = signal<'initial' | 'crate' | 'reward'>('initial');
   public isAddingToArsenal = signal(false);
@@ -44,33 +40,50 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
 
   public subtotal = computed(() => this.order()?.items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0) ?? 0);
 
+  // --- Lógica para la barra de progreso ---
+  private statusMap: { [key in UserOrderStatus]: { text: string; color: string; width: string } } = {
+    'Procesando': { text: 'En Preparación', color: 'text-warning', width: '50%' },
+    'Enviado': { text: 'En Tránsito', color: 'text-warning', width: '75%' },
+    'Entregado': { text: 'Entregado', color: 'text-success', width: '100%' },
+    'Cancelado': { text: 'Cancelado', color: 'text-danger', width: '0%' }
+  };
+
+  public currentStatusInfo = computed(() => {
+    const status = this.order()?.status ?? 'Procesando';
+    return this.statusMap[status] || { text: 'Confirmada', color: 'text-warning', width: '25%' };
+  });
+
   constructor() {
-    // Usamos 'effect' para reaccionar cuando la señal 'order' obtenga un valor.
     effect(() => {
       const currentOrder = this.order();
       if (currentOrder) {
-        this.initializeMissionLog();
+        this.initializeMissionLog(currentOrder);
       }
     });
   }
 
-  ngOnInit(): void {
-    // El 'effect' en el constructor se encarga de la lógica de inicialización.
-  }
+  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     if(this.timer) clearInterval(this.timer);
   }
 
-  private initializeMissionLog(): void {
+  private initializeMissionLog(order: UserOrder): void {
       const fullLog: MissionLog[] = [
-        { time: '10:30', status: 'Misión Aceptada. Procesando orden...' },
-        { time: '14:00', status: 'Paquete ensamblado en el Hangar 7.' },
-        { time: '18:45', status: 'Unidad de entrega asignada. ¡En ruta!' },
-        { time: '22:57', status: 'Paquete entregado. ¡Disfruta tu equipo!' }
+        { time: new Date(order.date).toLocaleTimeString('es-VE', { hour: '2-digit', minute:'2-digit' }), status: 'Misión Aceptada. Procesando orden...' },
+        { time: new Date(new Date(order.date).getTime() + 3 * 60 * 60 * 1000).toLocaleTimeString('es-VE', { hour: '2-digit', minute:'2-digit' }), status: 'Paquete ensamblado en el Hangar 7.' },
       ];
+
+      if(order.status === 'Enviado' || order.status === 'Entregado') {
+        fullLog.push({ time: new Date(new Date(order.date).getTime() + 5 * 60 * 60 * 1000).toLocaleTimeString('es-VE', { hour: '2-digit', minute:'2-digit' }), status: 'Unidad de entrega asignada. En ruta.' });
+      }
+      if (order.status === 'Entregado') {
+        fullLog.push({ time: new Date(new Date(order.date).getTime() + 8 * 60 * 60 * 1000).toLocaleTimeString('es-VE', { hour: '2-digit', minute:'2-digit' }), status: 'Paquete entregado. ¡Disfruta tu equipo!' });
+      }
+
       this.missionLog.set([]);
       let step = 0;
+      if (this.timer) clearInterval(this.timer);
       this.timer = setInterval(() => {
         if (step < fullLog.length) {
           this.missionLog.update(log => [...log, fullLog[step]]);
@@ -78,22 +91,42 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
         } else {
           clearInterval(this.timer);
         }
-      }, 1500);
+      }, 800);
   }
 
   openRewardModal(): void {
     this.isRewardModalOpen.set(true);
-    setTimeout(() => this.rewardAnimationStep.set('crate'), 50);
-    setTimeout(() => this.rewardAnimationStep.set('reward'), 2050);
+    // Secuencia de animación idéntica a la del HTML
+    setTimeout(() => {
+        this.rewardAnimationStep.set('crate');
+        setTimeout(() => {
+            // La animación de la caja temblando es por CSS
+            setTimeout(() => {
+                // Shatter y light burst son por CSS
+                setTimeout(() => {
+                    this.rewardAnimationStep.set('reward');
+                }, 200);
+            }, 500);
+        }, 400);
+    }, 50);
   }
 
+
   closeRewardModal(): void {
-    this.isRewardModalOpen.set(false);
-    setTimeout(() => {
-      this.rewardAnimationStep.set('initial');
-      this.successfullyAddedToArsenal.set(false);
-    }, 300);
-  }
+    const modal = document.getElementById('reward-modal');
+    if (modal) {
+        modal.style.animation = 'modal-fade-out 0.3s ease forwards';
+        setTimeout(() => {
+            this.isRewardModalOpen.set(false);
+            this.rewardAnimationStep.set('initial');
+            this.successfullyAddedToArsenal.set(false);
+        }, 300);
+    } else {
+        this.isRewardModalOpen.set(false);
+        this.rewardAnimationStep.set('initial');
+        this.successfullyAddedToArsenal.set(false);
+    }
+}
 
   copyCoupon(event: MouseEvent): void {
     const couponElement = (event.currentTarget as HTMLElement).querySelector('span');
@@ -115,7 +148,6 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
       this.userDataService.addProductsToArsenal(productsFromOrder);
       this.isAddingToArsenal.set(false);
       this.successfullyAddedToArsenal.set(true);
-      setTimeout(() => this.closeRewardModal(), 1500);
     }, 700);
   }
 
