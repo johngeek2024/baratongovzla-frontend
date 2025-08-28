@@ -1,4 +1,3 @@
-// src/app/features/account/pages/order-detail-page/order-detail-page.component.ts
 import { Component, computed, inject, signal, OnInit, OnDestroy, effect } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -32,7 +31,6 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
   public missionLog = signal<MissionLog[]>([]);
   private timer: any;
 
-  // --- Estado para el modal y sus animaciones ---
   public isRewardModalOpen = signal(false);
   public rewardAnimationStep = signal<'initial' | 'crate' | 'reward'>('initial');
   public isAddingToArsenal = signal(false);
@@ -40,12 +38,11 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
 
   public subtotal = computed(() => this.order()?.items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0) ?? 0);
 
-  // --- Lógica para la barra de progreso ---
   private statusMap: { [key in UserOrderStatus]: { text: string; color: string; width: string } } = {
     'Procesando': { text: 'En Preparación', color: 'text-warning', width: '50%' },
     'Enviado': { text: 'En Tránsito', color: 'text-warning', width: '75%' },
     'Entregado': { text: 'Entregado', color: 'text-success', width: '100%' },
-    'Cancelado': { text: 'Cancelado', color: 'text-danger', width: '0%' } // Added for completeness, if applicable
+    'Cancelado': { text: 'Cancelado', color: 'text-danger', width: '0%' }
   };
 
   public currentStatusInfo = computed(() => {
@@ -96,16 +93,17 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
 
   openRewardModal(): void {
     this.isRewardModalOpen.set(true);
-    // Inicia la animación de la caja con un pequeño retraso
     setTimeout(() => {
       this.rewardAnimationStep.set('crate');
-      // Después de que la caja cae (0.4s) y tiembla (0.5s), más un pequeño buffer
       setTimeout(() => {
-        this.rewardAnimationStep.set('reward'); // Transiciona a mostrar la recompensa
-      }, 950); // 400ms (drop) + 500ms (shake) + 50ms (buffer) = 950ms
-    }, 50); // Pequeño retraso inicial para asegurar que el modal esté visible antes de la animación de la caja
+        setTimeout(() => {
+            setTimeout(() => {
+                this.rewardAnimationStep.set('reward');
+            }, 200);
+        }, 500);
+      }, 400);
+    }, 50);
   }
-
 
   closeRewardModal(): void {
     const modalContent = document.getElementById('reward-modal-content');
@@ -115,7 +113,7 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
             this.isRewardModalOpen.set(false);
             this.rewardAnimationStep.set('initial');
             this.successfullyAddedToArsenal.set(false);
-        }, 300); // Coincide con la duración de reward-fade-out
+        }, 300);
     } else {
         this.isRewardModalOpen.set(false);
         this.rewardAnimationStep.set('initial');

@@ -26,6 +26,16 @@ export interface UserOrder {
   customerName: string;
   shippingCost?: number;
   taxes?: number;
+  deliveryMethod?: 'pickup' | 'delivery' | 'shipping';
+  pickupPoint?: string;
+  deliveryVehicle?: 'moto' | 'carro';
+  deliveryZone?: string;
+  guideNumber?: string;
+  // ✅ INICIO: CAMPOS AÑADIDOS PARA LOGÍSTICA ENRIQUECIDA
+  customerPhone?: string;
+  paymentMethod?: 'pago_movil' | 'binance' | 'cash';
+  paymentReference?: string;
+  // ✅ FIN: CAMPOS AÑADIDOS
 }
 
 @Injectable({
@@ -37,6 +47,9 @@ export class UserDataService {
   private platformId = inject(PLATFORM_ID);
 
   private readonly ORDERS_STORAGE_KEY = 'baratongo_all_orders';
+  // ✅ INICIO: SE AÑADE LA CLAVE PARA GUARDAR EL ARSENAL
+  private readonly ARSENAL_STORAGE_KEY = 'baratongo_user_arsenal';
+  // ✅ FIN: SE AÑADE LA CLAVE
 
   private _allOrders = signal<UserOrder[]>([]);
 
@@ -58,12 +71,25 @@ export class UserDataService {
         this._allOrders.set(JSON.parse(storedOrders));
       }
 
+      // ✅ INICIO: SE CARGA EL ARSENAL GUARDADO AL INICIAR EL SERVICIO
+      const storedArsenal = localStorage.getItem(this.ARSENAL_STORAGE_KEY);
+      if (storedArsenal) {
+        this.arsenal.set(JSON.parse(storedArsenal));
+      }
+      // ✅ FIN: SE CARGA EL ARSENAL
+
       // 2. Listener para sincronizar entre pestañas.
       window.addEventListener('storage', (event) => {
         if (event.key === this.ORDERS_STORAGE_KEY && event.newValue) {
           console.log('[Storage Event] Se detectó un cambio en los pedidos. Actualizando estado...');
           this._allOrders.set(JSON.parse(event.newValue));
         }
+        // ✅ INICIO: SE SINCRONIZA EL ARSENAL ENTRE PESTAÑAS
+        if (event.key === this.ARSENAL_STORAGE_KEY && event.newValue) {
+            console.log('[Storage Event] Se detectó un cambio en el arsenal. Actualizando estado...');
+            this.arsenal.set(JSON.parse(event.newValue));
+        }
+        // ✅ FIN: SE SINCRONIZA EL ARSENAL
       });
     }
 
@@ -73,6 +99,14 @@ export class UserDataService {
         localStorage.setItem(this.ORDERS_STORAGE_KEY, JSON.stringify(this._allOrders()));
       }
     });
+
+    // ✅ INICIO: SE AÑADE EFECTO PARA GUARDAR EL ARSENAL EN LOCALSTORAGE
+    effect(() => {
+      if (isPlatformBrowser(this.platformId)) {
+        localStorage.setItem(this.ARSENAL_STORAGE_KEY, JSON.stringify(this.arsenal()));
+      }
+    });
+    // ✅ FIN: SE AÑADE EFECTO
 
     effect(() => {
       if (!this.authService.currentUser()) {

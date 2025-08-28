@@ -90,12 +90,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     const newOrderStatus: UserOrderStatus = 'Procesando';
 
     const shippingAddressValue = this.checkoutService.shippingAddress();
-    const formattedAddress = typeof shippingAddressValue === 'string'
-      ? shippingAddressValue
-      : `${shippingAddressValue.line1}, ${shippingAddressValue.city}, ${shippingAddressValue.state}`;
+    const formattedAddress = `${shippingAddressValue.line1}, ${shippingAddressValue.city}, ${shippingAddressValue.state}`;
 
-    // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
-    // Se añaden las propiedades 'customerName' y 'customerEmail' que faltaban.
+    const taxes = this.totalPrice() * 0.16;
+
     const newUserOrder: UserOrder = {
       id: orderId,
       date: newOrderDate,
@@ -103,10 +101,21 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       status: newOrderStatus,
       items: this.cartStore.items().map(item => ({ product: item.product, quantity: item.quantity })),
       shippingAddress: formattedAddress,
-      customerName: currentUser.fullName, // <-- Propiedad añadida
-      customerEmail: currentUser.email,   // <-- Propiedad añadida
+      customerName: currentUser.fullName,
+      customerEmail: currentUser.email,
+      shippingCost: this.checkoutService.shippingCost(),
+      taxes: taxes,
+      deliveryMethod: this.checkoutService.deliveryMethod() ?? undefined,
+      pickupPoint: this.checkoutService.selectedPickupPoint() ?? undefined,
+      deliveryVehicle: this.checkoutService.selectedDeliveryVehicle() ?? undefined,
+      deliveryZone: this.checkoutService.selectedDeliveryZone() ?? undefined,
+      guideNumber: this.checkoutService.deliveryMethod() === 'shipping' ? `MRW-${Math.floor(100000000 + Math.random() * 900000000)}` : undefined,
+      // ✅ INICIO: SE GUARDAN LOS DATOS ENRIQUECIDOS
+      customerPhone: this.checkoutService.customerPhone(),
+      paymentMethod: this.checkoutService.paymentMethod() ?? undefined,
+      paymentReference: this.checkoutService.paymentReference() ?? undefined
+      // ✅ FIN: SE GUARDAN LOS DATOS ENRIQUECIDOS
     };
-    // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
     const adminOrderPayload: AdminOrderDetail = {
       id: `#${orderId}`,

@@ -5,6 +5,7 @@
             <i class="fas fa-arrow-left mr-2"></i>Volver a Mis Misiones
         </a>
         <h1 class="font-headings text-4xl md:text-5xl font-bold">Misión #{{ orderData.id }}</h1>
+        <!-- ✅ LÍNEA CORREGIDA: Se reincorpora la fecha del pedido para usar el DatePipe -->
         <p class="text-text-secondary text-lg">
             Realizado el {{ orderData.date | date:'fullDate' }} | Estado Actual:
             <span class="font-semibold transition-colors duration-500" [ngClass]="currentStatusInfo().color">{{ currentStatusInfo().text }}</span>
@@ -86,23 +87,73 @@
             </div>
 
             <div class="bg-dark-bg-secondary rounded-xl shadow-lg p-6 animate-fade-in-up" style="animation-delay: 500ms;">
-                <h2 class="font-headings text-2xl font-bold mb-4">Punto de Entrega</h2>
-                <address class="not-italic text-text-secondary">
-                    <strong class="text-text-primary">{{ orderData.customerName }}</strong><br>
-                    {{ orderData.shippingAddress }}
-                </address>
-            </div>
-
-            <div class="bg-dark-bg-secondary rounded-xl shadow-lg p-6 animate-fade-in-up" style="animation-delay: 600ms;">
-                <h2 class="font-headings text-2xl font-bold mb-4">Acciones Rápidas</h2>
-                <div class="space-y-3">
-                     <button class="w-full text-left bg-border-color/50 hover:bg-border-color transition-colors duration-200 p-3 rounded-lg flex items-center">
-                        <i class="fas fa-headset w-6 text-center mr-3 text-primary-accent"></i> Contactar Soporte
-                    </button>
-                    <button class="w-full text-left bg-border-color/50 hover:bg-border-color transition-colors duration-200 p-3 rounded-lg flex items-center">
-                        <i class="fas fa-file-invoice-dollar w-6 text-center mr-3 text-primary-accent"></i> Ver Factura
-                    </button>
-                </div>
+                @switch (orderData.deliveryMethod) {
+                    @case ('shipping') {
+                        <div>
+                            <div class="flex items-center gap-4 mb-3">
+                                <i class="fas fa-truck-fast text-primary-accent text-xl"></i>
+                                <h2 class="font-headings text-sm uppercase tracking-widest text-text-secondary">Logística de la Misión</h2>
+                            </div>
+                            <div class="bg-dark-bg p-4 rounded-lg space-y-3 text-sm">
+                                <div class="flex justify-between"><span class="text-text-secondary">Contacto:</span> <strong>{{ orderData.customerPhone }}</strong></div>
+                                <div class="flex justify-between"><span class="text-text-secondary">Método Pago:</span> <strong class="capitalize">{{ orderData.paymentMethod?.replace('_', ' ') }}</strong></div>
+                                @if(orderData.paymentReference) {
+                                <div class="flex justify-between"><span class="text-text-secondary">Referencia:</span> <strong class="font-mono">{{ orderData.paymentReference }}</strong></div>
+                                }
+                                <hr class="border-border-color/50 my-2">
+                                <div class="flex justify-between"><span class="text-text-secondary">Método Entrega:</span> <strong class="font-mono">Envío Nacional</strong></div>
+                                <div class="flex justify-between"><span class="text-text-secondary">Operador:</span> <strong>MRW</strong></div>
+                                <div class="flex justify-between items-center"><span class="text-text-secondary">N° Guía:</span> <a href="#" class="font-mono text-primary-accent hover:underline">{{ orderData.guideNumber }}</a></div>
+                            </div>
+                        </div>
+                    }
+                    @case ('delivery') {
+                        <div>
+                            <div class="flex items-center gap-4 mb-3">
+                                <i class="fas fa-motorcycle text-primary-accent text-xl"></i>
+                                <h2 class="font-headings text-sm uppercase tracking-widest text-text-secondary">Logística de la Misión</h2>
+                            </div>
+                            <div class="bg-dark-bg p-4 rounded-lg space-y-3 text-sm">
+                                <div class="flex justify-between"><span class="text-text-secondary">Contacto:</span> <strong>{{ orderData.customerPhone }}</strong></div>
+                                <div class="flex justify-between"><span class="text-text-secondary">Método Pago:</span> <strong class="capitalize">{{ orderData.paymentMethod?.replace('_', ' ') }}</strong></div>
+                                @if(orderData.paymentReference) {
+                                <div class="flex justify-between"><span class="text-text-secondary">Referencia:</span> <strong class="font-mono">{{ orderData.paymentReference }}</strong></div>
+                                }
+                                <hr class="border-border-color/50 my-2">
+                                <div class="flex justify-between"><span class="text-text-secondary">Método Entrega:</span> <strong class="font-mono">Delivery Local</strong></div>
+                                <div class="flex justify-between"><span class="text-text-secondary">Vehículo:</span> <strong class="capitalize">{{ orderData.deliveryVehicle }}</strong></div>
+                                <div class="flex justify-between"><span class="text-text-secondary">Zona:</span> <strong>{{ orderData.deliveryZone }}</strong></div>
+                            </div>
+                        </div>
+                    }
+                    @case ('pickup') {
+                         <div>
+                            <div class="flex items-center gap-4 mb-3">
+                                <i class="fas fa-store text-primary-accent text-xl"></i>
+                                <h2 class="font-headings text-sm uppercase tracking-widest text-text-secondary">Logística de la Misión</h2>
+                            </div>
+                            <div class="bg-dark-bg p-4 rounded-lg space-y-3 text-sm">
+                                <div class="flex justify-between"><span class="text-text-secondary">Contacto:</span> <strong>{{ orderData.customerPhone }}</strong></div>
+                                <div class="flex justify-between"><span class="text-text-secondary">Método Pago:</span> <strong class="capitalize">{{ orderData.paymentMethod?.replace('_', ' ') }}</strong></div>
+                                @if(orderData.paymentReference) {
+                                <div class="flex justify-between"><span class="text-text-secondary">Referencia:</span> <strong class="font-mono">{{ orderData.paymentReference }}</strong></div>
+                                }
+                                <hr class="border-border-color/50 my-2">
+                                <div class="flex justify-between"><span class="text-text-secondary">Método Entrega:</span> <strong class="font-mono">Retiro Personal</strong></div>
+                                <div class="flex justify-between"><span class="text-text-secondary">Punto:</span> <strong>{{ orderData.pickupPoint }}</strong></div>
+                            </div>
+                        </div>
+                    }
+                    @default {
+                        <div class="bg-dark-bg-secondary rounded-xl shadow-lg p-6">
+                            <h2 class="font-headings text-2xl font-bold mb-4">Punto de Entrega</h2>
+                            <address class="not-italic text-text-secondary">
+                                <strong class="text-text-primary">{{ orderData.customerName }}</strong><br>
+                                {{ orderData.shippingAddress }}
+                            </address>
+                        </div>
+                    }
+                }
             </div>
 
             @if (orderData.status === 'Entregado') {
@@ -125,7 +176,7 @@
 }
 
 @if(isRewardModalOpen()) {
-  <div class="fixed inset-0 bg-dark-bg/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-modal-fade-in">
+  <div id="reward-modal" class="fixed inset-0 bg-dark-bg/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-modal-fade-in">
       <div class="absolute inset-0" (click)="closeRewardModal()"></div>
       <button (click)="closeRewardModal()" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors z-50 opacity-0" [style.opacity]="rewardAnimationStep() === 'reward' ? '1' : '0'" [style.transition]="'opacity 0.3s'">
           <i class="fas fa-times text-2xl"></i>
@@ -166,21 +217,13 @@
 }
 
 <style>
-    /* Global fade-in-up for sections */
     @keyframes fade-in-up { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     .animate-fade-in-up { animation: fade-in-up 0.5s ease-out forwards; }
-
-    /* Pulse glow for the reward button */
     @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.2); } 50% { box-shadow: 0 0 25px 10px rgba(255, 215, 0, 0.4); } }
     .animate-pulse-glow { animation: pulse-glow 2.5s infinite ease-in-out; }
-
-    /* Modal overlay animations */
     @keyframes modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
     .animate-modal-fade-in { animation: modal-fade-in 0.3s ease-out forwards; }
     @keyframes reward-fade-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
-
-
-    /* Crate animation sequence */
     @keyframes crate-drop { 0% { transform: translateY(-100%) scale(0.7); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
     @keyframes crate-shake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
     @keyframes light-burst { 0% { transform: scale(0); opacity: 0; } 50% { opacity: 0.8; } 100% { transform: scale(3); opacity: 0; } }
@@ -189,18 +232,16 @@
     .animate-crate-sequence {
         animation:
             crate-drop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-            crate-shake 0.5s 0.4s ease-in-out, /* Starts after drop finishes */
-            crate-shatter 0.4s 0.9s ease-in forwards; /* Starts after shake almost finishes */
+            crate-shake 0.5s 0.4s ease-in-out,
+            crate-shatter 0.4s 0.9s ease-in forwards;
     }
     .animate-light-burst {
-        animation: light-burst 0.4s 0.5s ease-out forwards; /* Starts after crate drop begins */
+        animation: light-burst 0.4s 0.5s ease-out forwards;
     }
 
-    /* Reward reveal animation */
     @keyframes reward-reveal { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 80% { opacity: 1; transform: scale(1.05) translateY(0); } 100% { transform: scale(1); } }
     .animate-reward-reveal { animation: reward-reveal 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
 
-    /* Coupon shimmer effect */
     @keyframes coupon-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
     .coupon-shimmer-effect {
         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
