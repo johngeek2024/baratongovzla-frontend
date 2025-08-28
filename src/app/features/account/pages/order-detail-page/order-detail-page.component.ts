@@ -45,7 +45,7 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
     'Procesando': { text: 'En Preparación', color: 'text-warning', width: '50%' },
     'Enviado': { text: 'En Tránsito', color: 'text-warning', width: '75%' },
     'Entregado': { text: 'Entregado', color: 'text-success', width: '100%' },
-    'Cancelado': { text: 'Cancelado', color: 'text-danger', width: '0%' }
+    'Cancelado': { text: 'Cancelado', color: 'text-danger', width: '0%' } // Added for completeness, if applicable
   };
 
   public currentStatusInfo = computed(() => {
@@ -96,37 +96,32 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
 
   openRewardModal(): void {
     this.isRewardModalOpen.set(true);
-    // Secuencia de animación idéntica a la del HTML
+    // Inicia la animación de la caja con un pequeño retraso
     setTimeout(() => {
-        this.rewardAnimationStep.set('crate');
-        setTimeout(() => {
-            // La animación de la caja temblando es por CSS
-            setTimeout(() => {
-                // Shatter y light burst son por CSS
-                setTimeout(() => {
-                    this.rewardAnimationStep.set('reward');
-                }, 200);
-            }, 500);
-        }, 400);
-    }, 50);
+      this.rewardAnimationStep.set('crate');
+      // Después de que la caja cae (0.4s) y tiembla (0.5s), más un pequeño buffer
+      setTimeout(() => {
+        this.rewardAnimationStep.set('reward'); // Transiciona a mostrar la recompensa
+      }, 950); // 400ms (drop) + 500ms (shake) + 50ms (buffer) = 950ms
+    }, 50); // Pequeño retraso inicial para asegurar que el modal esté visible antes de la animación de la caja
   }
 
 
   closeRewardModal(): void {
-    const modal = document.getElementById('reward-modal');
-    if (modal) {
-        modal.style.animation = 'modal-fade-out 0.3s ease forwards';
+    const modalContent = document.getElementById('reward-modal-content');
+    if (modalContent) {
+        modalContent.style.animation = 'reward-fade-out 0.3s ease-out forwards';
         setTimeout(() => {
             this.isRewardModalOpen.set(false);
             this.rewardAnimationStep.set('initial');
             this.successfullyAddedToArsenal.set(false);
-        }, 300);
+        }, 300); // Coincide con la duración de reward-fade-out
     } else {
         this.isRewardModalOpen.set(false);
         this.rewardAnimationStep.set('initial');
         this.successfullyAddedToArsenal.set(false);
     }
-}
+  }
 
   copyCoupon(event: MouseEvent): void {
     const couponElement = (event.currentTarget as HTMLElement).querySelector('span');
