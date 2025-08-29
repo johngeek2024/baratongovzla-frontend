@@ -1,3 +1,4 @@
+// src/app/features/admin/admin.routes.ts
 import { Routes } from '@angular/router';
 import { adminAuthGuard } from '../../core/guards/admin-auth.guard';
 import { AdminLayoutComponent } from './pages/admin-layout/admin-layout.component';
@@ -23,7 +24,6 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'marketing/new', loadComponent: () => import('./pages/banner-edit-page/banner-edit-page.component').then(c => c.BannerEditPageComponent) },
       { path: 'marketing/edit/:id', loadComponent: () => import('./pages/banner-edit-page/banner-edit-page.component').then(c => c.BannerEditPageComponent) },
       { path: 'settings', loadComponent: () => import('./components/settings-panel/settings-panel.component').then(c => c.SettingsPanelComponent) },
-      // ✅ MEJORA: Se añade la ruta para el nuevo panel de analítica.
       { path: 'intelligence', loadComponent: () => import('./components/analytics-panel/analytics-panel.component').then(c => c.AnalyticsPanelComponent) },
     ],
   },

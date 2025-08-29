@@ -1,3 +1,4 @@
+// src/app/core/services/user-data.service.ts
 import { Injectable, signal, inject, effect, computed, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { AuthService } from './auth.service';
@@ -31,11 +32,9 @@ export interface UserOrder {
   deliveryVehicle?: 'moto' | 'carro';
   deliveryZone?: string;
   guideNumber?: string;
-  // ✅ INICIO: CAMPOS AÑADIDOS PARA LOGÍSTICA ENRIQUECIDA
   customerPhone?: string;
   paymentMethod?: 'pago_movil' | 'binance' | 'cash';
   paymentReference?: string;
-  // ✅ FIN: CAMPOS AÑADIDOS
 }
 
 @Injectable({
@@ -47,9 +46,7 @@ export class UserDataService {
   private platformId = inject(PLATFORM_ID);
 
   private readonly ORDERS_STORAGE_KEY = 'baratongo_all_orders';
-  // ✅ INICIO: SE AÑADE LA CLAVE PARA GUARDAR EL ARSENAL
   private readonly ARSENAL_STORAGE_KEY = 'baratongo_user_arsenal';
-  // ✅ FIN: SE AÑADE LA CLAVE
 
   private _allOrders = signal<UserOrder[]>([]);
 
@@ -65,48 +62,58 @@ export class UserDataService {
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
-      // 1. Carga inicial desde localStorage al arrancar.
+      // --- CORRECCIÓN DEFINITIVA: SANEAR DATOS AL CARGAR ---
       const storedOrders = localStorage.getItem(this.ORDERS_STORAGE_KEY);
       if (storedOrders) {
-        this._allOrders.set(JSON.parse(storedOrders));
+        try {
+          let parsedData = JSON.parse(storedOrders);
+          // 1. Asegura que los datos cargados sean un array.
+          if (Array.isArray(parsedData)) {
+            // 2. Sanea cada objeto del array para garantizar que tenga el formato correcto.
+            const sanitizedOrders: UserOrder[] = parsedData
+              .filter(order => typeof order === 'object' && order !== null && order.id) // Filtra elementos corruptos o nulos.
+              .map(order => ({
+                ...order,
+                items: Array.isArray(order.items) ? order.items : [] // Asegura que 'items' sea siempre un array.
+              }));
+            this._allOrders.set(sanitizedOrders);
+          } else {
+            // Si los datos guardados no son un array, se inicia con un estado limpio.
+            this._allOrders.set([]);
+          }
+        } catch (e) {
+          console.error("Fallo al parsear los pedidos desde localStorage, reseteando.", e);
+          this._allOrders.set([]); // Resetea si el JSON es inválido.
+        }
       }
+      // --- FIN DE LA CORRECCIÓN ---
 
-      // ✅ INICIO: SE CARGA EL ARSENAL GUARDADO AL INICIAR EL SERVICIO
       const storedArsenal = localStorage.getItem(this.ARSENAL_STORAGE_KEY);
       if (storedArsenal) {
         this.arsenal.set(JSON.parse(storedArsenal));
       }
-      // ✅ FIN: SE CARGA EL ARSENAL
 
-      // 2. Listener para sincronizar entre pestañas.
       window.addEventListener('storage', (event) => {
         if (event.key === this.ORDERS_STORAGE_KEY && event.newValue) {
-          console.log('[Storage Event] Se detectó un cambio en los pedidos. Actualizando estado...');
           this._allOrders.set(JSON.parse(event.newValue));
         }
-        // ✅ INICIO: SE SINCRONIZA EL ARSENAL ENTRE PESTAÑAS
         if (event.key === this.ARSENAL_STORAGE_KEY && event.newValue) {
-            console.log('[Storage Event] Se detectó un cambio en el arsenal. Actualizando estado...');
             this.arsenal.set(JSON.parse(event.newValue));
         }
-        // ✅ FIN: SE SINCRONIZA EL ARSENAL
       });
     }
 
-    // 3. Efecto para guardar en localStorage cada vez que la señal _allOrders cambie.
     effect(() => {
       if (isPlatformBrowser(this.platformId)) {
         localStorage.setItem(this.ORDERS_STORAGE_KEY, JSON.stringify(this._allOrders()));
       }
     });
 
-    // ✅ INICIO: SE AÑADE EFECTO PARA GUARDAR EL ARSENAL EN LOCALSTORAGE
     effect(() => {
       if (isPlatformBrowser(this.platformId)) {
         localStorage.setItem(this.ARSENAL_STORAGE_KEY, JSON.stringify(this.arsenal()));
       }
     });
-    // ✅ FIN: SE AÑADE EFECTO
 
     effect(() => {
       if (!this.authService.currentUser()) {
@@ -132,19 +139,7 @@ export class UserDataService {
   public getAllOrdersForAdmin = computed(() => this._allOrders());
 
   public addNewOrder(order: UserOrder): void {
-    // --- Lógica de Simulación ---
     this._allOrders.update(currentOrders => [order, ...currentOrders]);
-
-    // --- Lógica de Producción ---
-    // En producción, enviarías el pedido a la API y el backend se encargaría de notificar
-    // a los administradores a través de WebSocket, lo que activaría el listener de 'storage'.
-    /*
-    this.http.post<UserOrder>('/api/orders', order).subscribe(newOrder => {
-      // Opcionalmente, podrías actualizar el estado local con la respuesta del servidor.
-      // Pero con el listener de 'storage', la actualización sería automática si el backend
-      // notifica a todos los clientes.
-    });
-    */
   }
 
   public updateOrderStatus(orderId: string, status: UserOrderStatus): void {

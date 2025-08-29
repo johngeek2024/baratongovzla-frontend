@@ -1,3 +1,4 @@
+<!-- src/app/features/admin/components/orders-panel/orders-panel.component.html -->
 <header class="flex justify-between items-center">
   <h1 class="text-2xl sm:text-3xl font-bold">Gestión de Pedidos</h1>
 </header>
@@ -26,7 +27,8 @@
       } @else {
         @for (order of orders(); track order.id) {
           <tr class="last:border-b-0">
-            <td class="p-4 text-left border-b border-border-color font-semibold text-white">{{ order.id }}</td>
+            <!-- CORRECCIÓN: Se añade el # manualmente en la vista -->
+            <td class="p-4 text-left border-b border-border-color font-semibold text-white">#{{ order.id }}</td>
             <td class="p-4 text-left border-b border-border-color">{{ order.customerName }}</td>
             <td class="p-4 text-left border-b border-border-color">{{ order.date | date: 'dd MMM, yyyy' }}</td>
             <td class="p-4 text-left border-b border-border-color">${{ order.total.toFixed(2) }}</td>
@@ -56,6 +58,7 @@
               </div>
             </td>
             <td class="p-4 text-left border-b border-border-color">
+              <!-- CORRECCIÓN: El routerLink ahora usa el ID limpio (sin #) -->
               <a [routerLink]="['/admin/orders', order.id]" class="bg-transparent border-none text-text-secondary cursor-pointer text-lg p-2 transition-colors hover:text-primary-accent" title="Ver Detalles del Pedido">
                 <i class="fas fa-eye"></i>
               </a>
