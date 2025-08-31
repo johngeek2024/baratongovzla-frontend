@@ -82,12 +82,64 @@
             </div>
         </div>
     </div>
-  } @else {
+
+    @if (currentOrder.status === 'Entregado') {
+        <div class="bg-gradient-to-br from-secondary-accent/80 to-amber-600 rounded-xl p-6 text-center text-dark-bg-text relative overflow-hidden animate-pulse-glow mt-8">
+            <i class="fas fa-award text-5xl text-amber-900/50 absolute -top-2 -left-2"></i>
+            <h2 class="font-headings text-2xl font-bold mb-2">¡Misión Completada!</h2>
+            <p class="mb-4">Un paquete de suministros ha llegado.</p>
+            <button (click)="openRewardModal()" class="bg-dark-bg hover:bg-black text-secondary-accent font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 w-full">
+                <i class="fas fa-box-open mr-2"></i>Abrir Suministros
+            </button>
+        </div>
+    }
+    } @else {
     <p class="text-text-secondary">No se pudo cargar la información del pedido.</p>
   }
 </div>
 
+@if(isRewardModalOpen()) {
+  <div id="reward-modal" class="fixed inset-0 bg-dark-bg/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-modal-fade-in">
+      <div class="absolute inset-0" (click)="closeRewardModal()"></div>
+      <button (click)="closeRewardModal()" class="absolute top-4 right-4 text-white/50 hover:text-white transition-colors z-50 opacity-0" [style.opacity]="rewardAnimationStep() === 'reward' ? '1' : '0'" [style.transition]="'opacity 0.3s'">
+          <i class="fas fa-times text-2xl"></i>
+      </button>
+
+      @if(rewardAnimationStep() === 'crate') {
+        <div class="relative w-64 h-64">
+            <div class="absolute inset-0 rounded-full bg-secondary-accent/50 animate-light-burst"></div>
+            <div class="relative w-full h-full flex items-center justify-center opacity-0 animate-crate-sequence">
+                <i class="fas fa-box text-9xl text-amber-300 drop-shadow-[0_0_15px_rgba(255,215,0,0.7)]"></i>
+            </div>
+        </div>
+      }
+
+      @if (rewardAnimationStep() === 'reward') {
+        <div id="reward-modal-content" (click)="$event.stopPropagation()" class="text-center bg-dark-bg-secondary p-8 rounded-xl shadow-2xl max-w-sm relative z-10 border border-border-color animate-reward-reveal">
+            <div class="relative w-16 h-16 mx-auto mb-4">
+                <div class="absolute inset-0 bg-secondary-accent/20 rounded-full"></div>
+                <i class="fas fa-award text-5xl text-secondary-accent relative z-10 flex items-center justify-center w-full h-full"></i>
+            </div>
+            <h2 class="font-headings text-3xl font-bold mb-2 text-white">¡Recompensa Adquirida!</h2>
+            <p class="font-bold text-lg text-secondary-accent">¡Cupón de 10% OFF!</p>
+            <p (click)="copyCoupon($event)" class="font-mono bg-dark-bg rounded p-2 my-4 text-secondary-accent tracking-widest cursor-pointer relative overflow-hidden coupon-shimmer-effect" title="Click para copiar">
+                <span class="relative z-10">BARATONGO10</span>
+            </p>
+            <button (click)="handleAddToArsenal()" class="bg-primary-accent hover:opacity-80 text-dark-bg-text font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 w-full mt-4" [disabled]="isAddingToArsenal() || successfullyAddedToArsenal()">
+              @if (isAddingToArsenal()) {
+                <i class="fas fa-spinner animate-spin mr-2"></i> <span>Añadiendo...</span>
+              } @else if (successfullyAddedToArsenal()) {
+                <i class="fas fa-check mr-2"></i> <span>Añadido al Arsenal</span>
+              } @else {
+                <i class="fas fa-archive mr-2"></i> <span>Añadir a Mi Arsenal</span>
+              }
+            </button>
+        </div>
+      }
+  </div>
+}
 <style>
+  /* Se mantienen los estilos de la plantilla anterior. */
   .data-card {
     @apply rounded-2xl border border-border-color bg-dark-bg-secondary shadow-lg;
   }
@@ -118,4 +170,37 @@
   .item-price { @apply font-semibold text-lg; }
   .summary-row { @apply flex justify-between; }
   .total { @apply text-xl font-bold border-t border-border-color pt-4 mt-4; }
+
+  /* Animaciones restauradas */
+  @keyframes fade-in-up { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-fade-in-up { animation: fade-in-up 0.5s ease-out forwards; }
+  @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.2); } 50% { box-shadow: 0 0 25px 10px rgba(255, 215, 0, 0.4); } }
+  .animate-pulse-glow { animation: pulse-glow 2.5s infinite ease-in-out; }
+  @keyframes modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
+  .animate-modal-fade-in { animation: modal-fade-in 0.3s ease-out forwards; }
+  @keyframes reward-fade-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
+  @keyframes crate-drop { 0% { transform: translateY(-100%) scale(0.7); opacity: 0; } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+  @keyframes crate-shake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
+  @keyframes light-burst { 0% { transform: scale(0); opacity: 0; } 50% { opacity: 0.8; } 100% { transform: scale(3); opacity: 0; } }
+  @keyframes crate-shatter { 0% { transform: scale(1) rotate(0); opacity: 1; } 100% { transform: scale(1.5) rotate(15deg); opacity: 0; } }
+
+  .animate-crate-sequence {
+      animation:
+          crate-drop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+          crate-shake 0.5s 0.4s ease-in-out,
+          crate-shatter 0.4s 0.9s ease-in forwards;
+  }
+  .animate-light-burst {
+      animation: light-burst 0.4s 0.5s ease-out forwards;
+  }
+
+  @keyframes reward-reveal { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 80% { opacity: 1; transform: scale(1.05) translateY(0); } 100% { transform: scale(1); } }
+  .animate-reward-reveal { animation: reward-reveal 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+
+  @keyframes coupon-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+  .coupon-shimmer-effect {
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      background-size: 200% 100%;
+      animation: coupon-shimmer 2s infinite linear;
+  }
 </style>

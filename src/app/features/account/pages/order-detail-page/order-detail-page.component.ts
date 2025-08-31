@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, OnInit } from '@angular/core';
+import { Component, computed, inject, signal, OnInit, OnDestroy, effect } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { UserDataService, UserOrder, UserOrderStatus } from '../../../../core/services/user-data.service';
@@ -15,12 +15,10 @@ interface TimelineStep {
   imports: [CommonModule, RouterModule, CurrencyPipe, DatePipe],
   templateUrl: './order-detail-page.component.html',
 })
-export class OrderDetailPageComponent implements OnInit {
-  // ✅ CORRECCIÓN: Se inyecta ActivatedRoute para manejar los parámetros de la URL de forma segura.
+export class OrderDetailPageComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private userDataService = inject(UserDataService);
 
-  // ✅ CORRECCIÓN: Se elimina el input() y se reemplaza por una señal interna.
   private orderId = signal<string | null>(null);
 
   public order = computed<UserOrder | undefined>(() => {
@@ -64,10 +62,72 @@ export class OrderDetailPageComponent implements OnInit {
     }));
   });
 
-  // ✅ CORRECCIÓN: Se utiliza ngOnInit para suscribirse de forma segura al parámetro de la ruta.
+  // ✅ INICIO: RESTAURACIÓN DE LÓGICA DE RECOMPENSA
+  public isRewardModalOpen = signal(false);
+  public rewardAnimationStep = signal<'initial' | 'crate' | 'reward'>('initial');
+  public isAddingToArsenal = signal(false);
+  public successfullyAddedToArsenal = signal(false);
+
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       this.orderId.set(params.get('id'));
     });
   }
+
+  ngOnDestroy(): void {
+    // Si hubiera timers o suscripciones, se limpiarían aquí.
+  }
+
+  openRewardModal(): void {
+    this.isRewardModalOpen.set(true);
+    setTimeout(() => {
+      this.rewardAnimationStep.set('crate');
+      setTimeout(() => {
+        // Pequeño retraso para permitir la animación de la caja antes de revelar la recompensa
+        this.rewardAnimationStep.set('reward');
+      }, 1000); // Ajusta este tiempo si la animación de la caja es más larga o más corta
+    }, 50); // Pequeño retraso para que el modal se muestre antes de la animación de la caja
+  }
+
+  closeRewardModal(): void {
+    const modalContent = document.getElementById('reward-modal-content');
+    if (modalContent) {
+      // Aplicar animación de salida si el contenido está presente
+      modalContent.style.animation = 'reward-fade-out 0.3s ease-out forwards';
+      setTimeout(() => {
+        this.isRewardModalOpen.set(false);
+        this.rewardAnimationStep.set('initial');
+        this.successfullyAddedToArsenal.set(false);
+      }, 300); // Coincide con la duración de la animación 'reward-fade-out'
+    } else {
+      // Si el contenido no está presente, simplemente cierra el modal
+      this.isRewardModalOpen.set(false);
+      this.rewardAnimationStep.set('initial');
+      this.successfullyAddedToArsenal.set(false);
+    }
+  }
+
+  copyCoupon(event: MouseEvent): void {
+    const couponElement = (event.currentTarget as HTMLElement).querySelector('span');
+    if (couponElement?.textContent) {
+      navigator.clipboard.writeText(couponElement.textContent);
+      const originalText = couponElement.textContent;
+      couponElement.textContent = '¡Copiado!';
+      setTimeout(() => { couponElement.textContent = originalText; }, 1500);
+    }
+  }
+
+  handleAddToArsenal(): void {
+    const currentOrder = this.order();
+    if (!currentOrder?.items.length) return;
+
+    this.isAddingToArsenal.set(true);
+    setTimeout(() => {
+      const productsFromOrder = currentOrder.items.map(item => item.product);
+      this.userDataService.addProductsToArsenal(productsFromOrder); // Asume que este método existe en UserDataService
+      this.isAddingToArsenal.set(false);
+      this.successfullyAddedToArsenal.set(true);
+    }, 700);
+  }
+  // ✅ FIN: RESTAURACIÓN DE LÓGICA DE RECOMPENSA
 }
