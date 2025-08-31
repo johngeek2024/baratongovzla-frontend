@@ -5,6 +5,7 @@ import { switchMap } from 'rxjs';
 import { OrderAdminService } from '../../services/order-admin.service';
 import { AdminOrderDetail, OrderStatus } from '../../models/order.model';
 
+// Interfaces para la nueva lógica de la plantilla
 interface TimelineStep {
   name: string;
   status: 'completed' | 'active' | 'pending' | 'cancelled';
@@ -32,6 +33,7 @@ export class OrderDetailPageComponent implements OnInit {
   isActionsMenuOpen = signal(false);
   copyTooltip = signal<{ target: string; visible: boolean } | null>(null);
 
+  // Lógica para la Línea de Tiempo y el Registro de Actividad
   private readonly statusOrder: OrderStatus[] = ['Procesando', 'Enviado', 'Entregado'];
 
   timelineSteps = computed<TimelineStep[]>(() => {
@@ -47,7 +49,9 @@ export class OrderDetailPageComponent implements OnInit {
     if (orderStatus === 'Cancelado') {
         return baseSteps.map(step => ({ ...step, status: 'cancelled' }));
     }
-    const activeIndex = this.statusOrder.indexOf(orderStatus!) + 2;
+
+    const activeIndex = this.statusOrder.indexOf(orderStatus!) + 2; // +2 to account for "Realizado" and "Pagado"
+
     return baseSteps.map((step, index) => ({
       ...step,
       status: index < activeIndex ? 'completed' : (index === activeIndex ? 'active' : 'pending'),
@@ -56,11 +60,14 @@ export class OrderDetailPageComponent implements OnInit {
 
   activityLog = computed<ActivityLogItem[]>(() => {
       if (!this.order()) return [];
+      // Simulación de un registro de actividad
       return [
           { icon: 'fas fa-cogs', text: 'Estado cambiado a <strong>Procesando</strong>.', meta: 'Por <strong>AdminAura</strong> - Hoy a las 10:30 AM' },
-          { icon: 'fas fa-credit-card', text: `Pago de <strong>${this.totalPaid().toLocaleString('es-VE', { style: 'currency', currency: 'USD' })}</strong> confirmado.`, meta: 'Por <strong>Sistema</strong> - Hoy a las 9:15 AM' }
+          { icon: 'fas fa-credit-card', text: `Pago de <strong>${this.totalPaid()
+        .toLocaleString('es-VE', { style: 'currency', currency: 'USD' })}</strong> confirmado.`, meta: 'Por <strong>Sistema</strong> - Hoy a las 9:15 AM' }
       ];
   });
+
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
@@ -69,6 +76,7 @@ export class OrderDetailPageComponent implements OnInit {
     }
   }
 
+  // --- Análisis Financiero ---
   subtotal = computed(() => this.order()?.items.reduce((acc, item) => acc + (item.price * item.quantity), 0) ?? 0);
   shippingCost = computed(() => 10.00);
   discount = computed(() => this.subtotal() * 0.10);
@@ -80,7 +88,6 @@ export class OrderDetailPageComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.pipe(
       switchMap(params => {
-        // CORRECCIÓN DEFINITIVA: Se añade el '#' al ID limpio que viene de la URL antes de buscarlo.
         const id = `#${params.get('id') || ''}`;
         this.isLoading.set(true);
         return this.orderAdminService.getOrderById(id);

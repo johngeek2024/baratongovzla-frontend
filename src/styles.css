@@ -3,41 +3,42 @@
 @tailwind utilities;
 
 /* =============================================================== */
-/* DEFINICIÓN DE TEMAS PARA LA TIENDA PÚBLICA                      */
-/* Esta es la configuración de color para todo el sitio,           */
-/* excepto el panel de administración.                             */
+/* DEFINICIÓN DE TEMAS PARA LA TIENDA PÚBLICA Y PANEL DE ADMIN     */
 /* =============================================================== */
 
-/* --- TEMA POR DEFECTO (Home, etc.) --- */
 :root {
-  --color-dark-bg: 225 27% 8%;
-  --color-dark-bg-secondary: 222 47% 11%;
+  /* Paleta Principal Unificada */
+  --color-dark-bg: 231 60% 8%;               /* #0A0C1F */
+  --color-dark-bg-secondary: 222 47% 11%;    /* #121829 */
   --color-dark-bg-tertiary: 222 22% 17%;
-  --color-primary-accent: 223 100% 50%; /* Azul Eléctrico del Home */
-  --color-primary-accent-darker: 223 100% 45%;
+  --color-primary-accent: 206 100% 50%;      /* #00A9FF (Admin y default) */
+  --color-primary-accent-darker: 206 100% 45%;
   --color-secondary-accent: 45 100% 57%;
   --color-text-primary: 220 13% 91%;
   --color-text-secondary: 215 9% 65%;
   --color-text-on-dark: 220 14% 91%;
-  --color-border: 215 16% 27%;
+  --color-border: 220 13% 36%;
+
+  /* Colores Semánticos */
   --color-success: 145 63% 49%;
   --color-warning: 38 92% 53%;
   --color-danger: 4 85% 61%;
-  --color-badge-new: 200 100% 50%;   /* Azul Cian */
-  --color-badge-deal: 145 63% 49%;   /* Verde (success) */
-  --color-badge-soldout: 215 9% 65%; /* Gris (text-secondary) */
+  --color-profit: 145 63% 55%;             /* #4ade80 */
+
+  /* Colores de Superficie Específicos del Admin */
+  --color-dark-surface-1: 225 48% 18%;
+  --color-dark-surface-2: 222 24% 28%;      /* #1F2937 */
+
+  /* Colores para Badges (Etiquetas de Producto) */
+  --color-badge-new: 200 100% 50%;        /* Azul Cian */
+  --color-badge-deal: 145 63% 49%;       /* Verde (success) */
+  --color-badge-soldout: 215 9% 65%;     /* Gris (text-secondary) */
 }
 
-/* --- TEMA PARA PÁGINAS DE PRODUCTOS --- */
+/* --- TEMA PARA PÁGINAS DE PRODUCTOS (PLP/PDP) --- */
 .products-theme {
-  --color-dark-bg: 225 27% 8%;
-  --color-dark-bg-secondary: 222 47% 11%;
-  --color-primary-accent: 200 100% 50%; /* Azul Cian para productos */
+  --color-primary-accent: 200 100% 50%;      /* Azul Cian para productos */
   --color-primary-accent-darker: 200 100% 45%;
-  --color-secondary-accent: 45 100% 57%;
-  --color-text-primary: 220 13% 91%;
-  --color-text-secondary: 215 9% 65%;
-  --color-border: 215 16% 27%;
 }
 
 /* --- Estilos para la animación de aparición en scroll --- */
@@ -56,15 +57,15 @@
 @layer components {
   /* Estilos para los enlaces de categoría en el sidebar */
   .category-link {
-    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-text-on-dark font-medium hover:bg-primary-accent/10 hover:text-primary-accent transition-colors;
+    @apply flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-text-on-dark transition-colors hover:bg-primary-accent/10 hover:text-primary-accent;
   }
   .category-link.active {
-    @apply bg-primary-accent text-white font-bold;
+    @apply bg-primary-accent font-bold text-white;
   }
 
   /* Estilos para el interruptor (toggle) */
   .slider {
-    @apply absolute cursor-pointer inset-0 bg-border-color rounded-full transition-colors before:absolute before:h-4 before:w-4 before:left-1 before:bottom-1 before:bg-white before:rounded-full before:transition-transform peer-checked:bg-primary-accent peer-checked:before:translate-x-5;
+    @apply absolute inset-0 cursor-pointer rounded-full bg-border-color transition-colors before:absolute before:bottom-1 before:left-1 before:h-4 before:w-4 before:rounded-full before:bg-white before:transition-transform peer-checked:bg-primary-accent peer-checked:before:translate-x-5;
   }
 
   /* Estilos para los botones de vista activa (Grid/List, 2D/3D) */
@@ -74,13 +75,13 @@
 
   /* Componente de enlace para navegación legal */
   .nav-link-legal {
-    @apply block px-4 py-3 text-text-secondary rounded-lg font-medium border-l-[3px] border-transparent transition-all whitespace-nowrap;
+    @apply block whitespace-nowrap rounded-lg border-l-[3px] border-transparent px-4 py-3 font-medium text-text-secondary transition-all;
   }
   .nav-link-legal:hover {
-    @apply text-white bg-dark-bg-secondary;
+    @apply bg-dark-bg-secondary text-white;
   }
   .nav-link-legal.active {
-    @apply text-primary-accent border-primary-accent font-bold;
+    @apply border-primary-accent font-bold text-primary-accent;
   }
   /* Estilos para tarjetas activas en el checkout */
   .active-card {

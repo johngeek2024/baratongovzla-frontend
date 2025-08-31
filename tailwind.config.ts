@@ -29,6 +29,8 @@ const config: Config = {
         'badge-new': '#0ea5e9',
         'badge-exclusive': '#8b5cf6',
         'badge-offer': '#ef4444',
+        'profit': 'hsl(var(--color-profit) / <alpha-value>)',
+        'dark-surface-1': 'hsl(var(--color-dark-surface-1) / <alpha-value>)'
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
@@ -61,8 +63,10 @@ const config: Config = {
         'button-close': 'button-close-effect 0.4s ease-in-out',
       },
       boxShadow: {
-        'neon-primary': '0 0 8px hsl(var(--color-primary-accent)), 0 0 20px hsl(var(--color-primary-accent))',
-        'neon-secondary': '0 0 8px hsl(var(--color-secondary-accent)), 0 0 20px hsl(var(--color-secondary-accent))',
+        // ✅ INICIO: CORRECCIÓN QUIRÚRGICA DEL EFECTO NEÓN
+        'neon-primary': '0 0 10px hsl(var(--color-primary-accent) / 0.7), 0 0 25px hsl(var(--color-primary-accent) / 0.5)',
+        'neon-secondary': '0 0 10px hsl(var(--color-secondary-accent) / 0.7), 0 0 25px hsl(var(--color-secondary-accent) / 0.5)',
+        // ✅ FIN: CORRECCIÓN QUIRÚRGICA
       },
       textShadow: {
         DEFAULT: '0 2px 4px rgba(0, 0, 0, 0.5)',

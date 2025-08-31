@@ -1,14 +1,15 @@
 @if (isLoading()) {
-<div class="flex items-center justify-center py-20">
-    <i class="fas fa-spinner animate-spin text-4xl text-text-secondary"></i>
-    <p class="ml-4 text-text-secondary">Cargando detalles del comando...</p>
+<div class="flex h-full w-full items-center justify-center">
+    <div class="text-center">
+        <i class="fas fa-spinner animate-spin text-4xl text-text-secondary"></i>
+        <p class="mt-4 text-text-secondary">Cargando detalles del comando...</p>
+    </div>
 </div>
 } @else { @if (order(); as currentOrder) {
-<div class="mx-auto max-w-[1400px] p-4 md:p-8">
-    <!-- Encabezado del Pedido -->
+<div class="mx-auto max-w-[1400px]">
     <header class="mb-8 grid grid-cols-1 items-center gap-6 rounded-2xl border border-border-color bg-gradient-to-br from-dark-bg-secondary to-[#171d33] p-6 shadow-2xl shadow-black/30 md:grid-cols-[1fr_auto_auto_auto] md:gap-8">
         <div>
-            <h1 class="m-0 text-3xl font-bold">Pedido <span class="text-primary-accent">{{ currentOrder.id }}</span></h1>
+            <h1 class="m-0 text-3xl font-bold font-headings">Pedido <span class="text-primary-accent">{{ currentOrder.id }}</span></h1>
             <div class="text-sm text-text-secondary">Realizado el {{ currentOrder.date | date:'dd MMM, yyyy, h:mm a' }}</div>
         </div>
         <div class="text-center">
@@ -32,23 +33,23 @@
             <div class="mb-2 text-xs font-semibold uppercase text-text-secondary">Grand Total</div>
             <div class="text-3xl font-bold text-success">{{ totalPaid() | currency:'USD' }}</div>
         </div>
-        <div class="relative" [class.open]="isActionsMenuOpen()">
-            <button class="actions-btn flex w-full items-center justify-center gap-2 rounded-lg border border-border-color bg-[#121629] px-5 py-3 font-semibold text-text-primary transition-colors hover:border-primary-accent" (click)="toggleActionsMenu($event)">
+        <div class="relative quick-actions">
+            <button class="flex w-full items-center justify-center gap-2 rounded-lg border border-border-color bg-[#121629] px-5 py-3 font-semibold text-text-primary transition-colors hover:border-primary-accent" (click)="toggleActionsMenu($event)">
                 Acciones Rápidas <i class="fas fa-chevron-down transition-transform" [class.rotate-180]="isActionsMenuOpen()"></i>
             </button>
-            <div class="actions-dropdown absolute right-0 top-full z-10 mt-2 w-56 rounded-lg border border-border-color bg-dark-bg-tertiary p-2 shadow-2xl">
+            @if(isActionsMenuOpen()){
+            <div class="actions-dropdown absolute right-0 top-full z-10 mt-2 w-56 rounded-lg border border-border-color bg-dark-bg-tertiary p-2 shadow-2xl animate-in fade-in-0 zoom-in-95">
                 <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-text-secondary hover:bg-primary-accent hover:text-dark-bg"><i class="fas fa-print w-4 text-center"></i>Imprimir Factura</a>
                 <a href="https://wa.me/584128433922?text=Hola,%20te%20contacto%20sobre%20el%20pedido%20{{currentOrder.id}}" target="_blank" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-text-secondary hover:bg-primary-accent hover:text-dark-bg"><i class="fab fa-whatsapp w-4 text-center"></i>Contactar Cliente</a>
                 <div class="my-1 h-px bg-border-color"></div>
-                <a href="#" class="danger flex items-center gap-3 rounded-md px-3 py-2 text-sm text-danger hover:bg-danger hover:text-white"><i class="fas fa-times-circle w-4 text-center"></i>Cancelar Pedido</a>
+                <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-danger hover:bg-danger hover:text-white"><i class="fas fa-times-circle w-4 text-center"></i>Cancelar Pedido</a>
             </div>
+            }
         </div>
     </header>
 
-    <!-- Layout Principal -->
     <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-[2fr_1fr]">
         <main class="flex flex-col gap-8">
-            <!-- Línea de Tiempo -->
             <section class="data-card">
                 <div class="card-header"><i class="fas fa-stream"></i><h3>Línea de Tiempo del Pedido</h3></div>
                 <div class="card-body">
@@ -57,20 +58,19 @@
                         @for(step of timelineSteps(); track step.name) {
                         <li class="relative flex-1 text-center">
                             <div class="step-icon" [ngClass]="step.status"><i [class]="step.icon"></i></div>
-                            <div class="step-label mt-3 text-xs">{{ step.name }}</div>
+                            <div class="step-label mt-3 text-xs text-text-secondary">{{ step.name }}</div>
                         </li>
                         }
                         @if(currentOrder.status === 'Cancelado') {
                         <li class="relative flex-1 text-center">
                             <div class="step-icon cancelled"><i class="fas fa-times-circle"></i></div>
-                            <div class="step-label mt-3 text-xs">Cancelado</div>
+                            <div class="step-label mt-3 text-xs text-text-secondary">Cancelado</div>
                         </li>
                         }
                     </ul>
                 </div>
             </section>
 
-            <!-- Items del Pedido -->
             <section class="data-card">
                 <div class="card-header"><i class="fas fa-box-open"></i><h3>Artículos del Pedido ({{ currentOrder.items.length }})</h3></div>
                 <table class="w-full">
@@ -83,8 +83,8 @@
                     </thead>
                     <tbody>
                         @for(item of currentOrder.items; track item.productId) {
-                        <tr class="border-b border-border-color/50 last:border-none">
-                            <td class="p-4">
+                        <tr class="border-b border-border-color/50 last:border-none hover:bg-dark-surface-2/50 transition-colors">
+                            <td class="p-4 align-middle">
                                 <div class="flex items-center gap-4">
                                     <img src="https://placehold.co/100x100/0A0C1F/FFFFFF?text=P" [alt]="item.name" class="h-12 w-12 rounded-md bg-dark-bg object-contain">
                                     <div>
@@ -93,21 +93,20 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="p-4 text-right text-sm text-text-secondary">{{ item.quantity }} x {{ item.price | currency }}</td>
-                            <td class="p-4 text-right font-semibold">{{ (item.price * item.quantity) | currency }}</td>
+                            <td class="p-4 text-right align-middle text-sm text-text-secondary">{{ item.quantity }} x {{ item.price | currency }}</td>
+                            <td class="p-4 text-right align-middle font-semibold">{{ (item.price * item.quantity) | currency }}</td>
                         </tr>
                         }
                     </tbody>
                 </table>
             </section>
 
-            <!-- Registro de Actividad -->
             <section class="data-card">
                 <div class="card-header"><i class="fas fa-history"></i><h3>Registro de Actividad del Pedido</h3></div>
                 <div class="card-body">
                     <ul class="p-0">
                         @for(log of activityLog(); track log.meta) {
-                        <li class="flex gap-4 py-3 first:pt-0 last:pb-0">
+                        <li class="flex gap-4 border-b border-border-color py-3 last:border-none">
                             <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-dark-bg-tertiary text-text-secondary"><i [class]="log.icon"></i></div>
                             <div>
                                 <p class="text-sm" [innerHTML]="log.text"></p>
@@ -121,7 +120,6 @@
         </main>
 
         <aside class="flex flex-col gap-8 lg:sticky top-8">
-            <!-- Cliente -->
             <section class="data-card">
                 <div class="card-header"><i class="fas fa-user-circle"></i><h3>Cliente</h3></div>
                 <div class="card-body">
@@ -136,24 +134,23 @@
                         <a href="#" class="flex h-10 w-10 items-center justify-center rounded-lg border border-border-color text-text-secondary transition-colors hover:border-primary-accent hover:text-primary-accent" title="Ver Perfil Completo"><i class="fas fa-user-tag"></i></a>
                     </div>
                     <dl>
-                        <dt class="font-medium text-text-secondary">Email</dt>
+                        <dt class="mb-1 font-medium text-text-secondary">Email</dt>
                         <dd class="relative flex items-center gap-2">
                             <span [id]="'customer-email-' + currentOrder.id">{{ currentOrder.customerEmail }}</span>
                             <i class="far fa-copy cursor-pointer text-text-secondary transition-colors hover:text-primary-accent" (click)="copyToClipboard('customer-email-' + currentOrder.id)"></i>
                             @if(copyTooltip()?.target === 'customer-email-' + currentOrder.id && copyTooltip()?.visible) {
-                            <div class="copy-tooltip absolute left-full ml-2 rounded-md bg-success px-2 py-1 text-xs font-semibold text-white">¡Copiado!</div>
+                            <div class="absolute left-full ml-2 rounded-md bg-success px-2 py-1 text-xs font-semibold text-white animate-in fade-in-0 zoom-in-95">¡Copiado!</div>
                             }
                         </dd>
                     </dl>
                 </div>
             </section>
 
-            <!-- Gestión de Envío -->
             <section class="data-card">
                 <div class="card-header"><i class="fas fa-shipping-fast"></i><h3>Gestión de Envío</h3></div>
                 <div class="card-body">
                      <dl class="mb-4">
-                        <dt class="font-medium text-text-secondary">Dirección de Envío</dt>
+                        <dt class="mb-1 font-medium text-text-secondary">Dirección de Envío</dt>
                         <dd class="text-sm not-italic">{{ currentOrder.shippingAddress }}</dd>
                     </dl>
                     <div>
@@ -165,14 +162,13 @@
                             <input type="text" id="tracking-number" placeholder="Ej: 123456789" class="w-full rounded-r-lg border border-l-0 border-border-color bg-dark-bg px-4 py-2 text-text-primary outline-none focus:border-primary-accent">
                         </div>
                     </div>
-                    <button class="btn-primary mt-4 w-full rounded-lg bg-primary-accent px-4 py-3 font-bold text-dark-bg transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-accent/30">Marcar como Enviado</button>
+                    <button class="mt-4 w-full rounded-lg bg-primary-accent px-4 py-3 font-bold text-dark-bg transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-accent/30">Marcar como Enviado</button>
                 </div>
             </section>
 
-            <!-- Análisis Financiero -->
             <section class="data-card">
                 <div class="card-header"><i class="fas fa-wallet"></i><h3>Análisis Financiero</h3></div>
-                <div class="card-footer bg-black/20 p-6">
+                <div class="rounded-b-2xl bg-black/20 p-6">
                     <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                         <span class="text-text-secondary">Subtotal</span><span class="text-right font-semibold">{{ subtotal() | currency }}</span>
                         <span class="text-text-secondary">Envío</span><span class="text-right font-semibold">{{ shippingCost() | currency }}</span>
@@ -197,22 +193,27 @@
 </div>
 } }
 
-<!--
-  AURA'S NOTE: The styles have been converted to Tailwind utility classes.
-  The original CSS variables are still defined in the host for any potential custom properties,
-  but the layout and styling are now fully managed by Tailwind.
--->
 <style>
-    :host {
-        display: block;
-        --color-dark-surface-2: #1F2937;
-        --color-primary-accent-glow: rgba(0, 169, 255, 0.3);
-        --color-profit: #4ade80;
-    }
-    .actions-dropdown { display: none; }
-    .quick-actions.open .actions-dropdown { display: block; }
-    .step-icon.completed { border-color: var(--color-success); color: var(--color-success); }
-    .step-icon.active { border-color: var(--color-primary-accent); color: var(--color-primary-accent); transform: scale(1.1); box-shadow: 0 0 15px var(--color-primary-accent-glow); }
-    .step-icon.cancelled { border-color: var(--color-danger); color: var(--color-danger); }
+  .data-card {
+    @apply rounded-2xl border border-border-color bg-dark-surface-1 shadow-2xl shadow-black/20 backdrop-blur-sm transition-all duration-300 hover:shadow-primary-accent/20;
+  }
+  .card-header {
+    @apply flex items-center gap-3 border-b border-border-color p-5;
+  }
+  .card-header h3 {
+    @apply m-0 text-base font-bold;
+  }
+  .card-header i {
+    @apply text-primary-accent;
+  }
+  .card-body {
+    @apply p-6;
+  }
+  .step-icon {
+    @apply relative z-10 inline-flex h-8 w-8 items-center justify-center rounded-full border-2 bg-dark-bg transition-all;
+  }
+  .step-icon.pending { @apply border-border-color text-text-secondary; }
+  .step-icon.active { @apply scale-110 border-primary-accent text-primary-accent shadow-[0_0_15px_theme(colors.primary-accent/50)]; }
+  .step-icon.completed { @apply border-success bg-success text-white; }
+  .step-icon.cancelled { @apply border-danger bg-danger text-white; }
 </style>
-
