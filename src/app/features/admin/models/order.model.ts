@@ -15,6 +15,7 @@ export interface OrderItem {
   name: string;
   quantity: number;
   price: number;
+  cost: number;
 }
 
 // Interfaz completa para el detalle del pedido

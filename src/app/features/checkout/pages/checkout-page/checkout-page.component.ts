@@ -88,19 +88,17 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     const orderId = `BTV-${Date.now()}`;
     const newOrderDate = new Date().toISOString();
     const newOrderStatus: UserOrderStatus = 'Procesando';
-
     const shippingAddressValue = this.checkoutService.shippingAddress();
-    const formattedAddress = `${shippingAddressValue.line1}, ${shippingAddressValue.city}, ${shippingAddressValue.state}`;
-
     const taxes = this.totalPrice() * 0.16;
 
+    // Tu lógica original, ahora funcional gracias a la actualización del modelo UserOrder.
     const newUserOrder: UserOrder = {
       id: orderId,
       date: newOrderDate,
       total: this.totalPrice(),
       status: newOrderStatus,
       items: this.cartStore.items().map(item => ({ product: item.product, quantity: item.quantity })),
-      shippingAddress: formattedAddress,
+      shippingAddress: shippingAddressValue,
       customerName: currentUser.fullName,
       customerEmail: currentUser.email,
       shippingCost: this.checkoutService.shippingCost(),
@@ -110,13 +108,12 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       deliveryVehicle: this.checkoutService.selectedDeliveryVehicle() ?? undefined,
       deliveryZone: this.checkoutService.selectedDeliveryZone() ?? undefined,
       guideNumber: this.checkoutService.deliveryMethod() === 'shipping' ? `MRW-${Math.floor(100000000 + Math.random() * 900000000)}` : undefined,
-      // ✅ INICIO: SE GUARDAN LOS DATOS ENRIQUECIDOS
       customerPhone: this.checkoutService.customerPhone(),
       paymentMethod: this.checkoutService.paymentMethod() ?? undefined,
       paymentReference: this.checkoutService.paymentReference() ?? undefined
-      // ✅ FIN: SE GUARDAN LOS DATOS ENRIQUECIDOS
     };
 
+    // ✅ CORRECCIÓN QUIRÚRGICA: El payload para el admin se mantiene, pero sus 'items' deben cumplir con la interfaz 'OrderItem'.
     const adminOrderPayload: AdminOrderDetail = {
       id: `#${orderId}`,
       date: newOrderDate,
@@ -124,17 +121,19 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       status: newOrderStatus,
       customerName: currentUser.fullName,
       customerEmail: currentUser.email,
-      shippingAddress: formattedAddress,
+      shippingAddress: shippingAddressValue,
       items: this.cartStore.items().map(item => ({
         productId: item.product.id,
         name: item.product.name,
         quantity: item.quantity,
-        price: item.product.price
+        price: item.product.price,
+        cost: item.product.cost ?? item.product.price * 0.7 // Se añade 'cost' para cumplir el contrato
       })),
     };
 
     this.userDataService.addNewOrder(newUserOrder);
-    this.orderProcessingService.processNewOrder(adminOrderPayload);
+    // El servicio `processNewOrder` espera `UserOrder`, por lo que pasamos el objeto correcto.
+    this.orderProcessingService.processNewOrder(newUserOrder);
 
     const missionData = {
       orderNumber: orderId,
@@ -143,7 +142,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       total: this.totalPrice(),
       customerName: currentUser.fullName,
       customerPhone: this.checkoutService.customerPhone(),
-      shippingAddress: formattedAddress,
+      shippingAddress: shippingAddressValue,
       deliveryMethod: this.checkoutService.deliveryMethod(),
       paymentMethod: this.checkoutService.paymentMethod(),
       paymentReference: this.checkoutService.paymentReference(),

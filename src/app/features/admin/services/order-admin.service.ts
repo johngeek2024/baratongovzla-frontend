@@ -1,47 +1,36 @@
-// src/app/features/admin/services/order-admin.service.ts
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, of, delay } from 'rxjs';
-import { AdminOrderDetail, OrderStatus } from '../models/order.model';
-import { UserDataService, UserOrder, UserOrderStatus } from '../../../core/services/user-data.service';
-import { computed } from '@angular/core';
-import { Product } from '../../../core/models/product.model';
+import { AdminOrder, OrderStatus, AdminOrderDetail } from '../models/order.model';
+
+// ✅ CORRECCIÓN: El mock ahora incluye el costo de cada producto.
+const mockOrders: AdminOrderDetail[] = [
+  { id: '#BTV-1058', customerName: 'Aura', date: '2025-07-12', total: 39.00, status: 'Procesando', items: [{ productId: 'prod-1', name: 'Cable HDMI 2.1', quantity: 1, price: 39.00, cost: 22.50 }], shippingAddress: 'Urb. La Viña, Valencia', customerEmail: 'aura.designer@email.com' },
+  { id: '#BTV-1057', customerName: 'Carlos R.', date: '2025-07-10', total: 584.00, status: 'Enviado', items: [{ productId: 'prod-2', name: 'Hyperion X1 - Proyector 4K', quantity: 1, price: 499.00, cost: 350.00 }, { productId: 'prod-3', name: 'Teclado Void-Dasher', quantity: 1, price: 85.00, cost: 55.00 }], shippingAddress: 'El Trigal, Valencia', customerEmail: 'carlos.r@email.com' },
+  { id: '#BTV-1056', customerName: 'Elena G.', date: '2025-07-09', total: 125.50, status: 'Entregado', items: [{ productId: 'prod-4', name: 'Aura Watch Series 8', quantity: 1, price: 125.50, cost: 80.00 }], shippingAddress: 'Mañongo, Naguanagua', customerEmail: 'elena.g@email.com' },
+  { id: '#BTV-1055', customerName: 'Luis M.', date: '2025-07-05', total: 72.00, status: 'Cancelado', items: [], shippingAddress: 'San Diego', customerEmail: 'luis.m@email.com' },
+];
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class OrderAdminService {
-  private userDataService = inject(UserDataService);
+  private apiUrl = 'https://baratongovzla.com/api/admin/orders';
 
-  public readonly orders = computed(() => {
-    const allOrders = [...this.userDataService.getAllOrdersForAdmin()]
-      .sort((a: UserOrder, b: UserOrder) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    return allOrders.map((order: UserOrder): AdminOrderDetail => ({
-      id: order.id,
-      customerName: order.customerName,
-      date: order.date,
-      total: order.total,
-      status: order.status,
-      // --- CORRECCIÓN DE ROBUSTEZ ---
-      // Se asegura de que 'items' sea siempre un array, incluso si no existe en los datos originales.
-      items: (order.items || []).map((item: { product: Product; quantity: number }) => ({
-        productId: item.product.id,
-        name: item.product.name,
-        quantity: item.quantity,
-        price: item.product.price
-      })),
-      shippingAddress: order.shippingAddress,
-      customerEmail: order.customerEmail
-    }));
-  });
+  getOrders(): Observable<AdminOrderDetail[]> {
+    return of(mockOrders).pipe(delay(700));
+  }
 
   getOrderById(orderId: string): Observable<AdminOrderDetail | undefined> {
-    const order = this.orders().find((o: AdminOrderDetail) => o.id === orderId);
+    const order = mockOrders.find(o => o.id === orderId);
     return of(order).pipe(delay(400));
   }
 
   updateOrderStatus(orderId: string, status: OrderStatus): Observable<{ success: boolean }> {
-    this.userDataService.updateOrderStatus(orderId, status as UserOrderStatus);
+    const order = mockOrders.find(o => o.id === orderId);
+    if (order) {
+      order.status = status;
+    }
     return of({ success: true }).pipe(delay(500));
   }
 }

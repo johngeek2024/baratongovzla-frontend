@@ -1,107 +1,72 @@
 // src/app/features/admin/pages/order-detail-page/order-detail-page.component.ts
-import { Component, computed, inject, signal, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
-import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { Subscription, of } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Component, computed, inject, OnInit, signal, HostListener } from '@angular/core';
+import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { switchMap } from 'rxjs';
 import { OrderAdminService } from '../../services/order-admin.service';
-import { AdminOrderDetail, OrderStatus, OrderItem } from '../../models/order.model';
+import { AdminOrderDetail } from '../../models/order.model';
 
 @Component({
   selector: 'app-order-detail-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, CurrencyPipe, DatePipe],
+  imports: [CommonModule, RouterLink, DatePipe, CurrencyPipe],
   templateUrl: './order-detail-page.component.html',
 })
-export class OrderDetailPageComponent implements OnInit, OnDestroy, AfterViewInit {
+export class OrderDetailPageComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private orderAdminService = inject(OrderAdminService);
-  private routeSub!: Subscription;
 
-  public order = signal<AdminOrderDetail | undefined>(undefined);
-  public isActionsOpen = signal(false);
+  order = signal<AdminOrderDetail | undefined>(undefined);
+  isLoading = signal(true);
+  isActionsMenuOpen = signal(false);
+  copyTooltip = signal<{ target: string; visible: boolean } | null>(null);
 
-  public financialBreakdown = computed(() => {
-    const currentOrder = this.order();
-    if (!currentOrder || !currentOrder.items) return null;
-
-    const subtotal = currentOrder.items.reduce((acc: number, item: OrderItem) => acc + (item.price * item.quantity), 0);
-    const shipping = 10.00;
-    const discount = -52.40;
-    const total = subtotal + shipping + discount;
-    const productCost = -350.00;
-    const fees = -14.45;
-    const netProfit = total + productCost + fees;
-
-    return { subtotal, shipping, discount, total, productCost, fees, netProfit };
-  });
-
-  public statusInfo = computed(() => {
-    const status = this.order()?.status;
-    switch (status) {
-      case 'Procesando': return { text: 'Procesando', class: 'bg-warning/20 text-warning' };
-      case 'Enviado': return { text: 'Enviado', class: 'bg-primary-accent/20 text-primary-accent' };
-      case 'Entregado': return { text: 'Entregado', class: 'bg-success/20 text-success' };
-      case 'Cancelado': return { text: 'Cancelado', class: 'bg-danger/20 text-danger' };
-      default: return { text: 'Desconocido', class: '' };
+  // ✅ ESCUCHA CLICS PARA CERRAR EL MENÚ DE ACCIONES DE FORMA GLOBAL.
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    // No cierra el menú si el clic fue dentro del botón que lo abre.
+    if (!(event.target as HTMLElement).closest('.actions-btn')) {
+      this.isActionsMenuOpen.set(false);
     }
-  });
+  }
+
+  // --- SEÑALES COMPUTADAS PARA ANÁLISIS FINANCIERO ---
+  subtotal = computed(() => this.order()?.items.reduce((acc, item) => acc + (item.price * item.quantity), 0) ?? 0);
+  shippingCost = computed(() => 10.00); // Simulado
+  discount = computed(() => this.subtotal() * 0.10); // Simulado 10%
+  totalPaid = computed(() => this.subtotal() + this.shippingCost() - this.discount());
+  costOfGoods = computed(() => this.order()?.items.reduce((acc, item) => acc + (item.cost * item.quantity), 0) ?? 0);
+  paymentFees = computed(() => this.totalPaid() * 0.03); // Simulado 3%
+  netProfit = computed(() => this.totalPaid() - this.costOfGoods() - this.paymentFees());
 
   ngOnInit(): void {
-    this.routeSub = this.route.paramMap.pipe(
+    this.route.paramMap.pipe(
       switchMap(params => {
-        const id = params.get('id');
-        if (id) {
-          return this.orderAdminService.getOrderById(id);
-        }
-        return of(undefined);
+        // El ID en la URL no tiene el '#', lo reconstruimos para la búsqueda.
+        const id = '#' + params.get('id');
+        this.isLoading.set(true);
+        return this.orderAdminService.getOrderById(id);
       })
-    ).subscribe(orderData => {
-      this.order.set(orderData);
+    ).subscribe(order => {
+      this.order.set(order);
+      this.isLoading.set(false);
     });
   }
 
-  ngAfterViewInit(): void {
-    document.addEventListener('click', this.onDocumentClick);
-  }
-
-  ngOnDestroy(): void {
-    document.removeEventListener('click', this.onDocumentClick);
-    if (this.routeSub) {
-      this.routeSub.unsubscribe();
-    }
-  }
-
-  private onDocumentClick = (event: MouseEvent): void => {
-    if (!(event.target as HTMLElement).closest('.quick-actions')) {
-      this.isActionsOpen.set(false);
-    }
-  }
-
-  toggleActions(event: MouseEvent): void {
+  // ✅ MANEJA LA VISIBILIDAD DEL MENÚ DESPLEGABLE.
+  toggleActionsMenu(event: MouseEvent): void {
     event.stopPropagation();
-    this.isActionsOpen.update(value => !value);
+    this.isActionsMenuOpen.update(v => !v);
   }
 
-  copyToClipboard(event: MouseEvent, targetId: string): void {
-    const icon = event.currentTarget as HTMLElement;
-    const tooltip = icon.nextElementSibling as HTMLElement;
+  // ✅ COPIA TEXTO AL PORTAPAPELES Y MUESTRA UN TOOLTIP.
+  copyToClipboard(targetId: string): void {
     const targetElement = document.getElementById(targetId);
-
-    if (targetElement?.innerText) {
+    if (targetElement) {
       navigator.clipboard.writeText(targetElement.innerText).then(() => {
-        if(tooltip) {
-          tooltip.classList.add('visible');
-          setTimeout(() => tooltip.classList.remove('visible'), 1500);
-        }
-      }).catch(err => console.error('Error al copiar:', err));
+        this.copyTooltip.set({ target: targetId, visible: true });
+        setTimeout(() => this.copyTooltip.set(null), 1500);
+      });
     }
-  }
-
-  isStepCompleted(step: OrderStatus): boolean {
-    const orderStatus = this.order()?.status;
-    if (!orderStatus) return false;
-    const steps: OrderStatus[] = ['Procesando', 'Enviado', 'Entregado'];
-    return steps.indexOf(orderStatus) >= steps.indexOf(step);
   }
 }

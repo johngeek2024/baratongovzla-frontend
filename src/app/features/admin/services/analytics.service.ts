@@ -1,5 +1,4 @@
 // src/app/features/admin/services/analytics.service.ts
-
 import { Injectable, inject, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Observable, of, delay } from 'rxjs';
@@ -7,14 +6,13 @@ import { DataStoreService } from '../../../core/services/data-store.service';
 import { OrderAdminService } from './order-admin.service';
 import { AdminOrderDetail } from '../models/order.model';
 
-// --- Interfaces para los modelos de datos de analítica ---
-export interface CohortData {
+// --- Interfaces sin cambios ---
+export interface CohortData { //...
   cohortMonth: string;
   newCustomers: number;
   retention: (number | null)[];
 }
-
-export interface TopCustomer {
+export interface TopCustomer { //...
   name: string;
   totalSpent: number;
   orderCount: number;
@@ -27,13 +25,11 @@ export class AnalyticsService {
   private dataStore = inject(DataStoreService);
   private orderAdminService = inject(OrderAdminService);
 
-  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
-  // Se consume directamente la señal reactiva del OrderAdminService.
-  private orders = this.orderAdminService.orders;
-  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
+  // ✅ CORRECCIÓN: Se consume el método getOrders() y se convierte a Signal.
+  private orders = toSignal(this.orderAdminService.getOrders(), { initialValue: [] });
 
   public cohortAnalysis = computed<CohortData[]>(() => {
-    // La señal 'orders' ahora es directamente accesible y está tipada.
+    // ... (sin cambios en la lógica interna)
     const orders = this.orders();
     if (orders.length === 0) return [];
 
@@ -54,17 +50,16 @@ export class AnalyticsService {
 
     const cohortData: CohortData[] = Object.keys(cohorts).sort().map(month => {
       const customersInCohort = cohorts[month];
-      const retention = Array(6).fill(null);
+      const retention = Array(6).fill(null); // Analizar 6 meses de retención
 
-      retention[0] = 100;
+      retention[0] = 100; // Mes 0 siempre es 100%
 
       for (let i = 1; i < 6; i++) {
         const targetDate = new Date(month + '-01');
         targetDate.setMonth(targetDate.getMonth() + i);
 
         const retainedCustomers = new Set();
-        // ✅ CORRECCIÓN: Se añade el tipo explícito a 'order'.
-        orders.forEach((order: AdminOrderDetail) => {
+        orders.forEach(order => {
           const orderDate = new Date(order.date);
           if (
             customersInCohort.includes(order.customerName) &&
@@ -88,9 +83,9 @@ export class AnalyticsService {
   });
 
   public topCustomers = computed<TopCustomer[]>(() => {
+    // ... (sin cambios en la lógica interna)
     const customerData: { [key: string]: { totalSpent: number; orderCount: number } } = {};
-    // ✅ CORRECCIÓN: Se añade el tipo explícito a 'order'.
-    this.orders().forEach((order: AdminOrderDetail) => {
+    this.orders().forEach(order => {
       if (!customerData[order.customerName]) {
         customerData[order.customerName] = { totalSpent: 0, orderCount: 0 };
       }
@@ -105,9 +100,9 @@ export class AnalyticsService {
   });
 
   public salesByCategory = computed(() => {
+    // ... (sin cambios en la lógica interna)
     const categorySales: { [key: string]: number } = {};
-    // ✅ CORRECCIÓN: Se añade el tipo explícito a 'order' e 'item'.
-    this.orders().forEach((order: AdminOrderDetail) => {
+    this.orders().forEach(order => {
       order.items.forEach(item => {
         const product = this.dataStore.getProductById(item.productId);
         if (product) {
@@ -120,6 +115,7 @@ export class AnalyticsService {
   });
 
   getUniqueVisitors(period: 'daily'): Observable<number> {
+    // ... (sin cambios en la lógica interna)
     const mockVisitorCount = 250;
     return of(mockVisitorCount).pipe(delay(250));
   }
