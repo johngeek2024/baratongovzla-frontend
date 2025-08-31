@@ -36,6 +36,7 @@
                         [value]="order.status"
                         (change)="onStatusChange($event, order)"
                         [ngClass]="{
+                          'text-text-secondary border-text-secondary bg-text-secondary/20': order.status === 'Pedido Realizado' || order.status === 'Pago Confirmado',
                           'text-warning border-warning bg-warning/20': order.status === 'Procesando',
                           'text-primary-accent border-primary-accent bg-primary-accent/20': order.status === 'Enviado',
                           'text-success border-success bg-success/20': order.status === 'Entregado',
@@ -46,12 +47,13 @@
                   }
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2" [ngClass]="{
+                    'text-text-secondary': order.status === 'Pedido Realizado' || order.status === 'Pago Confirmado',
                     'text-warning': order.status === 'Procesando',
                     'text-primary-accent': order.status === 'Enviado',
                     'text-success': order.status === 'Entregado',
                     'text-danger': order.status === 'Cancelado'
                   }">
-                  <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                  <svg class="fill-current h-4 w-4" xmlns="http://www.w.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                 </div>
               </div>
             </td>

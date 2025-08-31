@@ -1,5 +1,5 @@
 // src/app/features/admin/models/order.model.ts
-export type OrderStatus = 'Procesando' | 'Enviado' | 'Entregado' | 'Cancelado';
+export type OrderStatus = 'Pedido Realizado' | 'Pago Confirmado' | 'Procesando' | 'Enviado' | 'Entregado' | 'Cancelado';
 
 export interface AdminOrder {
   id: string;

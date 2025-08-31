@@ -1,18 +1,10 @@
+// src/app/features/admin/components/orders-panel/orders-panel.component.ts
+
 import { Component, HostBinding, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { OrderAdminService } from '../../services/order-admin.service';
 import { RouterModule } from '@angular/router';
-
-// Tipos y Interfaces
-export type OrderStatus = 'Procesando' | 'Enviado' | 'Entregado' | 'Cancelado';
-
-export interface AdminOrder {
-  id: string;
-  customerName: string;
-  date: string;
-  total: number;
-  status: OrderStatus;
-}
+import { AdminOrder, OrderStatus } from '../../models/order.model';
 
 @Component({
   selector: 'app-orders-panel',
@@ -24,16 +16,16 @@ export class OrdersPanelComponent implements OnInit {
   @HostBinding('class') class = 'content-panel active';
   private orderAdminService = inject(OrderAdminService);
 
-  // ✅ CORRECCIÓN: La señal se inicializa vacía. La asignación directa desde el servicio fue eliminada.
   orders = signal<AdminOrder[]>([]);
   isLoading = signal(true);
-  statusOptions: OrderStatus[] = ['Procesando', 'Enviado', 'Entregado', 'Cancelado'];
+
+  // ✅ CORRECCIÓN: El array de opciones ahora contiene todos los estados de la línea de tiempo.
+  statusOptions: OrderStatus[] = ['Pedido Realizado', 'Pago Confirmado', 'Procesando', 'Enviado', 'Entregado', 'Cancelado'];
 
   ngOnInit(): void {
     this.loadOrders();
   }
 
-  // Esta función ya consume el servicio correctamente.
   private loadOrders(): void {
     this.isLoading.set(true);
     this.orderAdminService.getOrders().subscribe(data => {

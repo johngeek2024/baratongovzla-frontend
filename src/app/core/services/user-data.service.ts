@@ -6,7 +6,7 @@ import { DeliveryMethod, DeliveryVehicle, PaymentMethod } from './checkout.servi
 import { OrderAdminService } from '../../features/admin/services/order-admin.service';
 import { AdminOrderDetail } from '../../features/admin/models/order.model';
 
-export type UserOrderStatus = 'Procesando' | 'Enviado' | 'Entregado' | 'Cancelado';
+export type UserOrderStatus = 'Pedido Realizado' | 'Pago Confirmado' | 'Procesando' | 'Enviado' | 'Entregado' | 'Cancelado';
 
 export interface UserOrder {
   id: string;

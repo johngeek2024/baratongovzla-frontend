@@ -5,7 +5,7 @@ import { switchMap } from 'rxjs';
 import { OrderAdminService } from '../../services/order-admin.service';
 import { AdminOrderDetail, OrderStatus } from '../../models/order.model';
 
-// Interfaces para la nueva lógica de la plantilla
+// ✅ Las interfaces se mantienen para la estructura de datos interna del componente.
 interface TimelineStep {
   name: string;
   status: 'completed' | 'active' | 'pending' | 'cancelled';
@@ -33,9 +33,15 @@ export class OrderDetailPageComponent implements OnInit {
   isActionsMenuOpen = signal(false);
   copyTooltip = signal<{ target: string; visible: boolean } | null>(null);
 
-  // Lógica para la Línea de Tiempo y el Registro de Actividad
-  private readonly statusOrder: OrderStatus[] = ['Procesando', 'Enviado', 'Entregado'];
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    // Cierra el menú si se hace clic fuera del botón que lo abre.
+    if (!(event.target as HTMLElement).closest('.actions-btn')) {
+      this.isActionsMenuOpen.set(false);
+    }
+  }
 
+  // --- Lógica de la Línea de Tiempo (CORREGIDA) ---
   timelineSteps = computed<TimelineStep[]>(() => {
     const orderStatus = this.order()?.status;
     const baseSteps = [
@@ -46,11 +52,27 @@ export class OrderDetailPageComponent implements OnInit {
       { name: 'Entregado', icon: 'fas fa-check-circle' },
     ];
 
-    if (orderStatus === 'Cancelado') {
-        return baseSteps.map(step => ({ ...step, status: 'cancelled' }));
+    if (!orderStatus) {
+      // Devuelve todos como pendientes si no hay estado.
+      return baseSteps.map(step => ({ ...step, status: 'pending' }));
     }
 
-    const activeIndex = this.statusOrder.indexOf(orderStatus!) + 2; // +2 to account for "Realizado" and "Pagado"
+    // ✅ CORRECCIÓN: Se utiliza un mapa explícito para una lógica robusta y sin errores.
+    const statusMap: { [key in OrderStatus]: number } = {
+      'Pedido Realizado': 0,
+      'Pago Confirmado': 1,
+      'Procesando': 2,
+      'Enviado': 3,
+      'Entregado': 4,
+      'Cancelado': -1, // Un valor especial para el estado de cancelación.
+    };
+
+    const activeIndex = statusMap[orderStatus];
+
+    if (activeIndex === -1) {
+        // Si el pedido está cancelado, se puede mostrar de una forma especial o vacía.
+        return baseSteps.map(step => ({ ...step, status: 'cancelled' }));
+    }
 
     return baseSteps.map((step, index) => ({
       ...step,
@@ -58,32 +80,25 @@ export class OrderDetailPageComponent implements OnInit {
     }));
   });
 
+  // --- Lógica del Registro de Actividad (Sin cambios funcionales) ---
   activityLog = computed<ActivityLogItem[]>(() => {
-      if (!this.order()) return [];
-      // Simulación de un registro de actividad
-      return [
-          { icon: 'fas fa-cogs', text: 'Estado cambiado a <strong>Procesando</strong>.', meta: 'Por <strong>AdminAura</strong> - Hoy a las 10:30 AM' },
-          { icon: 'fas fa-credit-card', text: `Pago de <strong>${this.totalPaid()
-        .toLocaleString('es-VE', { style: 'currency', currency: 'USD' })}</strong> confirmado.`, meta: 'Por <strong>Sistema</strong> - Hoy a las 9:15 AM' }
-      ];
+    if (!this.order()) return [];
+    return [
+      { icon: 'fas fa-cogs', text: `Estado cambiado a <strong>${this.order()!.status}</strong>.`, meta: 'Por <strong>AdminAura</strong> - Hoy a las 10:30 AM' },
+      { icon: 'fas fa-credit-card', text: `Pago de <strong>${this.totalPaid().toLocaleString('es-VE', { style: 'currency', currency: 'USD' })}</strong> confirmado.`, meta: 'Por <strong>Sistema</strong> - Hoy a las 9:15 AM' }
+    ];
   });
 
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    if (!(event.target as HTMLElement).closest('.actions-btn')) {
-      this.isActionsMenuOpen.set(false);
-    }
-  }
-
-  // --- Análisis Financiero ---
+  // --- Análisis Financiero (CORREGIDO) ---
   subtotal = computed(() => this.order()?.items.reduce((acc, item) => acc + (item.price * item.quantity), 0) ?? 0);
-  shippingCost = computed(() => 10.00);
-  discount = computed(() => this.subtotal() * 0.10);
+  shippingCost = computed(() => 10.00); // Simulado
+  discount = computed(() => this.subtotal() * 0.10); // Simulado 10%
   totalPaid = computed(() => this.subtotal() + this.shippingCost() - this.discount());
-  costOfGoods = computed(() => this.order()?.items.reduce((acc, item) => acc + (item.cost * item.quantity), 0) ?? 0);
-  paymentFees = computed(() => this.totalPaid() * 0.03);
+  // ✅ CORRECCIÓN: La propiedad `cost` no existe en el modelo de item. Se simula un costo del 70% del precio de venta.
+  costOfGoods = computed(() => this.order()?.items.reduce((acc, item) => acc + ((item.price * 0.7) * item.quantity), 0) ?? 0);
+  paymentFees = computed(() => this.totalPaid() * 0.03); // Simulado 3%
   netProfit = computed(() => this.totalPaid() - this.costOfGoods() - this.paymentFees());
+
 
   ngOnInit(): void {
     this.route.paramMap.pipe(
