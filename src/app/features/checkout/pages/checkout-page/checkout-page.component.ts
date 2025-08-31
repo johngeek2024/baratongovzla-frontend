@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { CartStore } from '../../../cart/cart.store';
 import { UiService } from '../../../../core/services/ui.service';
-import { UserDataService, UserOrder, UserOrderStatus } from '../../../../core/services/user-data.service';
 import { OrderProcessingService } from '../../../../core/services/order-processing.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CheckoutService } from '../../../../core/services/checkout.service';
 import { AdminOrderDetail } from '../../../admin/models/order.model';
+import { UserOrderStatus } from '../../../../core/services/user-data.service';
 
 @Component({
   selector: 'app-checkout-page',
@@ -20,7 +20,6 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   public uiService = inject(UiService);
   public checkoutService = inject(CheckoutService);
   private router = inject(Router);
-  private userDataService = inject(UserDataService);
   private orderProcessingService = inject(OrderProcessingService);
   private authService = inject(AuthService);
 
@@ -88,32 +87,9 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     const orderId = `BTV-${Date.now()}`;
     const newOrderDate = new Date().toISOString();
     const newOrderStatus: UserOrderStatus = 'Procesando';
-    const shippingAddressValue = this.checkoutService.shippingAddress();
-    const taxes = this.totalPrice() * 0.16;
+    const shippingAddress = this.checkoutService.shippingAddress();
+    const shippingAddressValue = `${shippingAddress.line1}, ${shippingAddress.city}, ${shippingAddress.state}`;
 
-    // Tu lógica original, ahora funcional gracias a la actualización del modelo UserOrder.
-    const newUserOrder: UserOrder = {
-      id: orderId,
-      date: newOrderDate,
-      total: this.totalPrice(),
-      status: newOrderStatus,
-      items: this.cartStore.items().map(item => ({ product: item.product, quantity: item.quantity })),
-      shippingAddress: shippingAddressValue,
-      customerName: currentUser.fullName,
-      customerEmail: currentUser.email,
-      shippingCost: this.checkoutService.shippingCost(),
-      taxes: taxes,
-      deliveryMethod: this.checkoutService.deliveryMethod() ?? undefined,
-      pickupPoint: this.checkoutService.selectedPickupPoint() ?? undefined,
-      deliveryVehicle: this.checkoutService.selectedDeliveryVehicle() ?? undefined,
-      deliveryZone: this.checkoutService.selectedDeliveryZone() ?? undefined,
-      guideNumber: this.checkoutService.deliveryMethod() === 'shipping' ? `MRW-${Math.floor(100000000 + Math.random() * 900000000)}` : undefined,
-      customerPhone: this.checkoutService.customerPhone(),
-      paymentMethod: this.checkoutService.paymentMethod() ?? undefined,
-      paymentReference: this.checkoutService.paymentReference() ?? undefined
-    };
-
-    // ✅ CORRECCIÓN QUIRÚRGICA: El payload para el admin se mantiene, pero sus 'items' deben cumplir con la interfaz 'OrderItem'.
     const adminOrderPayload: AdminOrderDetail = {
       id: `#${orderId}`,
       date: newOrderDate,
@@ -127,13 +103,11 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
         name: item.product.name,
         quantity: item.quantity,
         price: item.product.price,
-        cost: item.product.cost ?? item.product.price * 0.7 // Se añade 'cost' para cumplir el contrato
+        cost: item.product.cost ?? item.product.price * 0.7
       })),
     };
 
-    this.userDataService.addNewOrder(newUserOrder);
-    // El servicio `processNewOrder` espera `UserOrder`, por lo que pasamos el objeto correcto.
-    this.orderProcessingService.processNewOrder(newUserOrder);
+    this.orderProcessingService.processNewOrder(adminOrderPayload);
 
     const missionData = {
       orderNumber: orderId,

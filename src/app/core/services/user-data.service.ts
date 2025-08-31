@@ -1,12 +1,13 @@
-import { Injectable, signal, inject, effect } from '@angular/core';
+import { Injectable, signal, inject, effect, computed } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Product } from '../models/product.model';
 import { DataStoreService } from './data-store.service';
-import { DeliveryMethod, DeliveryVehicle, PaymentMethod } from './checkout.service'; // Importar tipos
+import { DeliveryMethod, DeliveryVehicle, PaymentMethod } from './checkout.service';
+import { OrderAdminService } from '../../features/admin/services/order-admin.service';
+import { AdminOrderDetail } from '../../features/admin/models/order.model';
 
-export type UserOrderStatus = 'Procesando' | 'Enviado' | 'Entregado';
+export type UserOrderStatus = 'Procesando' | 'Enviado' | 'Entregado' | 'Cancelado';
 
-// ✅ CORRECCIÓN ESTRUCTURAL: La interfaz UserOrder ahora es más rica para almacenar todos los datos del checkout.
 export interface UserOrder {
   id: string;
   date: string;
@@ -42,8 +43,29 @@ export interface UserAddress {
 export class UserDataService {
   private authService = inject(AuthService);
   private dataStore = inject(DataStoreService);
+  private orderAdminService = inject(OrderAdminService);
 
-  public orders = signal<UserOrder[]>([]);
+  public orders = computed<UserOrder[]>(() => {
+    const adminOrders = this.orderAdminService.getAllOrdersSignal()();
+    const currentUser = this.authService.currentUser();
+    if (!currentUser) return [];
+
+    return adminOrders
+      .filter(order => order.customerEmail === currentUser.email)
+      .map(adminOrder => {
+        const userOrderItems = adminOrder.items.map(item => {
+          const product = this.dataStore.getProductById(item.productId);
+          return { product: product!, quantity: item.quantity };
+        }).filter(item => item.product);
+
+        return {
+          ...adminOrder,
+          id: adminOrder.id.replace('#', ''),
+          items: userOrderItems,
+        } as UserOrder;
+      });
+  });
+
   public addresses = signal<UserAddress[]>([]);
   public wishlist = signal<Product[]>([]);
   public arsenal = signal<Product[]>([]);
@@ -62,33 +84,24 @@ export class UserDataService {
   private loadUserData(userId: string, userEmail: string): void {
     console.log(`Cargando datos para el usuario: ${userId}`);
     if (userEmail === 'cliente@baratongo.com') {
-      this.orders.set(this.getMockOrdersCliente());
       this.addresses.set([{ name: 'Oficina', recipient: 'Cliente de Prueba', line1: 'Torre Empresarial, Piso 10', city: 'Valencia', state: 'Carabobo' }]);
       this.wishlist.set([this.dataStore.products()[2]]);
       this.arsenal.set([this.dataStore.products()[0]]);
     } else {
-      this.orders.set(this.getMockOrdersAura());
-      this.addresses.set([{ name: 'Casa', recipient: 'Aura', line1: 'Urb. Prebo, Edificio Tech', city: 'Valencia', state: 'Carabobo' }]);
-      this.wishlist.set([this.dataStore.products()[0], this.dataStore.products()[1]]);
-      this.arsenal.set([this.dataStore.products()[2]]);
+      this.addresses.set([]);
+      this.wishlist.set([]);
+      this.arsenal.set([]);
     }
   }
 
+  public getOrderById(orderId: string): UserOrder | undefined {
+    return this.orders().find(o => o.id === orderId);
+  }
+
   private clearUserData(): void {
-    this.orders.set([]);
     this.addresses.set([]);
     this.wishlist.set([]);
     this.arsenal.set([]);
-  }
-
-  public addNewOrder(order: UserOrder): void {
-    this.orders.update(currentOrders => [order, ...currentOrders]);
-  }
-
-  public updateOrderStatus(orderId: string, status: UserOrderStatus): void {
-    this.orders.update(currentOrders =>
-      currentOrders.map(o => o.id === orderId ? { ...o, status } : o)
-    );
   }
 
   public addProductsToArsenal(productsToAdd: Product[]): void {
@@ -97,17 +110,5 @@ export class UserDataService {
       const newProducts = productsToAdd.filter(p => !currentArsenalIds.has(p.id));
       return [...currentArsenal, ...newProducts];
     });
-  }
-
-  // --- Mocks (actualizados para cumplir con la nueva interfaz UserOrder) ---
-  private getMockOrdersAura(): UserOrder[] {
-    return [
-      { id: 'BTV-1057', date: '2025-07-10', total: 584.00, status: 'Enviado', items: [], shippingAddress: 'Urb. Prebo, Edificio Tech', customerName: 'Aura', customerEmail: 'aura.designer@email.com', customerPhone: '04121234567', shippingCost: 10 },
-    ];
-  }
-  private getMockOrdersCliente(): UserOrder[] {
-    return [
-      { id: 'BTV-1060', date: '2025-08-01', total: 399.00, status: 'Procesando', items: [], shippingAddress: 'Torre Empresarial, Piso 10', customerName: 'Cliente de Prueba', customerEmail: 'cliente@baratongo.com', customerPhone: '04241234567', shippingCost: 0 },
-    ];
   }
 }

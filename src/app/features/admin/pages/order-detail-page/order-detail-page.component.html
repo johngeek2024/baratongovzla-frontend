@@ -1,117 +1,218 @@
 @if (isLoading()) {
-  <div class="w-full text-center py-20">
+<div class="flex items-center justify-center py-20">
     <i class="fas fa-spinner animate-spin text-4xl text-text-secondary"></i>
-  </div>
-} @else {
-  @if (order(); as currentOrder) {
-    <div class="animate-in fade-in-0 duration-500">
-      <header class="grid grid-cols-1 md:grid-cols-[1fr_auto_auto_auto] items-center gap-6 bg-dark-bg-secondary border border-border-color rounded-2xl p-6 mb-8 shadow-lg">
+    <p class="ml-4 text-text-secondary">Cargando detalles del comando...</p>
+</div>
+} @else { @if (order(); as currentOrder) {
+<div class="mx-auto max-w-[1400px] p-4 md:p-8">
+    <!-- Encabezado del Pedido -->
+    <header class="mb-8 grid grid-cols-1 items-center gap-6 rounded-2xl border border-border-color bg-gradient-to-br from-dark-bg-secondary to-[#171d33] p-6 shadow-2xl shadow-black/30 md:grid-cols-[1fr_auto_auto_auto] md:gap-8">
         <div>
-          <h1 class="text-2xl sm:text-3xl font-bold m-0">Pedido <span class="text-primary-accent">{{ currentOrder.id }}</span></h1>
-          <p class="text-sm text-text-secondary">Realizado el {{ currentOrder.date | date:'dd MMM, yyyy, h:mm a' }}</p>
+            <h1 class="m-0 text-3xl font-bold">Pedido <span class="text-primary-accent">{{ currentOrder.id }}</span></h1>
+            <div class="text-sm text-text-secondary">Realizado el {{ currentOrder.date | date:'dd MMM, yyyy, h:mm a' }}</div>
         </div>
         <div class="text-center">
-          <p class="text-xs uppercase text-text-secondary font-semibold mb-2">Estado Actual</p>
-          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold"
-                [ngClass]="{
-                  'bg-warning/20 text-warning': currentOrder.status === 'Procesando',
-                  'bg-primary-accent/20 text-primary-accent': currentOrder.status === 'Enviado',
-                  'bg-success/20 text-success': currentOrder.status === 'Entregado',
-                  'bg-danger/20 text-danger': currentOrder.status === 'Cancelado'
-                }">
-            <span class="w-2 h-2 rounded-full" [ngClass]="{
-              'bg-warning animate-pulse': currentOrder.status === 'Procesando',
-              'bg-primary-accent': currentOrder.status === 'Enviado',
-              'bg-success': currentOrder.status === 'Entregado',
-              'bg-danger': currentOrder.status === 'Cancelado'
-            }"></span>
-            {{ currentOrder.status }}
-          </span>
+            <div class="mb-2 text-xs font-semibold uppercase text-text-secondary">Estado Actual</div>
+            <span class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold" [ngClass]="{
+                'bg-warning/20 text-warning': currentOrder.status === 'Procesando',
+                'bg-primary-accent/20 text-primary-accent': currentOrder.status === 'Enviado',
+                'bg-success/20 text-success': currentOrder.status === 'Entregado',
+                'bg-danger/20 text-danger': currentOrder.status === 'Cancelado'
+              }">
+              <span class="h-2 w-2 rounded-full" [ngClass]="{
+                'bg-warning animate-pulse': currentOrder.status === 'Procesando',
+                'bg-primary-accent': currentOrder.status === 'Enviado',
+                'bg-success': currentOrder.status === 'Entregado',
+                'bg-danger': currentOrder.status === 'Cancelado'
+              }"></span>
+              {{ currentOrder.status }}
+            </span>
         </div>
         <div class="text-center">
-          <p class="text-xs uppercase text-text-secondary font-semibold mb-2">Grand Total</p>
-          <p class="text-3xl font-bold text-success">{{ totalPaid() | currency:'USD' }}</p>
+            <div class="mb-2 text-xs font-semibold uppercase text-text-secondary">Grand Total</div>
+            <div class="text-3xl font-bold text-success">{{ totalPaid() | currency:'USD' }}</div>
         </div>
-        <div class="relative">
-          <button (click)="toggleActionsMenu($event)" class="actions-btn bg-dark-bg border border-border-color rounded-lg px-4 py-2 font-semibold hover:border-primary-accent transition-colors w-full">
-            Acciones Rápidas <i class="fas fa-chevron-down ml-2 text-xs"></i>
-          </button>
-          @if(isActionsMenuOpen()) {
-            <div class="absolute top-full right-0 mt-2 w-56 bg-dark-bg-tertiary border border-border-color rounded-lg shadow-2xl p-2 z-10 animate-in fade-in-0 zoom-in-95 duration-200">
-              <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-text-secondary hover:bg-primary-accent hover:text-white"><i class="fas fa-print w-4 text-center"></i>Imprimir Factura</a>
-              <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-text-secondary hover:bg-primary-accent hover:text-white"><i class="fab fa-whatsapp w-4 text-center"></i>Contactar Cliente</a>
-              <div class="h-px bg-border-color my-1"></div>
-              <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-danger hover:bg-danger hover:text-white"><i class="fas fa-times-circle w-4 text-center"></i>Cancelar Pedido</a>
+        <div class="relative" [class.open]="isActionsMenuOpen()">
+            <button class="actions-btn flex w-full items-center justify-center gap-2 rounded-lg border border-border-color bg-[#121629] px-5 py-3 font-semibold text-text-primary transition-colors hover:border-primary-accent" (click)="toggleActionsMenu($event)">
+                Acciones Rápidas <i class="fas fa-chevron-down transition-transform" [class.rotate-180]="isActionsMenuOpen()"></i>
+            </button>
+            <div class="actions-dropdown absolute right-0 top-full z-10 mt-2 w-56 rounded-lg border border-border-color bg-dark-bg-tertiary p-2 shadow-2xl">
+                <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-text-secondary hover:bg-primary-accent hover:text-dark-bg"><i class="fas fa-print w-4 text-center"></i>Imprimir Factura</a>
+                <a href="https://wa.me/584128433922?text=Hola,%20te%20contacto%20sobre%20el%20pedido%20{{currentOrder.id}}" target="_blank" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-text-secondary hover:bg-primary-accent hover:text-dark-bg"><i class="fab fa-whatsapp w-4 text-center"></i>Contactar Cliente</a>
+                <div class="my-1 h-px bg-border-color"></div>
+                <a href="#" class="danger flex items-center gap-3 rounded-md px-3 py-2 text-sm text-danger hover:bg-danger hover:text-white"><i class="fas fa-times-circle w-4 text-center"></i>Cancelar Pedido</a>
             </div>
-          }
         </div>
-      </header>
+    </header>
 
-      <div class="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
-        <main class="space-y-6">
-          <section class="bg-dark-bg-secondary border border-border-color rounded-xl p-6">
-            <h3 class="text-lg font-bold text-white mt-0 mb-4">Items del Pedido ({{ currentOrder.items.length }})</h3>
-            <table class="w-full">
-              <thead>
-                <tr class="border-b border-border-color"><th class="p-2 text-left text-sm font-semibold text-text-secondary uppercase">Producto</th><th class="p-2 text-right text-sm font-semibold text-text-secondary uppercase">Costo</th><th class="p-2 text-right text-sm font-semibold text-text-secondary uppercase">Total</th></tr>
-              </thead>
-              <tbody>
-                @for(item of currentOrder.items; track item.productId) {
-                  <tr class="border-b border-border-color/50 last:border-none">
-                    <td class="p-2 py-4">
-                      <div class="flex items-center gap-4">
-                        <img src="https://placehold.co/100x100/0A0C1F/FFFFFF?text=P" [alt]="item.name" class="w-12 h-12 object-contain bg-dark-bg rounded-md">
-                        <div>
-                          <p class="font-semibold text-white">{{ item.name }}</p>
-                          <p class="text-xs text-text-secondary">SKU: {{ item.productId }}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="p-2 text-right text-sm text-text-secondary">{{ item.quantity }} x {{ item.price | currency }}</td>
-                    <td class="p-2 text-right font-semibold">{{ (item.price * item.quantity) | currency }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </section>
+    <!-- Layout Principal -->
+    <div class="grid grid-cols-1 items-start gap-8 lg:grid-cols-[2fr_1fr]">
+        <main class="flex flex-col gap-8">
+            <!-- Línea de Tiempo -->
+            <section class="data-card">
+                <div class="card-header"><i class="fas fa-stream"></i><h3>Línea de Tiempo del Pedido</h3></div>
+                <div class="card-body">
+                    <ul class="relative flex justify-between">
+                        <div class="absolute left-0 top-4 h-0.5 w-full bg-border-color"></div>
+                        @for(step of timelineSteps(); track step.name) {
+                        <li class="relative flex-1 text-center">
+                            <div class="step-icon" [ngClass]="step.status"><i [class]="step.icon"></i></div>
+                            <div class="step-label mt-3 text-xs">{{ step.name }}</div>
+                        </li>
+                        }
+                        @if(currentOrder.status === 'Cancelado') {
+                        <li class="relative flex-1 text-center">
+                            <div class="step-icon cancelled"><i class="fas fa-times-circle"></i></div>
+                            <div class="step-label mt-3 text-xs">Cancelado</div>
+                        </li>
+                        }
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Items del Pedido -->
+            <section class="data-card">
+                <div class="card-header"><i class="fas fa-box-open"></i><h3>Artículos del Pedido ({{ currentOrder.items.length }})</h3></div>
+                <table class="w-full">
+                    <thead class="border-b border-border-color">
+                        <tr>
+                            <th class="p-3 text-left text-xs font-semibold uppercase text-text-secondary">Producto</th>
+                            <th class="p-3 text-right text-xs font-semibold uppercase text-text-secondary">Costo</th>
+                            <th class="p-3 text-right text-xs font-semibold uppercase text-text-secondary">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for(item of currentOrder.items; track item.productId) {
+                        <tr class="border-b border-border-color/50 last:border-none">
+                            <td class="p-4">
+                                <div class="flex items-center gap-4">
+                                    <img src="https://placehold.co/100x100/0A0C1F/FFFFFF?text=P" [alt]="item.name" class="h-12 w-12 rounded-md bg-dark-bg object-contain">
+                                    <div>
+                                        <p class="font-semibold text-white">{{ item.name }}</p>
+                                        <p class="text-xs text-text-secondary">SKU: {{ item.productId }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4 text-right text-sm text-text-secondary">{{ item.quantity }} x {{ item.price | currency }}</td>
+                            <td class="p-4 text-right font-semibold">{{ (item.price * item.quantity) | currency }}</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Registro de Actividad -->
+            <section class="data-card">
+                <div class="card-header"><i class="fas fa-history"></i><h3>Registro de Actividad del Pedido</h3></div>
+                <div class="card-body">
+                    <ul class="p-0">
+                        @for(log of activityLog(); track log.meta) {
+                        <li class="flex gap-4 py-3 first:pt-0 last:pb-0">
+                            <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-dark-bg-tertiary text-text-secondary"><i [class]="log.icon"></i></div>
+                            <div>
+                                <p class="text-sm" [innerHTML]="log.text"></p>
+                                <p class="text-xs text-text-secondary" [innerHTML]="log.meta"></p>
+                            </div>
+                        </li>
+                        }
+                    </ul>
+                </div>
+            </section>
         </main>
-        <aside class="space-y-6 lg:sticky top-8">
-          <section class="bg-dark-bg-secondary border border-border-color rounded-xl">
-            <div class="p-6">
-              <h3 class="text-lg font-bold text-white mt-0 mb-4">Análisis Financiero</h3>
-              <div class="space-y-2 text-sm">
-                <div class="flex justify-between"><span class="text-text-secondary">Subtotal</span> <span class="font-semibold">{{ subtotal() | currency }}</span></div>
-                <div class="flex justify-between"><span class="text-text-secondary">Envío</span> <span class="font-semibold">{{ shippingCost() | currency }}</span></div>
-                <div class="flex justify-between"><span class="text-text-secondary">Descuento (NUEVO10)</span> <span class="font-semibold text-danger">-{{ discount() | currency }}</span></div>
-                <div class="flex justify-between text-base font-bold pt-2 border-t border-dashed border-border-color"><span class="text-white">Total Pagado</span> <span class="text-white">{{ totalPaid() | currency }}</span></div>
-                <hr class="border-border-color border-dashed my-2">
-                <div class="flex justify-between"><span class="text-text-secondary">Costo de Productos</span> <span class="font-semibold">-{{ costOfGoods() | currency }}</span></div>
-                <div class="flex justify-between"><span class="text-text-secondary">Comisiones de Pago</span> <span class="font-semibold">-{{ paymentFees() | currency }}</span></div>
-                <div class="flex justify-between text-base font-bold pt-2 border-t border-dashed border-border-color"><span class="text-success">Ganancia Neta</span> <span class="text-success">{{ netProfit() | currency }}</span></div>
-              </div>
-            </div>
-          </section>
 
-          <section class="bg-dark-bg-secondary border border-border-color rounded-xl p-6">
-            <h3 class="text-lg font-bold text-white mt-0 mb-4">Cliente</h3>
-            <p class="font-semibold text-white">{{ currentOrder.customerName }}</p>
-            <div class="relative flex items-center gap-2">
-              <span id="customer-email" class="text-text-secondary text-sm">{{ currentOrder.customerEmail }}</span>
-              <button (click)="copyToClipboard('customer-email')" class="text-text-secondary hover:text-primary-accent transition-colors"><i class="far fa-copy"></i></button>
-              @if(copyTooltip()?.target === 'customer-email' && copyTooltip()?.visible) {
-                <div class="absolute left-full ml-2 px-2 py-1 bg-success text-white text-xs rounded-md animate-in fade-in-0 zoom-in-95">¡Copiado!</div>
-              }
-            </div>
-            <p class="text-text-secondary text-sm mt-2 border-t border-border-color pt-2">Dirección: <strong class="text-white">{{ currentOrder.shippingAddress }}</strong></p>
-          </section>
+        <aside class="flex flex-col gap-8 lg:sticky top-8">
+            <!-- Cliente -->
+            <section class="data-card">
+                <div class="card-header"><i class="fas fa-user-circle"></i><h3>Cliente</h3></div>
+                <div class="card-body">
+                    <div class="mb-6 flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary-accent text-xl font-bold">{{ currentOrder.customerName.slice(0, 2).toUpperCase() }}</div>
+                            <div>
+                                <div class="text-lg font-semibold">{{ currentOrder.customerName }}</div>
+                                <div class="text-xs text-text-secondary">Cliente Leal - 5 Pedidos</div>
+                            </div>
+                        </div>
+                        <a href="#" class="flex h-10 w-10 items-center justify-center rounded-lg border border-border-color text-text-secondary transition-colors hover:border-primary-accent hover:text-primary-accent" title="Ver Perfil Completo"><i class="fas fa-user-tag"></i></a>
+                    </div>
+                    <dl>
+                        <dt class="font-medium text-text-secondary">Email</dt>
+                        <dd class="relative flex items-center gap-2">
+                            <span [id]="'customer-email-' + currentOrder.id">{{ currentOrder.customerEmail }}</span>
+                            <i class="far fa-copy cursor-pointer text-text-secondary transition-colors hover:text-primary-accent" (click)="copyToClipboard('customer-email-' + currentOrder.id)"></i>
+                            @if(copyTooltip()?.target === 'customer-email-' + currentOrder.id && copyTooltip()?.visible) {
+                            <div class="copy-tooltip absolute left-full ml-2 rounded-md bg-success px-2 py-1 text-xs font-semibold text-white">¡Copiado!</div>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </section>
+
+            <!-- Gestión de Envío -->
+            <section class="data-card">
+                <div class="card-header"><i class="fas fa-shipping-fast"></i><h3>Gestión de Envío</h3></div>
+                <div class="card-body">
+                     <dl class="mb-4">
+                        <dt class="font-medium text-text-secondary">Dirección de Envío</dt>
+                        <dd class="text-sm not-italic">{{ currentOrder.shippingAddress }}</dd>
+                    </dl>
+                    <div>
+                        <label for="tracking-number" class="mb-2 block font-medium">Añadir Número de Seguimiento</label>
+                        <div class="flex">
+                            <select id="shipping-carrier" class="flex-grow rounded-l-lg border border-border-color bg-dark-bg px-4 py-2 text-text-primary outline-none focus:border-primary-accent">
+                                <option>MRW</option> <option>Zoom</option> <option>Tealca</option> <option>Delivery</option>
+                            </select>
+                            <input type="text" id="tracking-number" placeholder="Ej: 123456789" class="w-full rounded-r-lg border border-l-0 border-border-color bg-dark-bg px-4 py-2 text-text-primary outline-none focus:border-primary-accent">
+                        </div>
+                    </div>
+                    <button class="btn-primary mt-4 w-full rounded-lg bg-primary-accent px-4 py-3 font-bold text-dark-bg transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-accent/30">Marcar como Enviado</button>
+                </div>
+            </section>
+
+            <!-- Análisis Financiero -->
+            <section class="data-card">
+                <div class="card-header"><i class="fas fa-wallet"></i><h3>Análisis Financiero</h3></div>
+                <div class="card-footer bg-black/20 p-6">
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                        <span class="text-text-secondary">Subtotal</span><span class="text-right font-semibold">{{ subtotal() | currency }}</span>
+                        <span class="text-text-secondary">Envío</span><span class="text-right font-semibold">{{ shippingCost() | currency }}</span>
+                        <span class="text-text-secondary">Descuento <span class="text-xs italic text-secondary-accent">(NUEVO10)</span></span><span class="text-right font-semibold text-danger">-{{ discount() | currency }}</span>
+                        <hr class="col-span-2 my-2 border-dashed border-border-color">
+                        <span class="text-base font-bold">Total Pagado</span><span class="text-right text-base font-bold">{{ totalPaid() | currency }}</span>
+                        <hr class="col-span-2 my-2 border-dashed border-border-color">
+                        <span class="text-text-secondary">Costo de Productos</span><span class="text-right font-semibold">-{{ costOfGoods() | currency }}</span>
+                        <span class="text-text-secondary">Comisiones de Pago</span><span class="text-right font-semibold">-{{ paymentFees() | currency }}</span>
+                        <span class="text-lg font-bold text-profit">Ganancia Neta</span><span class="text-right text-lg font-bold text-profit">{{ netProfit() | currency }}</span>
+                    </div>
+                </div>
+            </section>
         </aside>
-      </div>
     </div>
-  } @else {
-    <div class="bg-dark-bg-secondary border border-border-color rounded-xl p-6 text-center">
-      <h2 class="text-danger">Pedido no encontrado</h2>
-      <p class="text-text-secondary">El pedido que buscas no existe o fue eliminado.</p>
-      <a routerLink="/admin/orders" class="bg-primary-accent text-dark-bg border-none px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all duration-200 inline-flex mt-4">Volver a Pedidos</a>
-    </div>
-  }
-}
+</div>
+} @else {
+<div class="text-center rounded-xl border border-border-color bg-dark-bg-secondary p-6">
+    <h2 class="text-danger">Pedido no encontrado</h2>
+    <p class="text-text-secondary">El pedido que buscas no existe o fue eliminado.</p>
+    <a routerLink="/admin/orders" class="mt-4 inline-flex rounded-lg border-none bg-primary-accent px-6 py-2.5 font-bold text-dark-bg transition-all">Volver a Pedidos</a>
+</div>
+} }
+
+<!--
+  AURA'S NOTE: The styles have been converted to Tailwind utility classes.
+  The original CSS variables are still defined in the host for any potential custom properties,
+  but the layout and styling are now fully managed by Tailwind.
+-->
+<style>
+    :host {
+        display: block;
+        --color-dark-surface-2: #1F2937;
+        --color-primary-accent-glow: rgba(0, 169, 255, 0.3);
+        --color-profit: #4ade80;
+    }
+    .actions-dropdown { display: none; }
+    .quick-actions.open .actions-dropdown { display: block; }
+    .step-icon.completed { border-color: var(--color-success); color: var(--color-success); }
+    .step-icon.active { border-color: var(--color-primary-accent); color: var(--color-primary-accent); transform: scale(1.1); box-shadow: 0 0 15px var(--color-primary-accent-glow); }
+    .step-icon.cancelled { border-color: var(--color-danger); color: var(--color-danger); }
+</style>
+
