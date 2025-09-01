@@ -14,7 +14,7 @@
 
 # Tabla de Contenidos
 
-1.  [Ecosistema Tecnológico](#ecosistema-tecnológico)
+1.  [Ecosistema Tecnológico](https://github.com/johngeek2024/baratongovzla-frontend/blob/main/README.md#ecosistema-tecnol%C3%B3gico)
 2.  [Arquitectura Angular Moderna](#arquitectura-angular-moderna)
 3.  [Estructura de Directorios](#estructura-de-directorios)
 4.  [Sistema de Estilos con Tailwind CSS](#sistema-de-estilos-con-tailwind-css)
