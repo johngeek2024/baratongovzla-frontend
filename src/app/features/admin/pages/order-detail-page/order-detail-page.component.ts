@@ -5,7 +5,6 @@ import { switchMap } from 'rxjs';
 import { OrderAdminService } from '../../services/order-admin.service';
 import { AdminOrderDetail, OrderStatus } from '../../models/order.model';
 
-// ✅ Las interfaces se mantienen para la estructura de datos interna del componente.
 interface TimelineStep {
   name: string;
   status: 'completed' | 'active' | 'pending' | 'cancelled';
@@ -35,13 +34,21 @@ export class OrderDetailPageComponent implements OnInit {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    // Cierra el menú si se hace clic fuera del botón que lo abre.
-    if (!(event.target as HTMLElement).closest('.actions-btn')) {
+    if (!(event.target as HTMLElement).closest('.quick-actions')) {
       this.isActionsMenuOpen.set(false);
     }
   }
 
-  // --- Lógica de la Línea de Tiempo (CORREGIDA) ---
+  // --- Análisis Financiero ---
+  subtotal = computed(() => this.order()?.items.reduce((acc, item) => acc + (item.price * item.quantity), 0) ?? 0);
+  shippingCost = computed(() => 10.00); // Simulado
+  discount = computed(() => this.subtotal() * 0.10); // Simulado 10%
+  totalPaid = computed(() => this.subtotal() + this.shippingCost() - this.discount());
+  costOfGoods = computed(() => this.subtotal() * 0.7); // Simulado
+  paymentFees = computed(() => this.totalPaid() * 0.03); // Simulado
+  netProfit = computed(() => this.totalPaid() - this.costOfGoods() - this.paymentFees());
+
+  // --- Lógica de la Línea de Tiempo ---
   timelineSteps = computed<TimelineStep[]>(() => {
     const orderStatus = this.order()?.status;
     const baseSteps = [
@@ -52,27 +59,16 @@ export class OrderDetailPageComponent implements OnInit {
       { name: 'Entregado', icon: 'fas fa-check-circle' },
     ];
 
-    if (!orderStatus) {
-      // Devuelve todos como pendientes si no hay estado.
-      return baseSteps.map(step => ({ ...step, status: 'pending' }));
-    }
+    if (!orderStatus) return baseSteps.map(step => ({ ...step, status: 'pending' }));
 
-    // ✅ CORRECCIÓN: Se utiliza un mapa explícito para una lógica robusta y sin errores.
     const statusMap: { [key in OrderStatus]: number } = {
-      'Pedido Realizado': 0,
-      'Pago Confirmado': 1,
-      'Procesando': 2,
-      'Enviado': 3,
-      'Entregado': 4,
-      'Cancelado': -1, // Un valor especial para el estado de cancelación.
+      'Pedido Realizado': 0, 'Pago Confirmado': 1, 'Procesando': 2,
+      'Enviado': 3, 'Entregado': 4, 'Cancelado': -1,
     };
 
     const activeIndex = statusMap[orderStatus];
 
-    if (activeIndex === -1) {
-        // Si el pedido está cancelado, se puede mostrar de una forma especial o vacía.
-        return baseSteps.map(step => ({ ...step, status: 'cancelled' }));
-    }
+    if (activeIndex === -1) return baseSteps.map(step => ({ ...step, status: 'cancelled' }));
 
     return baseSteps.map((step, index) => ({
       ...step,
@@ -80,25 +76,58 @@ export class OrderDetailPageComponent implements OnInit {
     }));
   });
 
-  // --- Lógica del Registro de Actividad (Sin cambios funcionales) ---
+  // ✅ INICIO: LÓGICA DE REGISTRO DE ACTIVIDAD DINÁMICO
   activityLog = computed<ActivityLogItem[]>(() => {
-    if (!this.order()) return [];
-    return [
-      { icon: 'fas fa-cogs', text: `Estado cambiado a <strong>${this.order()!.status}</strong>.`, meta: 'Por <strong>AdminAura</strong> - Hoy a las 10:30 AM' },
-      { icon: 'fas fa-credit-card', text: `Pago de <strong>${this.totalPaid().toLocaleString('es-VE', { style: 'currency', currency: 'USD' })}</strong> confirmado.`, meta: 'Por <strong>Sistema</strong> - Hoy a las 9:15 AM' }
+    const order = this.order();
+    if (!order) return [];
+
+    const allPossibleLogs: ActivityLogItem[] = [
+      {
+        icon: 'fas fa-receipt',
+        text: `Pedido <strong>#${order.id}</strong> fue creado.`,
+        meta: `Por <strong>${order.customerName}</strong> - ${new Date(order.date).toLocaleDateString('es-VE')} a las ${new Date(order.date).toLocaleTimeString('es-VE', { hour: '2-digit', minute:'2-digit' })}`
+      },
+      {
+        icon: 'fas fa-credit-card',
+        text: `Pago de <strong>${this.totalPaid().toLocaleString('es-VE', { style: 'currency', currency: 'USD' })}</strong> fue confirmado.`,
+        meta: 'Por <strong>Sistema</strong> - Automáticamente'
+      },
+      {
+        icon: 'fas fa-cogs',
+        text: 'El pedido entró en estado de <strong>Procesando</strong>.',
+        meta: 'Actualizado por <strong>AdminAura</strong>' // Simulado
+      },
+      {
+        icon: 'fas fa-truck',
+        text: 'El pedido fue marcado como <strong>Enviado</strong>.',
+        meta: 'Actualizado por <strong>AdminAura</strong>' // Simulado
+      },
+      {
+        icon: 'fas fa-check-circle',
+        text: 'El pedido fue marcado como <strong>Entregado</strong>.',
+        meta: 'Actualizado por <strong>AdminAura</strong>' // Simulado
+      }
     ];
+
+    const statusMap: { [key in OrderStatus]: number } = {
+      'Pedido Realizado': 0, 'Pago Confirmado': 1, 'Procesando': 2,
+      'Enviado': 3, 'Entregado': 4, 'Cancelado': -1,
+    };
+
+    const currentStatusIndex = statusMap[order.status];
+
+    if (currentStatusIndex === -1) {
+      return [{
+        icon: 'fas fa-times-circle',
+        text: `Pedido <strong>#${order.id}</strong> fue cancelado.`,
+        meta: `Por <strong>AdminAura</strong>`
+      }];
+    }
+
+    // Devuelve las entradas del log hasta el estado actual, en orden cronológico inverso (último primero).
+    return allPossibleLogs.slice(0, currentStatusIndex + 1).reverse();
   });
-
-  // --- Análisis Financiero (CORREGIDO) ---
-  subtotal = computed(() => this.order()?.items.reduce((acc, item) => acc + (item.price * item.quantity), 0) ?? 0);
-  shippingCost = computed(() => 10.00); // Simulado
-  discount = computed(() => this.subtotal() * 0.10); // Simulado 10%
-  totalPaid = computed(() => this.subtotal() + this.shippingCost() - this.discount());
-  // ✅ CORRECCIÓN: La propiedad `cost` no existe en el modelo de item. Se simula un costo del 70% del precio de venta.
-  costOfGoods = computed(() => this.order()?.items.reduce((acc, item) => acc + ((item.price * 0.7) * item.quantity), 0) ?? 0);
-  paymentFees = computed(() => this.totalPaid() * 0.03); // Simulado 3%
-  netProfit = computed(() => this.totalPaid() - this.costOfGoods() - this.paymentFees());
-
+  // ✅ FIN: LÓGICA DE REGISTRO DE ACTIVIDAD DINÁMICO
 
   ngOnInit(): void {
     this.route.paramMap.pipe(
