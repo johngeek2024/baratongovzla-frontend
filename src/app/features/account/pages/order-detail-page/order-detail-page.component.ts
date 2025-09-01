@@ -2,10 +2,18 @@ import { Component, computed, inject, signal, OnInit, OnDestroy, effect } from '
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { UserDataService, UserOrder, UserOrderStatus } from '../../../../core/services/user-data.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs/operators';
 
 interface TimelineStep {
   name: string;
   status: 'completed' | 'active' | 'pending';
+  icon: string;
+}
+
+interface MissionLog {
+  time: string;
+  status: string;
   icon: string;
 }
 
@@ -19,18 +27,26 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private userDataService = inject(UserDataService);
 
-  private orderId = signal<string | null>(null);
+  private orderId = toSignal(this.route.paramMap.pipe(map(params => params.get('id'))));
 
-  public order = computed<UserOrder | undefined>(() => {
+  // ✅ CORRECCIÓN: La obtención del pedido ahora usa la lógica correcta.
+  public readonly order = computed(() => {
     const id = this.orderId();
     if (!id) return undefined;
     return this.userDataService.orders().find(o => o.id === id);
   });
 
-  public subtotal = computed(() => {
-    return this.order()?.items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0) ?? 0;
-  });
+  public missionLog = signal<MissionLog[]>([]);
+  private timer: any;
 
+  public isRewardModalOpen = signal(false);
+  public rewardAnimationStep = signal<'initial' | 'crate' | 'reward'>('initial');
+  public isAddingToArsenal = signal(false);
+  public successfullyAddedToArsenal = signal(false);
+
+  public subtotal = computed(() => this.order()?.items.reduce((acc, item) => acc + (item.product.price * item.quantity), 0) ?? 0);
+
+  // ✅ CORRECCIÓN: Se reintroduce la lógica correcta para la línea de tiempo.
   timelineSteps = computed<TimelineStep[]>(() => {
     const orderStatus = this.order()?.status;
     const baseSteps = [
@@ -46,14 +62,9 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
     }
 
     const statusMap: { [key in UserOrderStatus]: number } = {
-      'Pedido Realizado': 0,
-      'Pago Confirmado': 1,
-      'Procesando': 2,
-      'Enviado': 3,
-      'Entregado': 4,
-      'Cancelado': -1,
+      'Pedido Realizado': 0, 'Pago Confirmado': 1, 'Procesando': 2,
+      'Enviado': 3, 'Entregado': 4, 'Cancelado': -1,
     };
-
     const activeIndex = statusMap[orderStatus];
 
     return baseSteps.map((step, index) => ({
@@ -62,20 +73,52 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
     }));
   });
 
-  // ✅ INICIO: RESTAURACIÓN DE LÓGICA DE RECOMPENSA
-  public isRewardModalOpen = signal(false);
-  public rewardAnimationStep = signal<'initial' | 'crate' | 'reward'>('initial');
-  public isAddingToArsenal = signal(false);
-  public successfullyAddedToArsenal = signal(false);
-
-  ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      this.orderId.set(params.get('id'));
+  constructor() {
+    effect(() => {
+      const currentOrder = this.order();
+      if (currentOrder) {
+        this.initializeMissionLog(currentOrder);
+      }
     });
   }
 
+  ngOnInit(): void {}
+
   ngOnDestroy(): void {
-    // Si hubiera timers o suscripciones, se limpiarían aquí.
+    if(this.timer) clearInterval(this.timer);
+  }
+
+  private initializeMissionLog(order: UserOrder): void {
+      const timeFormat: Intl.DateTimeFormatOptions = { hour: '2-digit', minute:'2-digit' };
+      const orderDate = new Date(order.date);
+
+      const fullLog: Omit<MissionLog, 'icon'>[] = [
+        { time: orderDate.toLocaleTimeString('es-VE', timeFormat), status: 'Misión Aceptada. Procesando orden...' },
+        { time: new Date(orderDate.getTime() + 1 * 60 * 60 * 1000).toLocaleTimeString('es-VE', timeFormat), status: 'Paquete ensamblado en el Hangar 7.' },
+      ];
+
+      if(order.status === 'Enviado' || order.status === 'Entregado') {
+        fullLog.push({ time: new Date(orderDate.getTime() + 2 * 60 * 60 * 1000).toLocaleTimeString('es-VE', timeFormat), status: 'Unidad de entrega asignada. En ruta.' });
+      }
+      if (order.status === 'Entregado') {
+        fullLog.push({ time: new Date(orderDate.getTime() + 4 * 60 * 60 * 1000).toLocaleTimeString('es-VE', timeFormat), status: 'Paquete entregado. ¡Disfruta tu equipo!' });
+      }
+
+      this.missionLog.set([]);
+      let step = 0;
+      if (this.timer) clearInterval(this.timer);
+      this.timer = setInterval(() => {
+        if (step < fullLog.length) {
+          const logEntry = {
+            ...fullLog[step],
+            icon: this.getIconForStatus(fullLog[step].status)
+          };
+          this.missionLog.update(log => [...log, logEntry]);
+          step++;
+        } else {
+          clearInterval(this.timer);
+        }
+      }, 800);
   }
 
   openRewardModal(): void {
@@ -83,27 +126,24 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.rewardAnimationStep.set('crate');
       setTimeout(() => {
-        // Pequeño retraso para permitir la animación de la caja antes de revelar la recompensa
         this.rewardAnimationStep.set('reward');
-      }, 1000); // Ajusta este tiempo si la animación de la caja es más larga o más corta
-    }, 50); // Pequeño retraso para que el modal se muestre antes de la animación de la caja
+      }, 1200);
+    }, 50);
   }
 
   closeRewardModal(): void {
     const modalContent = document.getElementById('reward-modal-content');
     if (modalContent) {
-      // Aplicar animación de salida si el contenido está presente
-      modalContent.style.animation = 'reward-fade-out 0.3s ease-out forwards';
-      setTimeout(() => {
+        modalContent.style.animation = 'reward-fade-out 0.3s ease-out forwards';
+        setTimeout(() => {
+            this.isRewardModalOpen.set(false);
+            this.rewardAnimationStep.set('initial');
+            this.successfullyAddedToArsenal.set(false);
+        }, 300);
+    } else {
         this.isRewardModalOpen.set(false);
         this.rewardAnimationStep.set('initial');
         this.successfullyAddedToArsenal.set(false);
-      }, 300); // Coincide con la duración de la animación 'reward-fade-out'
-    } else {
-      // Si el contenido no está presente, simplemente cierra el modal
-      this.isRewardModalOpen.set(false);
-      this.rewardAnimationStep.set('initial');
-      this.successfullyAddedToArsenal.set(false);
     }
   }
 
@@ -124,10 +164,17 @@ export class OrderDetailPageComponent implements OnInit, OnDestroy {
     this.isAddingToArsenal.set(true);
     setTimeout(() => {
       const productsFromOrder = currentOrder.items.map(item => item.product);
-      this.userDataService.addProductsToArsenal(productsFromOrder); // Asume que este método existe en UserDataService
+      this.userDataService.addProductsToArsenal(productsFromOrder);
       this.isAddingToArsenal.set(false);
       this.successfullyAddedToArsenal.set(true);
     }, 700);
   }
-  // ✅ FIN: RESTAURACIÓN DE LÓGICA DE RECOMPENSA
+
+  private getIconForStatus(status: string): string {
+    if (status.includes('Procesando')) return 'fa-cogs';
+    if (status.includes('ensamblado')) return 'fa-box-archive';
+    if (status.includes('ruta')) return 'fa-truck-fast';
+    if (status.includes('entregado')) return 'fa-flag-checkered';
+    return 'fa-check-circle';
+  }
 }

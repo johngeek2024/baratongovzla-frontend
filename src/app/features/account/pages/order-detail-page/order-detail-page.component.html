@@ -1,4 +1,4 @@
-<div class="content-panel active">
+<div [class]="'content-panel active'">
   @if (order(); as currentOrder) {
     <header class="mb-8 grid grid-cols-1 items-center gap-6 rounded-2xl border border-border-color bg-gradient-to-br from-dark-bg-secondary to-[#171d33] p-6 shadow-2xl shadow-black/30 md:grid-cols-[1fr_auto_auto]">
         <div>
@@ -49,51 +49,73 @@
     </section>
 
     <div class="order-detail-grid">
-        <div class="data-card">
-            <div class="card-header"><i class="fas fa-box-open"></i><h3>Artículos del Pedido</h3></div>
-            <div class="card-body !p-0">
-                @for(item of currentOrder.items; track item.product.id) {
-                    <div class="item-card">
-                        <img [src]="item.product.imageUrl" [alt]="item.product.name" class="item-card-img">
-                        <div class="item-info">
-                            <h4 class="font-semibold">{{ item.product.name }}</h4>
-                            <p class="text-text-secondary">Cantidad: {{ item.quantity }}</p>
+        <div class="space-y-8">
+            <div class="data-card">
+                <div class="card-header"><i class="fas fa-box-open"></i><h3>Artículos del Pedido</h3></div>
+                <div class="card-body !p-0">
+                    @for(item of currentOrder.items; track item.product.id) {
+                        <div class="item-card">
+                            <img [src]="item.product.imageUrl" [alt]="item.product.name" class="item-card-img">
+                            <div class="item-info">
+                                <h4 class="font-semibold">{{ item.product.name }}</h4>
+                                <p class="text-text-secondary">Cantidad: {{ item.quantity }}</p>
+                            </div>
+                            <p class="item-price">{{ (item.product.price * item.quantity) | currency }}</p>
                         </div>
-                        <p class="item-price">{{ (item.product.price * item.quantity) | currency }}</p>
-                    </div>
-                }
+                    }
+                </div>
+            </div>
+
+            <div class="data-card">
+                <div class="card-header"><i class="fas fa-satellite-dish"></i><h3>Bitácora de Misión</h3></div>
+                <div class="card-body">
+                    <ul class="space-y-4 font-mono text-sm">
+                        @for(log of missionLog(); track log.time; let i = $index) {
+                          <li class="flex items-start gap-4 animate-fade-in-up" [style.animation-delay]="(i * 150) + 'ms'">
+                              <span class="text-primary-accent pt-1"><i class="fas" [class]="log.icon"></i></span>
+                              <div>
+                                  <p class="text-text-primary">{{ log.status }}</p>
+                                  <p class="text-xs text-text-secondary">{{ log.time }}</p>
+                              </div>
+                          </li>
+                        }
+                    </ul>
+                </div>
             </div>
         </div>
-        <div class="data-card h-fit">
-             <div class="card-header"><i class="fas fa-file-invoice-dollar"></i><h3>Resumen</h3></div>
-             <div class="card-body space-y-3">
-                <div class="summary-row">
-                    <span>Subtotal:</span>
-                    <span>{{ subtotal() | currency:'USD' }}</span>
-                </div>
-                <div class="summary-row">
-                    <span>Envío:</span>
-                    <span>$0.00</span>
-                </div>
-                <div class="summary-row total">
-                    <span>Total:</span>
-                    <span>{{ currentOrder.total | currency:'USD' }}</span>
+
+        <div class="space-y-8">
+            <div class="data-card h-fit">
+                 <div class="card-header"><i class="fas fa-file-invoice-dollar"></i><h3>Resumen Financiero</h3></div>
+                 <div class="card-body space-y-3">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>{{ subtotal() | currency:'USD' }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Envío:</span>
+                        <span>$0.00</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span>{{ currentOrder.total | currency:'USD' }}</span>
+                    </div>
                 </div>
             </div>
+
+            @if (currentOrder.status === 'Entregado') {
+              <div class="bg-gradient-to-br from-secondary-accent/80 to-amber-600 rounded-xl p-6 text-center text-dark-bg relative overflow-hidden animate-pulse-glow">
+                  <i class="fas fa-award text-5xl text-amber-900/50 absolute -top-2 -left-2"></i>
+                  <h2 class="font-headings text-2xl font-bold mb-2 text-dark-bg">¡Misión Completada!</h2>
+                  <p class="mb-4 text-dark-bg/80">Un paquete de suministros ha llegado.</p>
+                  <button (click)="openRewardModal()" class="bg-dark-bg hover:bg-black text-secondary-accent font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 w-full">
+                      <i class="fas fa-box-open mr-2"></i>Abrir Suministros
+                  </button>
+              </div>
+            }
         </div>
     </div>
-
-    @if (currentOrder.status === 'Entregado') {
-        <div class="bg-gradient-to-br from-secondary-accent/80 to-amber-600 rounded-xl p-6 text-center text-dark-bg-text relative overflow-hidden animate-pulse-glow mt-8">
-            <i class="fas fa-award text-5xl text-amber-900/50 absolute -top-2 -left-2"></i>
-            <h2 class="font-headings text-2xl font-bold mb-2">¡Misión Completada!</h2>
-            <p class="mb-4">Un paquete de suministros ha llegado.</p>
-            <button (click)="openRewardModal()" class="bg-dark-bg hover:bg-black text-secondary-accent font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 w-full">
-                <i class="fas fa-box-open mr-2"></i>Abrir Suministros
-            </button>
-        </div>
-    }
-    } @else {
+  } @else {
     <p class="text-text-secondary">No se pudo cargar la información del pedido.</p>
   }
 </div>
@@ -125,7 +147,7 @@
             <p (click)="copyCoupon($event)" class="font-mono bg-dark-bg rounded p-2 my-4 text-secondary-accent tracking-widest cursor-pointer relative overflow-hidden coupon-shimmer-effect" title="Click para copiar">
                 <span class="relative z-10">BARATONGO10</span>
             </p>
-            <button (click)="handleAddToArsenal()" class="bg-primary-accent hover:opacity-80 text-dark-bg-text font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 w-full mt-4" [disabled]="isAddingToArsenal() || successfullyAddedToArsenal()">
+            <button (click)="handleAddToArsenal()" class="bg-primary-accent hover:opacity-80 text-dark-bg font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 w-full mt-4" [disabled]="isAddingToArsenal() || successfullyAddedToArsenal()">
               @if (isAddingToArsenal()) {
                 <i class="fas fa-spinner animate-spin mr-2"></i> <span>Añadiendo...</span>
               } @else if (successfullyAddedToArsenal()) {
@@ -138,30 +160,17 @@
       }
   </div>
 }
+
 <style>
-  /* Se mantienen los estilos de la plantilla anterior. */
-  .data-card {
-    @apply rounded-2xl border border-border-color bg-dark-bg-secondary shadow-lg;
-  }
-  .card-header {
-    @apply flex items-center gap-3 border-b border-border-color p-5;
-  }
-  .card-header h3 {
-    @apply m-0 text-base font-bold text-text-primary;
-  }
-  .card-header i {
-    @apply text-primary-accent;
-  }
-  .card-body {
-    @apply p-6;
-  }
-  .step-icon {
-    @apply relative z-10 mx-auto flex h-8 w-8 items-center justify-center rounded-full border-2 bg-dark-bg transition-all;
-  }
+  .data-card { @apply rounded-2xl border border-border-color bg-dark-bg-secondary shadow-lg; }
+  .card-header { @apply flex items-center gap-3 border-b border-border-color p-5; }
+  .card-header h3 { @apply m-0 text-base font-bold text-text-primary; }
+  .card-header i { @apply text-primary-accent; }
+  .card-body { @apply p-6; }
+  .step-icon { @apply relative z-10 mx-auto flex h-8 w-8 items-center justify-center rounded-full border-2 bg-dark-bg transition-all; }
   .step-icon.pending { @apply border-border-color text-text-secondary; }
   .step-icon.active { @apply scale-110 border-primary-accent text-primary-accent shadow-[0_0_15px_theme(colors.primary-accent/50)]; }
   .step-icon.completed { @apply border-success bg-success text-white; }
-
   .order-detail-grid { @apply grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8; }
   .item-card { @apply flex flex-col sm:flex-row items-center gap-4 p-4 border-b border-border-color; }
   .item-card:last-child { @apply border-none; }
@@ -170,8 +179,6 @@
   .item-price { @apply font-semibold text-lg; }
   .summary-row { @apply flex justify-between; }
   .total { @apply text-xl font-bold border-t border-border-color pt-4 mt-4; }
-
-  /* Animaciones restauradas */
   @keyframes fade-in-up { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
   .animate-fade-in-up { animation: fade-in-up 0.5s ease-out forwards; }
   @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.2); } 50% { box-shadow: 0 0 25px 10px rgba(255, 215, 0, 0.4); } }
@@ -183,20 +190,15 @@
   @keyframes crate-shake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
   @keyframes light-burst { 0% { transform: scale(0); opacity: 0; } 50% { opacity: 0.8; } 100% { transform: scale(3); opacity: 0; } }
   @keyframes crate-shatter { 0% { transform: scale(1) rotate(0); opacity: 1; } 100% { transform: scale(1.5) rotate(15deg); opacity: 0; } }
-
   .animate-crate-sequence {
       animation:
           crate-drop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
           crate-shake 0.5s 0.4s ease-in-out,
           crate-shatter 0.4s 0.9s ease-in forwards;
   }
-  .animate-light-burst {
-      animation: light-burst 0.4s 0.5s ease-out forwards;
-  }
-
+  .animate-light-burst { animation: light-burst 0.4s 0.5s ease-out forwards; }
   @keyframes reward-reveal { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 80% { opacity: 1; transform: scale(1.05) translateY(0); } 100% { transform: scale(1); } }
   .animate-reward-reveal { animation: reward-reveal 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-
   @keyframes coupon-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
   .coupon-shimmer-effect {
       background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
