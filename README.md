@@ -50,10 +50,11 @@ Este no es el Angular de antes. La aplicación está construida desde cero con l
 
 ---
 
-# 3. Estructura de Directorios
+## 3. Estructura de Directorios
 
 La organización del código está diseñada para ser intuitiva, escalable y mantenible, siguiendo una estricta separación de responsabilidades.
 
+```bash
 src/
 └── app/
     ├── core/               # Lógica central y singletons de la aplicación.
@@ -79,6 +80,7 @@ src/
     ├── app.config.ts       # Configuración principal (providers, SSR, Zoneless).
     ├── app.routes.ts       # Rutas principales con lazy loading de features.
     └── app.component.ts    # Componente raíz (AppComponent).
+```
 
 ---
 
