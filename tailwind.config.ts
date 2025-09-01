@@ -1,3 +1,5 @@
+// johngeek2024/baratongovzla-frontend/tailwind.config.ts
+
 import type { Config } from 'tailwindcss';
 import plugin from 'tailwindcss/plugin';
 
@@ -30,7 +32,24 @@ const config: Config = {
         'badge-exclusive': '#8b5cf6',
         'badge-offer': '#ef4444',
         'profit': 'hsl(var(--color-profit) / <alpha-value>)',
-        'dark-surface-1': 'hsl(var(--color-dark-surface-1) / <alpha-value>)'
+        'dark-surface-1': 'hsl(var(--color-dark-surface-1) / <alpha-value>)',
+        // ✅ INICIO: COLORES DE ADMIN AJUSTADOS
+        // 'admin-gray' eliminado, se usará 'dark-bg' o 'dark-bg-secondary'
+        'admin-blue': {
+          '600': '#2563eb',
+          '500': '#3b82f6',
+          '400': '#60a5fa',
+        },
+        'admin-green': {
+          '400': '#4ade80',
+        },
+        'admin-yellow': {
+          '400': '#facc15',
+        },
+        'admin-orange': {
+          '400': '#fb923c',
+        }
+        // ✅ FIN: COLORES DE ADMIN AJUSTADOS
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
@@ -63,10 +82,8 @@ const config: Config = {
         'button-close': 'button-close-effect 0.4s ease-in-out',
       },
       boxShadow: {
-        // ✅ INICIO: CORRECCIÓN QUIRÚRGICA DEL EFECTO NEÓN
         'neon-primary': '0 0 10px hsl(var(--color-primary-accent) / 0.7), 0 0 25px hsl(var(--color-primary-accent) / 0.5)',
         'neon-secondary': '0 0 10px hsl(var(--color-secondary-accent) / 0.7), 0 0 25px hsl(var(--color-secondary-accent) / 0.5)',
-        // ✅ FIN: CORRECCIÓN QUIRÚRGICA
       },
       textShadow: {
         DEFAULT: '0 2px 4px rgba(0, 0, 0, 0.5)',

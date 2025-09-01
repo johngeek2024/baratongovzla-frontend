@@ -1,12 +1,12 @@
 // src/app/features/admin/services/dashboard.service.ts
-import { Injectable, inject, computed, Signal } from '@angular/core'; // Signal importado
+
+import { Injectable, inject, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DataStoreService } from '../../../core/services/data-store.service';
 import { OrderAdminService } from './order-admin.service';
 import { CustomerAdminService } from './customer-admin.service';
-// ✅ CORRECCIÓN: Se importa AdminOrderDetail para un tipado estricto
 import { AdminOrder, AdminOrderDetail } from '../models/order.model';
-import { AdminCustomer } from '../components/customers-panel/customers-panel.component';
+import { AdminCustomerDetails } from '../models/customer.model';
 import { SettingsService } from './../../../core/services/settings.service';
 import { Product } from '../../../core/models/product.model';
 import { AnalyticsService } from './analytics.service';
@@ -22,22 +22,19 @@ export class DashboardService {
   private settingsService = inject(SettingsService);
   private analyticsService = inject(AnalyticsService);
 
-  // ✅ CORRECCIÓN: Se define el tipo explícito para la señal de órdenes.
-  private orders: Signal<AdminOrderDetail[]>;
-  private customers: Signal<AdminCustomer[]>;
+  private orders: import("@angular/core").Signal<AdminOrderDetail[]>;
+  private customers: import("@angular/core").Signal<AdminCustomerDetails[]>;
   private products = this.dataStore.products;
   private settings = this.settingsService.settings;
-  private uniqueVisitors: Signal<number>;
+  private uniqueVisitors: import("@angular/core").Signal<number>;
 
   constructor() {
-    // ✅ CORRECCIÓN: Se consume el método getOrders() y se convierte el Observable a Signal.
     this.orders = toSignal(this.orderAdminService.getOrders(), { initialValue: [] });
     this.customers = toSignal(this.customerAdminService.getCustomers(), { initialValue: [] });
     this.uniqueVisitors = toSignal(this.analyticsService.getUniqueVisitors('daily'), { initialValue: 0 });
   }
 
   public dailySalesGoal = computed(() => {
-    // ... (sin cambios aquí)
     const goals = this.settings().dailyGoals;
     const dayIndex = new Date().getDay();
     const dayName = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][dayIndex];
@@ -45,7 +42,6 @@ export class DashboardService {
   });
 
   public salesToday = computed(() => {
-    // ... (sin cambios aquí)
     const today = new Date();
     const threeDaysAgo = new Date().setDate(today.getDate() - 3);
     return this.orders().reduce((total: number, order: AdminOrder) => {
@@ -58,7 +54,6 @@ export class DashboardService {
   });
 
   public salesGoalProgress = computed(() => {
-    // ... (sin cambios aquí)
     const goal = this.dailySalesGoal();
     if (goal === 0) return 0;
     const progress = (this.salesToday() / goal) * 100;
@@ -66,48 +61,40 @@ export class DashboardService {
   });
 
   public newOrdersCount = computed(() => {
-    // ... (sin cambios aquí)
     const today = new Date();
     const threeDaysAgo = new Date().setDate(today.getDate() - 3);
     return this.orders().filter((o: AdminOrder) => new Date(o.date).getTime() >= threeDaysAgo).length;
   });
 
-  public newCustomerRate = computed(() => {
-    // ✅ CORRECCIÓN: Se añade tipado explícito a los parámetros para resolver TS7006.
-    const orderingCustomers = this.orders().map((o: AdminOrderDetail) => o.customerName);
-    if (orderingCustomers.length === 0) return 0;
-    const uniqueOrderingCustomers = [...new Set(orderingCustomers)];
-    const newOrderingCustomers = uniqueOrderingCustomers.filter(customerName =>
-      this.orders().filter((o: AdminOrderDetail) => o.customerName === customerName).length === 1
-    ).length;
-    return (newOrderingCustomers / uniqueOrderingCustomers.length) * 100;
-  });
-
-  // ... (resto de métodos computados sin cambios relevantes, pero se beneficiarán del tipado correcto)
-  public conversionRate = computed(() => { // ...
+  public conversionRate = computed(() => {
     const visitors = this.uniqueVisitors();
     if (visitors === 0) return 0;
     return (this.newOrdersCount() / visitors) * 100;
   });
-  public averageTicket = computed(() => { // ...
+
+  public averageTicket = computed(() => {
     const orders = this.orders();
     if (orders.length === 0) return 0;
     const totalSales = orders.reduce((acc: number, order: AdminOrder) => acc + order.total, 0);
     return totalSales / orders.length;
   });
-  public unitsPerTransaction = computed(() => { // ...
+
+  public unitsPerTransaction = computed(() => {
     const orders = this.orders();
     if (orders.length === 0) return 0;
     const totalItems = orders.reduce((acc: number, order: AdminOrderDetail) => acc + (order.items?.length || 0), 0);
     return totalItems > 0 ? totalItems / orders.length : 0;
   });
-  public lowStockCount = computed(() => { // ...
+
+  public lowStockCount = computed(() => {
     return this.products().filter((p: Product) => p.stock <= 3).length;
   });
-  public inventoryValue = computed(() => { // ...
+
+  public inventoryValue = computed(() => {
     return this.products().reduce((acc: number, p: Product) => acc + (p.price * p.stock), 0);
   });
-  public costOfGoodsSold = computed(() => { // ...
+
+  public costOfGoodsSold = computed(() => {
     const today = new Date();
     const thirtyDaysAgo = new Date().setDate(today.getDate() - 30);
 
@@ -123,25 +110,40 @@ export class DashboardService {
       return totalCost;
     }, 0);
   });
-  public inventoryTurnoverDays = computed(() => { // ...
+
+  public inventoryTurnoverDays = computed(() => {
     const cogs = this.costOfGoodsSold();
     if (cogs === 0) return 0;
     const inventoryCostValue = this.products().reduce((acc: number, p: Product) => acc + ((p.cost || p.price * 0.7) * p.stock), 0);
     if (inventoryCostValue === 0) return 0;
     return (inventoryCostValue / cogs) * 30;
   });
-  public newCustomersCount = computed(() => { // ...
+
+  public newCustomersCount = computed(() => {
     const today = new Date();
     const thirtyDaysAgo = new Date().setDate(today.getDate() - 30);
-    return this.customers().filter((c: AdminCustomer) => new Date(c.registeredDate).getTime() >= thirtyDaysAgo).length;
+    // ✅ CORRECCIÓN: Se actualiza la anotación de tipo para usar la nueva interfaz.
+    return this.customers().filter((c: AdminCustomerDetails) => new Date(c.accountCreated).getTime() >= thirtyDaysAgo).length;
   });
-  public customerAcquisitionCost = computed(() => { // ...
+
+  public newCustomerRate = computed(() => {
+    const orderingCustomers = this.orders().map(o => o.customerName);
+    if (orderingCustomers.length === 0) return 0;
+    const uniqueOrderingCustomers = [...new Set(orderingCustomers)];
+    const newOrderingCustomers = uniqueOrderingCustomers.filter(customerName =>
+      this.orders().filter(o => o.customerName === customerName).length === 1
+    ).length;
+    return (newOrderingCustomers / uniqueOrderingCustomers.length) * 100;
+  });
+
+  public customerAcquisitionCost = computed(() => {
     const newCustomers = this.newCustomersCount();
     if (newCustomers === 0) return 0;
     const marketingSpend = this.settings().monthlyMarketingSpend;
     return marketingSpend / newCustomers;
   });
-  public inventoryHealth = computed(() => { // ...
+
+  public inventoryHealth = computed(() => {
     const totalValue = this.inventoryValue();
     if (totalValue === 0) return { status: 'Saludable', color: 'success' } as const;
     const lowStockValue = this.products().filter(p => p.stock <= 3).reduce((acc, p) => acc + (p.price * p.stock), 0);
@@ -150,7 +152,8 @@ export class DashboardService {
     if (lowStockPercentage > 10) return { status: 'En Riesgo', color: 'warning' } as const;
     return { status: 'Saludable', color: 'success' } as const;
   });
-   public stats = computed<StatCard[]>(() => [ // ...
+
+  public stats = computed<StatCard[]>(() => [
     { title: 'Ventas del Día', value: `$${this.salesToday().toFixed(2)}`, icon: 'fas fa-dollar-sign', progress: { value: this.salesGoalProgress(), color: 'success' } },
     { title: 'Ticket Promedio', value: `$${this.averageTicket().toFixed(2)}`, icon: 'fas fa-chart-line', subValue: { value: `${this.unitsPerTransaction().toFixed(1)}`, label: 'UPT' } },
     { title: 'Nuevos Pedidos', value: this.newOrdersCount().toString(), icon: 'fas fa-receipt', subValue: { value: `${this.conversionRate().toFixed(2)}%`, label: 'Conversión' } },
@@ -158,7 +161,8 @@ export class DashboardService {
     { title: 'Bajo Stock', value: `${this.lowStockCount()} Productos`, icon: 'fas fa-exclamation-triangle', health: this.inventoryHealth(), action: { label: 'Gestionar Stock', link: '/admin/products', icon: 'fas fa-tasks' } },
     { title: 'Valor del Inventario', value: `$${this.inventoryValue().toLocaleString('es-VE', { minimumFractionDigits: 2 })}`, icon: 'fas fa-warehouse', subValue: { value: `${this.inventoryTurnoverDays().toFixed(0)}`, label: 'días rotación' } },
   ]);
-  public hotProducts = computed(() => { // ...
+
+  public hotProducts = computed(() => {
     const salesCount: { [productId: string]: number } = {};
     this.orders().forEach(order => {
       order.items.forEach(item => {
@@ -175,7 +179,8 @@ export class DashboardService {
       })
       .filter(item => item.product);
   });
-  public coldProducts = computed(() => { // ...
+
+  public coldProducts = computed(() => {
     const sixtyDaysAgo = new Date();
     sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
@@ -188,7 +193,8 @@ export class DashboardService {
 
     return this.products().filter(product => !soldProductIds.has(product.id));
   });
-   public salesChartData = computed(() => { // ...
+
+  public salesChartData = computed(() => {
       const labels = ['Semana 1', 'Semana 2', 'Semana 3', 'Hoy'];
       const values = [1200, 3500, 2800, this.salesToday()];
       return { labels, values };

@@ -1,44 +1,297 @@
-<header class="flex justify-between items-center">
-  <h1 class="text-2xl sm:text-3xl font-bold">Gestión de Clientes</h1>
-</header>
+<div class="relative">
+    <div [class.opacity-0]="currentView() !== 'dashboard'" [class.pointer-events-none]="currentView() !== 'dashboard'" class="transition-opacity duration-300 ease-in-out">
+        <header class="mb-6 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+            <h1 class="text-3xl font-bold text-white">Gestión de Clientes</h1>
+            <button (click)="toggleAddModal()" class="bg-primary-accent hover:bg-primary-accent-darker text-dark-bg font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors self-start sm:self-center">
+                <i class="fas fa-plus"></i> Añadir Cliente
+            </button>
+        </header>
 
-<div class="bg-dark-bg-secondary border border-border-color rounded-xl overflow-x-auto mt-8">
-  <table class="w-full border-collapse">
-    <thead>
-      <tr>
-        <th class="p-4 text-left border-b border-border-color text-sm font-semibold text-text-secondary uppercase whitespace-nowrap">Nombre</th>
-        <th class="p-4 text-left border-b border-border-color text-sm font-semibold text-text-secondary uppercase whitespace-nowrap">Correo</th>
-        <th class="p-4 text-left border-b border-border-color text-sm font-semibold text-text-secondary uppercase whitespace-nowrap">Registrado</th>
-        <th class="p-4 text-left border-b border-border-color text-sm font-semibold text-text-secondary uppercase whitespace-nowrap">Pedidos</th>
-        <th class="p-4 text-left border-b border-border-color text-sm font-semibold text-text-secondary uppercase whitespace-nowrap">Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      @if (isLoading()) {
-        @for (_ of [1,2,3,4]; track $index) {
-          <tr class="last:border-none">
-            @for (_ of [1,2,3,4,5]; track $index) {
-              <td class="p-4 text-left border-b border-border-color"><div class="w-full h-4 bg-border-color rounded animate-pulse"></div></td>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+            <div class="bg-dark-bg-secondary border border-border-color rounded-2xl p-4 flex items-center gap-4 hover:border-admin-blue-500 hover:-translate-y-1 transition-all duration-300">
+                <div class="bg-admin-blue-500/10 text-admin-blue-400 rounded-full w-14 h-14 flex items-center justify-center flex-shrink-0"><i class="fas fa-users text-2xl"></i></div>
+                <div><div class="text-3xl font-bold text-white">{{ totalClientsStat() }}</div><div class="text-sm text-text-secondary">Clientes Totales</div></div>
+            </div>
+            <div class="bg-dark-bg-secondary border border-border-color rounded-2xl p-4 flex items-center gap-4 hover:border-admin-green-400 hover:-translate-y-1 transition-all duration-300">
+                <div class="bg-admin-green-400/10 text-admin-green-400 rounded-full w-14 h-14 flex items-center justify-center flex-shrink-0"><i class="fas fa-sync-alt text-2xl"></i></div>
+                <div><div class="text-3xl font-bold text-white">{{ recurringClientsStat() }}</div><div class="text-sm text-text-secondary">Clientes Recurrentes</div></div>
+            </div>
+             <div class="bg-dark-bg-secondary border border-border-color rounded-2xl p-4 flex items-center gap-4 hover:border-admin-yellow-400 hover:-translate-y-1 transition-all duration-300">
+                <div class="bg-admin-yellow-400/10 text-admin-yellow-400 rounded-full w-14 h-14 flex items-center justify-center flex-shrink-0"><i class="fas fa-crown text-2xl"></i></div>
+                <div><div class="text-3xl font-bold text-white">{{ vipClientsStat() }}</div><div class="text-sm text-text-secondary">Clientes VIP</div></div>
+            </div>
+             <div class="bg-dark-bg-secondary border border-border-color rounded-2xl p-4 flex items-center gap-4 hover:border-admin-orange-400 hover:-translate-y-1 transition-all duration-300">
+                <div class="bg-admin-orange-400/10 text-admin-orange-400 rounded-full w-14 h-14 flex items-center justify-center flex-shrink-0"><i class="fas fa-exclamation-triangle text-2xl"></i></div>
+                <div><div class="text-3xl font-bold text-white">{{ atRiskClientsStat() }}</div><div class="text-sm text-text-secondary">Clientes en Riesgo</div></div>
+            </div>
+        </div>
+
+        <div class="bg-dark-bg-secondary border border-border-color rounded-2xl overflow-hidden">
+            <div class="p-4 sm:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border-color">
+                 <div class="w-full md:w-auto">
+                    <h2 class="text-xl font-bold text-white">Todos los Clientes</h2>
+                    <div class="relative mt-2">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"></i>
+                        <input type="text" [formControl]="searchControl" placeholder="Buscar..." class="w-full md:w-64 bg-dark-bg border border-border-color rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary-accent focus:border-primary-accent outline-none">
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <div class="bg-dark-bg border border-border-color p-1 rounded-lg flex">
+                        <button (click)="setViewMode('table')" [class.bg-primary-accent]="viewMode() === 'table'" [class.text-white]="viewMode() === 'table'" class="px-3 py-1.5 text-lg rounded-md text-text-secondary"><i class="fas fa-list"></i></button>
+                        <button (click)="setViewMode('card')" [class.bg-primary-accent]="viewMode() === 'card'" [class.text-white]="viewMode() === 'card'" class="px-3 py-1.5 text-lg rounded-md text-text-secondary"><i class="fas fa-th-large"></i></button>
+                    </div>
+                    <button (click)="openFiltersPanel()" class="bg-dark-bg hover:bg-dark-bg-tertiary text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors border border-border-color"><i class="fas fa-filter"></i><span class="hidden sm:inline">Filtros</span></button>
+                </div>
+            </div>
+            @if(isLoading()){
+                <div class="text-center p-8 text-text-secondary">
+                    <i class="fas fa-spinner animate-spin text-2xl"></i>
+                    <p class="mt-2">Cargando clientes...</p>
+                </div>
+            } @else {
+                <div [class.hidden]="viewMode() !== 'table'">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-text-secondary uppercase bg-dark-bg">
+                                <tr>
+                                    <th scope="col" class="p-4">Cliente</th>
+                                    <th scope="col" class="p-4">Estatus</th>
+                                    <th scope="col" class="p-4 hidden md:table-cell">Órdenes</th>
+                                    <th scope="col" class="p-4 hidden lg:table-cell">Total Gastado</th>
+                                    <th scope="col" class="p-4">Última Actividad</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border-color">
+                                @for(customer of filteredCustomers(); track customer.id){
+                                <tr (click)="selectCustomer(customer.id)" class="hover:bg-dark-bg-tertiary/50 cursor-pointer">
+                                    <td class="p-4 whitespace-nowrap">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full bg-dark-bg flex items-center justify-center font-bold text-white">{{getAvatarInitials(customer.name)}}</div>
+                                            <div>
+                                                <div class="font-bold text-white">{{customer.name}}</div>
+                                                <div class="text-sm text-text-secondary hidden sm:block">{{customer.email}}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="p-4 whitespace-nowrap">
+                                        @if (getStatusBadge(customer.status); as badge) {
+                                            <span class="inline-flex items-center gap-2 px-3 py-1 text-xs font-bold rounded-full"
+                                                [ngClass]="{
+                                                    'bg-admin-yellow-400/10 text-admin-yellow-400': badge.color === 'yellow',
+                                                    'bg-admin-green-400/10 text-admin-green-400': badge.color === 'green',
+                                                    'bg-admin-orange-400/10 text-admin-orange-400': badge.color === 'orange',
+                                                    'bg-admin-blue-400/10 text-admin-blue-400': badge.color === 'blue'
+                                                }">
+                                                <i class="fas {{ badge.icon }}"></i>{{ badge.text }}
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="p-4 hidden md:table-cell">{{customer.orders}}</td>
+                                    <td class="p-4 hidden lg:table-cell">{{customer.totalSpent | currency:'USD':'symbol':'1.2-2'}}</td>
+                                    <td class="p-4 whitespace-nowrap">{{customer.lastActivity | date:'mediumDate'}}</td>
+                                </tr>
+                                } @empty {
+                                   <tr><td colspan="5" class="text-center p-8 text-text-secondary">No se encontraron clientes con los filtros actuales.</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div [class.hidden]="viewMode() !== 'card'" class="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                   @for(customer of filteredCustomers(); track customer.id){
+                        <div (click)="selectCustomer(customer.id)" class="bg-dark-bg/50 border border-border-color rounded-xl p-4 flex flex-col gap-4 cursor-pointer hover:-translate-y-1 hover:border-primary-accent transition-all duration-300">
+                           <div class="flex items-center gap-3">
+                               <div class="w-12 h-12 rounded-full bg-dark-bg-secondary flex items-center justify-center font-bold text-white text-lg">{{getAvatarInitials(customer.name)}}</div>
+                               <div>
+                                   <div class="font-bold text-white text-lg">{{customer.name}}</div>
+                                   <div class="text-sm text-text-secondary">{{customer.email}}</div>
+                               </div>
+                           </div>
+                           <div class="flex justify-between items-center">
+                                @if (getStatusBadge(customer.status); as badge) {
+                                    <span class="inline-flex items-center gap-2 px-3 py-1 text-xs font-bold rounded-full"
+                                        [ngClass]="{
+                                            'bg-admin-yellow-400/10 text-admin-yellow-400': badge.color === 'yellow',
+                                            'bg-admin-green-400/10 text-admin-green-400': badge.color === 'green',
+                                            'bg-admin-orange-400/10 text-admin-orange-400': badge.color === 'orange',
+                                            'bg-admin-blue-400/10 text-admin-blue-400': badge.color === 'blue'
+                                        }">
+                                        <i class="fas {{ badge.icon }}"></i>{{ badge.text }}
+                                    </span>
+                                }
+                                <div class="text-sm text-text-secondary">Última vez: <span class="text-white font-semibold">{{customer.lastActivity | date:'shortDate'}}</span></div>
+                           </div>
+                        </div>
+                   } @empty {
+                        <p class="md:col-span-2 xl:col-span-3 text-center p-8 text-text-secondary">No se encontraron clientes.</p>
+                   }
+                </div>
             }
-          </tr>
-        }
-      } @else {
-        @for (customer of customers(); track customer.id) {
-          <tr class="last:border-none">
-            <td class="p-4 text-left border-b border-border-color font-semibold text-white">{{ customer.name }}</td>
-            <td class="p-4 text-left border-b border-border-color">{{ customer.email }}</td>
-            <td class="p-4 text-left border-b border-border-color">{{ customer.registeredDate | date: 'dd MMM, yyyy' }}</td>
-            <td class="p-4 text-left border-b border-border-color">{{ customer.orderCount }}</td>
-            <td class="p-4 text-left border-b border-border-color">
-              <button title="Ver Detalles del Cliente" class="bg-transparent border-none text-text-secondary cursor-pointer text-lg p-2 transition-colors hover:text-primary-accent"><i class="fas fa-eye"></i></button>
-            </td>
-          </tr>
-        } @empty {
-          <tr>
-            <td colspan="5" class="p-4 text-left border-b border-border-color py-8 text-text-secondary">No se encontraron clientes.</td>
-          </tr>
-        }
-      }
-    </tbody>
-  </table>
+        </div>
+    </div>
+
+    @if(currentView() === 'detail' && selectedCustomer(); as customer){
+    <div class="fixed inset-0 bg-dark-bg/70 backdrop-blur-sm z-30 transition-opacity duration-300 ease-in-out animate-in fade-in-0">
+      <div (click)="$event.stopPropagation()" class="bg-dark-bg-secondary border border-border-color rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-in fade-in-0 slide-in-from-bottom-5 duration-300">
+        <div class="p-4 flex justify-between items-center border-b border-border-color sticky top-0 bg-dark-bg-secondary/80 backdrop-blur-md z-10">
+          <button (click)="backToDashboard()" class="text-text-secondary hover:text-white font-semibold flex items-center gap-2 transition-colors"><i class="fas fa-arrow-left"></i> Volver</button>
+          <div class="flex items-center gap-2 relative">
+            <button class="text-text-secondary hover:text-white w-8 h-8 rounded-lg hover:bg-dark-bg-tertiary"><i class="fas fa-envelope"></i></button>
+            <button (click)="toggleActionsMenu()" class="text-text-secondary hover:text-white w-8 h-8 rounded-lg hover:bg-dark-bg-tertiary"><i class="fas fa-ellipsis-v"></i></button>
+            @if(isActionsMenuOpen()){
+              <div class="absolute top-full right-0 mt-2 w-56 bg-dark-bg-tertiary border border-border-color rounded-lg shadow-xl z-30 origin-top-right animate-in fade-in-0 zoom-in-95">
+                 <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-dark-bg"><i class="fas fa-pencil-alt mr-2"></i> Editar Cliente</a>
+                 <a href="#" class="block px-4 py-2 text-sm text-red-500 hover:bg-dark-bg"><i class="fas fa-trash-alt mr-2"></i> Eliminar Cliente</a>
+              </div>
+            }
+          </div>
+        </div>
+        <div class="p-6 md:p-8">
+            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                <div class="w-24 h-24 sm:w-28 sm:h-28 bg-dark-bg rounded-full flex items-center justify-center text-4xl font-bold border-4 border-border-color flex-shrink-0 text-white">{{getAvatarInitials(customer.name)}}</div>
+                <div class="flex-grow text-center sm:text-left">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-white">{{customer.name}}</h2>
+                         @if (getStatusBadge(customer.status); as badge) {
+                            <span class="inline-flex items-center gap-2 px-3 py-1 text-xs font-bold rounded-full mx-auto sm:mx-0"
+                                [ngClass]="{
+                                    'bg-admin-yellow-400/10 text-admin-yellow-400': badge.color === 'yellow',
+                                    'bg-admin-green-400/10 text-admin-green-400': badge.color === 'green',
+                                    'bg-admin-orange-400/10 text-admin-orange-400': badge.color === 'orange',
+                                    'bg-admin-blue-400/10 text-admin-blue-400': badge.color === 'blue'
+                                }">
+                                <i class="fas {{ badge.icon }}"></i>{{ badge.text }}
+                            </span>
+                        }
+                    </div>
+                    <p class="text-text-secondary mb-4">{{customer.email}}</p>
+                </div>
+            </div>
+            <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center border-t border-border-color pt-6">
+                <div><div class="text-2xl font-bold text-white">{{customer.orders}}</div><div class="text-xs text-text-secondary uppercase tracking-wider">Órdenes</div></div>
+                <div><div class="text-2xl font-bold text-white">{{customer.totalSpent | currency:'USD'}}</div><div class="text-xs text-text-secondary uppercase tracking-wider">Total Gastado</div></div>
+                <div><div class="text-2xl font-bold text-white">{{(customer.orders > 0 ? customer.totalSpent / customer.orders : 0) | currency:'USD'}}</div><div class="text-xs text-text-secondary uppercase tracking-wider">Valor Promedio</div></div>
+                 <div><div class="text-xl font-bold text-white">{{customer.lastActivity | date:'mediumDate'}}</div><div class="text-xs text-text-secondary uppercase tracking-wider">Última Actividad</div></div>
+            </div>
+        </div>
+        <div class="border-b border-border-color px-6 md:px-8">
+            <nav class="flex gap-6 -mb-px">
+                <button (click)="setActiveDetailTab('summary')" class="border-b-2 py-3 px-1 font-semibold transition-colors" [ngClass]="{'border-primary-accent text-white': activeDetailTab() === 'summary', 'border-transparent text-text-secondary hover:text-white': activeDetailTab() !== 'summary'}">Resumen</button>
+                <button (click)="setActiveDetailTab('history')" class="border-b-2 py-3 px-1 font-semibold transition-colors" [ngClass]="{'border-primary-accent text-white': activeDetailTab() === 'history', 'border-transparent text-text-secondary hover:text-white': activeDetailTab() !== 'history'}">Historial</button>
+                <button (click)="setActiveDetailTab('info')" class="border-b-2 py-3 px-1 font-semibold transition-colors" [ngClass]="{'border-primary-accent text-white': activeDetailTab() === 'info', 'border-transparent text-text-secondary hover:text-white': activeDetailTab() !== 'info'}">Información</button>
+            </nav>
+        </div>
+        <div class="p-6 md:p-8">
+            <div [class.hidden]="activeDetailTab() !== 'summary'">
+                <h3 class="font-bold text-white mb-4 text-lg">Línea de Tiempo</h3>
+                <div class="relative pl-8 space-y-6 border-l-2 border-border-color max-h-96 overflow-y-auto pr-4">
+                    @for(event of customer.events; track event.id){
+                        <div class="relative">
+                             @if (getEventType(event.type); as eventType) {
+                                <div class="absolute -left-4 top-1 w-7 h-7 bg-dark-bg rounded-full flex items-center justify-center ring-4 ring-dark-bg-secondary"
+                                    [ngClass]="{
+                                        'text-admin-blue-400': eventType.color === 'blue',
+                                        'text-admin-orange-400': eventType.color === 'orange',
+                                        'text-admin-yellow-400': eventType.color === 'yellow',
+                                        'text-admin-green-400': eventType.color === 'green'
+                                    }">
+                                    <i class="fas {{ eventType.icon }} text-xs"></i>
+                                </div>
+                             }
+                            <div class="ml-4">
+                                <div class="font-bold text-white">{{event.title}}</div>
+                                <p class="text-sm text-text-secondary">{{event.description}}</p>
+                                <time class="text-xs text-text-secondary/70 mt-1 block">{{event.date | date}}</time>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div [class.hidden]="activeDetailTab() !== 'history'">
+                <h3 class="font-bold text-white mb-4 text-lg">Historial de Compras</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead class="text-xs text-text-secondary uppercase"><tr><th class="p-2">ID Pedido</th><th class="p-2">Fecha</th><th class="p-2">Monto</th><th class="p-2">Estatus</th></tr></thead>
+                        <tbody class="divide-y divide-border-color">
+                            @for(item of purchaseHistory(); track item.id){
+                            <tr class="hover:bg-dark-bg-tertiary/50">
+                                <td class="p-2 font-mono text-primary-accent">#{{item.id}}</td><td class="p-2">{{item.date | date:'mediumDate'}}</td><td class="p-2 text-admin-green-400 font-bold">{{item.amount | currency:'USD'}}</td><td class="p-2">{{item.status}}</td>
+                            </tr>
+                            } @empty {
+                                <tr><td colspan="4" class="text-center py-4 text-text-secondary">No hay compras registradas.</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div [class.hidden]="activeDetailTab() !== 'info'">
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <section>
+                        <h3 class="font-bold text-white mb-4 text-lg">Información de Contacto</h3>
+                        <ul class="text-sm space-y-3">
+                            <li class="flex items-start gap-3"><i class="fab fa-whatsapp w-4 text-center text-text-secondary mt-1"></i><div><div class="font-semibold text-text-secondary">WhatsApp</div><span class="text-white">{{customer.whatsapp}}</span></div></li>
+                            <li class="flex items-start gap-3"><i class="fas fa-map-marker-alt w-4 text-center text-text-secondary mt-1"></i><div><div class="font-semibold text-text-secondary">Dirección</div><span class="text-white">{{customer.address}}</span></div></li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3 class="font-bold text-white mb-4 text-lg">Notas Internas</h3>
+                        <div class="space-y-4"><textarea placeholder="Añadir una nota sobre el cliente..." class="w-full bg-dark-bg border border-border-color rounded-lg p-3 text-sm focus:ring-2 focus:ring-primary-accent focus:border-primary-accent outline-none" rows="4"></textarea> <button class="bg-primary-accent hover:bg-primary-accent-darker text-dark-bg font-bold py-2 px-4 rounded-lg text-sm">Guardar Nota</button></div>
+                    </section>
+                </div>
+            </div>
+          </div>
+      </div>
+    </div>
+    }
+
+    @if(isFiltersPanelOpen()){
+    <div (click)="closeFiltersPanel()" class="fixed inset-0 bg-dark-bg/70 backdrop-blur-sm z-40 transition-opacity duration-300 ease-in-out animate-in fade-in-0"></div>
+    <div class="fixed top-0 left-0 h-full w-full max-w-sm bg-dark-bg-secondary z-50 transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col" [class.translate-x-0]="isFiltersPanelOpen()">
+        <div class="p-4 sm:p-6 flex justify-between items-center border-b border-border-color">
+            <h2 class="text-xl font-bold text-white">Filtros Avanzados</h2>
+            <button (click)="closeFiltersPanel()" class="text-text-secondary hover:text-white text-2xl">&times;</button>
+        </div>
+        <div class="p-4 sm:p-6 flex-grow overflow-y-auto">
+            <div class="space-y-6">
+                <label class="font-semibold text-white">Estatus del Cliente</label>
+                <div class="space-y-3">
+                    @for (statusKey of statusKeys; track statusKey) {
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox"
+                                   [checked]="tempStatusFilters().has(statusKey)"
+                                   (change)="toggleStatusFilter(statusKey)"
+                                   class="h-4 w-4 rounded bg-dark-bg-tertiary border-border-color text-primary-accent focus:ring-primary-accent focus:ring-offset-dark-bg-secondary">
+                            <span class="ml-3 text-sm text-text-primary">{{ getStatusBadge(statusKey).text }}</span>
+                        </label>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="p-4 sm:p-6 border-t border-border-color grid grid-cols-2 gap-4">
+            <button (click)="resetFilters()" class="bg-dark-bg-tertiary hover:bg-border-color text-white font-bold py-2 px-4 rounded-lg transition-colors">Limpiar</button>
+            <button (click)="applyFilters()" class="bg-primary-accent hover:bg-primary-accent-darker text-dark-bg font-bold py-2 px-4 rounded-lg transition-colors">Aplicar</button>
+        </div>
+    </div>
+    }
+
+    @if(isAddModalOpen()){
+    <div (click)="toggleAddModal()" class="fixed inset-0 bg-dark-bg/70 backdrop-blur-sm z-40 flex items-center justify-center p-4 transition-opacity duration-300 ease-in-out animate-in fade-in-0">
+        <div (click)="$event.stopPropagation()" class="bg-dark-bg-secondary border border-border-color rounded-2xl w-full max-w-md p-6 transform transition-all duration-300 animate-in fade-in-0 zoom-in-95">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-white">Añadir Nuevo Cliente</h2>
+                <button (click)="toggleAddModal()" class="text-text-secondary hover:text-white text-2xl">&times;</button>
+            </div>
+            <form class="space-y-4">
+                <div><label for="new-name" class="block text-sm font-medium text-text-secondary mb-1">Nombre Completo</label><input type="text" id="new-name" required class="w-full bg-dark-bg border border-border-color rounded-lg py-2 px-4 text-sm focus:ring-2 focus:ring-primary-accent focus:border-primary-accent outline-none"></div>
+                <div><label for="new-email" class="block text-sm font-medium text-text-secondary mb-1">Correo Electrónico</label><input type="email" id="new-email" required class="w-full bg-dark-bg border border-border-color rounded-lg py-2 px-4 text-sm focus:ring-2 focus:ring-primary-accent focus:border-primary-accent outline-none"></div>
+                <div><label for="new-whatsapp" class="block text-sm font-medium text-text-secondary mb-1">WhatsApp</label><input type="tel" id="new-whatsapp" class="w-full bg-dark-bg border border-border-color rounded-lg py-2 px-4 text-sm focus:ring-2 focus:ring-primary-accent focus:border-primary-accent outline-none"></div>
+                <div><label for="new-address" class="block text-sm font-medium text-text-secondary mb-1">Dirección</label><input type="text" id="new-address" class="w-full bg-dark-bg border border-border-color rounded-lg py-2 px-4 text-sm focus:ring-2 focus:ring-primary-accent focus:border-primary-accent outline-none"></div>
+                <div class="pt-4 flex justify-end gap-4">
+                    <button type="button" (click)="toggleAddModal()" class="bg-dark-bg-tertiary hover:bg-border-color text-white font-bold py-2 px-4 rounded-lg transition-colors">Cancelar</button>
+                    <button type="submit" class="bg-primary-accent hover:bg-primary-accent-darker text-dark-bg font-bold py-2 px-4 rounded-lg transition-colors">Guardar Cliente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    }
 </div>
