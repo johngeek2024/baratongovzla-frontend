@@ -56,29 +56,29 @@ La organización del código está diseñada para ser intuitiva, escalable y man
 
 src/
 └── app/
-├── core/               # Lógica central y singletons de la aplicación.
-│   ├── services/       # Servicios globales (AuthService, DataStoreService, UiService).
-│   ├── guards/         # Guardianes de rutas (AuthGuard, AdminAuthGuard).
-│   ├── interceptors/   # Interceptores HTTP (ErrorInterceptor, AuthInterceptor).
-│   └── models/         # Interfaces y tipos de datos globales (Product, User).
-│
-├── components/         # Componentes de UI "tontos", 100% reutilizables.
-│   ├── layout/         # Componentes estructurales (Header, Footer, BottomNav).
-│   └── ui/             # Elementos de UI (Button, Modal, ProductCard).
-│
-├── features/           # MÓDULOS DE NEGOCIO (cada uno con sus componentes, servicios y rutas).
-│   ├── home/           # Página de inicio.
-│   ├── products/       # Listado y detalle de productos (PLP/PDP).
-│   ├── cart/           # Lógica del carrito de compras.
-│   ├── checkout/       # Proceso de pago.
-│   ├── auth/           # Login, registro.
-│   └── admin/          # Panel de administración.
-│
-├── shared/             # Pipes y Directivas compartidas, reutilizables y standalone.
-│
-├── app.config.ts       # Configuración principal (providers, SSR, Zoneless).
-├── app.routes.ts       # Rutas principales con lazy loading de features.
-└── app.component.ts    # Componente raíz (AppComponent).
+    ├── core/               # Lógica central y singletons de la aplicación.
+    │   ├── services/       # Servicios globales (AuthService, DataStoreService, UiService).
+    │   ├── guards/         # Guardianes de rutas (AuthGuard, AdminAuthGuard).
+    │   ├── interceptors/   # Interceptores HTTP (ErrorInterceptor, AuthInterceptor).
+    │   └── models/         # Interfaces y tipos de datos globales (Product, User).
+    │
+    ├── components/         # Componentes de UI "tontos", 100% reutilizables.
+    │   ├── layout/         # Componentes estructurales (Header, Footer, BottomNav).
+    │   └── ui/             # Elementos de UI (Button, Modal, ProductCard).
+    │
+    ├── features/           # MÓDULOS DE NEGOCIO (cada uno con sus componentes, servicios y rutas).
+    │   ├── home/           # Página de inicio.
+    │   ├── products/       # Listado y detalle de productos (PLP/PDP).
+    │   ├── cart/           # Lógica del carrito de compras.
+    │   ├── checkout/       # Proceso de pago.
+    │   ├── auth/           # Login, registro.
+    │   └── admin/          # Panel de administración.
+    │
+    ├── shared/             # Pipes y Directivas compartidas, reutilizables y standalone.
+    │
+    ├── app.config.ts       # Configuración principal (providers, SSR, Zoneless).
+    ├── app.routes.ts       # Rutas principales con lazy loading de features.
+    └── app.component.ts    # Componente raíz (AppComponent).
 
 ---
 
