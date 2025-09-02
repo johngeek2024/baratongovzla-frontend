@@ -6,11 +6,12 @@ import { AdminCustomerDetails, CustomerStatus, PurchaseHistoryItem } from '../..
 import { CustomerAdminService } from '../../services/customer-admin.service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-customers-panel',
   standalone: true,
-  imports: [CommonModule, DatePipe, CurrencyPipe, ReactiveFormsModule],
+  imports: [CommonModule, DatePipe, CurrencyPipe, ReactiveFormsModule, RouterLink],
   templateUrl: './customers-panel.component.html',
 })
 export class CustomersPanelComponent implements OnInit {
@@ -34,7 +35,6 @@ export class CustomersPanelComponent implements OnInit {
   public searchControl = new FormControl('');
   public statusFilters = signal<CustomerStatus[]>([]);
   public tempStatusFilters = signal<Set<CustomerStatus>>(new Set());
-  // ✅ CORRECCIÓN: Se define una propiedad fuertemente tipada para el bucle en la plantilla.
   public readonly statusKeys: CustomerStatus[] = ['vip', 'recurring', 'at-risk', 'new'];
 
 
