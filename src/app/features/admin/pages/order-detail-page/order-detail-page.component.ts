@@ -1,3 +1,5 @@
+// src/app/features/admin/pages/order-detail-page/order-detail-page.component.ts
+
 import { Component, computed, inject, OnInit, signal, HostListener } from '@angular/core';
 import { CommonModule, DatePipe, CurrencyPipe } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -61,6 +63,7 @@ export class OrderDetailPageComponent implements OnInit {
 
     if (!orderStatus) return baseSteps.map(step => ({ ...step, status: 'pending' }));
 
+    // ✅ CORRECCIÓN: Este mapa ahora es válido porque el tipo OrderStatus ha sido expandido.
     const statusMap: { [key in OrderStatus]: number } = {
       'Pedido Realizado': 0, 'Pago Confirmado': 1, 'Procesando': 2,
       'Enviado': 3, 'Entregado': 4, 'Cancelado': -1,
@@ -76,7 +79,7 @@ export class OrderDetailPageComponent implements OnInit {
     }));
   });
 
-  // ✅ INICIO: LÓGICA DE REGISTRO DE ACTIVIDAD DINÁMICO
+  // --- Lógica de Registro de Actividad Dinámico ---
   activityLog = computed<ActivityLogItem[]>(() => {
     const order = this.order();
     if (!order) return [];
@@ -95,17 +98,17 @@ export class OrderDetailPageComponent implements OnInit {
       {
         icon: 'fas fa-cogs',
         text: 'El pedido entró en estado de <strong>Procesando</strong>.',
-        meta: 'Actualizado por <strong>AdminAura</strong>' // Simulado
+        meta: 'Actualizado por <strong>AdminAura</strong>'
       },
       {
         icon: 'fas fa-truck',
         text: 'El pedido fue marcado como <strong>Enviado</strong>.',
-        meta: 'Actualizado por <strong>AdminAura</strong>' // Simulado
+        meta: 'Actualizado por <strong>AdminAura</strong>'
       },
       {
         icon: 'fas fa-check-circle',
         text: 'El pedido fue marcado como <strong>Entregado</strong>.',
-        meta: 'Actualizado por <strong>AdminAura</strong>' // Simulado
+        meta: 'Actualizado por <strong>AdminAura</strong>'
       }
     ];
 
@@ -124,15 +127,13 @@ export class OrderDetailPageComponent implements OnInit {
       }];
     }
 
-    // Devuelve las entradas del log hasta el estado actual, en orden cronológico inverso (último primero).
     return allPossibleLogs.slice(0, currentStatusIndex + 1).reverse();
   });
-  // ✅ FIN: LÓGICA DE REGISTRO DE ACTIVIDAD DINÁMICO
 
   ngOnInit(): void {
     this.route.paramMap.pipe(
       switchMap(params => {
-        const id = `#${params.get('id') || ''}`;
+        const id = '#BTV-' + params.get('id');
         this.isLoading.set(true);
         return this.orderAdminService.getOrderById(id);
       })

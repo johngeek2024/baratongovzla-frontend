@@ -151,4 +151,31 @@ export class CustomersPanelComponent implements OnInit {
     };
     return (typeMap as any)[type];
   }
+
+  // ✅ INICIO: LÓGICA PARA GENERAR GRÁFICO SPARKLINE
+  generateSparkline(history: number[]): { points: string; minPoint: { x: number, y: number }, maxPoint: { x: number, y: number } } | null {
+    if (!history || history.length < 2) return null;
+    const width = 250, height = 60, padding = 5;
+    const minVal = Math.min(...history);
+    const maxVal = Math.max(...history);
+    const range = maxVal - minVal === 0 ? 1 : maxVal - minVal;
+
+    const points = history.map((d, i) => {
+      const x = (i / (history.length - 1)) * (width - 2 * padding) + padding;
+      const y = (height - padding) - ((d - minVal) / range) * (height - 2 * padding);
+      return `${x},${y}`;
+    }).join(' ');
+
+    const minIndex = history.indexOf(minVal);
+    const maxIndex = history.indexOf(maxVal);
+    const minPointCoords = points.split(' ')[minIndex].split(',');
+    const maxPointCoords = points.split(' ')[maxIndex].split(',');
+
+    return {
+        points,
+        minPoint: { x: parseFloat(minPointCoords[0]), y: parseFloat(minPointCoords[1]) },
+        maxPoint: { x: parseFloat(maxPointCoords[0]), y: parseFloat(maxPointCoords[1]) }
+    };
+  }
+  // ✅ FIN: LÓGICA PARA GENERAR GRÁFICO SPARKLINE
 }
