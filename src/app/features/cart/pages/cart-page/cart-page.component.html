@@ -69,19 +69,30 @@
           <div class="mb-6">
             <label class="block text-sm font-medium text-text-on-dark mb-2">Código de Descuento</label>
             <div class="flex gap-2">
-              <input type="text" placeholder="Ingresa tu código" class="flex-grow bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark">
-              <button class="bg-border-color text-text-on-dark font-bold py-2 px-4 rounded-md hover:bg-primary-accent">Aplicar</button>
+              <input #couponInput type="text" placeholder="Ingresa tu código" class="flex-grow bg-dark-bg border border-border-color rounded-md px-3 py-2 text-text-on-dark uppercase placeholder:normal-case">
+              <button (click)="handleApplyCoupon(couponInput.value)" class="bg-border-color text-text-on-dark font-bold py-2 px-4 rounded-md hover:bg-primary-accent">Aplicar</button>
             </div>
+            @if (couponMessage()) {
+              <p class="text-xs mt-2" [ngClass]="{'text-success': couponMessageIsSuccess(), 'text-danger': !couponMessageIsSuccess()}">
+                {{ couponMessage() }}
+              </p>
+            }
           </div>
           <div class="space-y-2 text-text-secondary border-t border-border-color pt-6">
             <div class="flex justify-between">
               <span>Subtotal</span>
-              <span class="font-semibold text-text-on-dark">${{ cartStore.totalPrice() }}</span>
+              <span class="font-semibold text-text-on-dark">{{ cartStore.totalPrice() | currency }}</span>
             </div>
-          </div>
+            @if (checkoutService.discountAmount().value > 0) {
+              <div class="flex justify-between text-success">
+                <span>Descuento ({{ checkoutService.appliedCoupon()?.code }})</span>
+                <span class="font-semibold">- {{ checkoutService.discountAmount().value | currency }}</span>
+              </div>
+            }
+            </div>
           <div class="flex justify-between text-xl font-bold text-text-on-dark mt-4 pt-4 border-t border-border-color">
             <span>Total</span>
-            <span>${{ cartStore.totalPrice() }}</span>
+            <span>{{ finalTotal() | currency }}</span>
           </div>
           <a routerLink="/checkout" class="text-center w-full mt-8 bg-primary-accent text-white font-bold py-3 rounded-lg hover:bg-white hover:text-dark-bg transition-colors flex items-center justify-center gap-2">
             Proceder al Pago <i class="fas fa-arrow-right"></i>

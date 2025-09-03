@@ -23,6 +23,11 @@ export const ADMIN_ROUTES: Routes = [
       { path: 'marketing', loadComponent: () => import('./components/marketing-panel/marketing-panel.component').then(c => c.MarketingPanelComponent) },
       { path: 'marketing/new', loadComponent: () => import('./pages/banner-edit-page/banner-edit-page.component').then(c => c.BannerEditPageComponent) },
       { path: 'marketing/edit/:id', loadComponent: () => import('./pages/banner-edit-page/banner-edit-page.component').then(c => c.BannerEditPageComponent) },
+      // ✅ INICIO: ADICIONES QUIRÚRGICAS PARA CUPONES
+      { path: 'marketing/coupons', loadComponent: () => import('./components/coupons-panel/coupons-panel.component').then(c => c.CouponsPanelComponent) },
+      { path: 'marketing/coupons/new', loadComponent: () => import('./pages/coupon-edit-page/coupon-edit-page.component').then(c => c.CouponEditPageComponent) },
+      { path: 'marketing/coupons/edit/:id', loadComponent: () => import('./pages/coupon-edit-page/coupon-edit-page.component').then(c => c.CouponEditPageComponent) },
+      // ✅ FIN: ADICIONES QUIRÚRGICAS PARA CUPONES
       { path: 'settings', loadComponent: () => import('./components/settings-panel/settings-panel.component').then(c => c.SettingsPanelComponent) },
       { path: 'intelligence', loadComponent: () => import('./components/analytics-panel/analytics-panel.component').then(c => c.AnalyticsPanelComponent) },
     ],

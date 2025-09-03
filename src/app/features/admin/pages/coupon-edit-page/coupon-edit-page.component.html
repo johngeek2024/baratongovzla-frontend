@@ -1,0 +1,18 @@
+<div class="content-panel active">
+  <header class="flex justify-between items-center">
+    <div>
+      <a routerLink="/admin/marketing/coupons" class="text-sm text-primary-accent hover:underline flex items-center gap-2">
+        <i class="fas fa-arrow-left"></i> Volver a Cupones
+      </a>
+      <h1 class="mt-2 text-2xl sm:text-3xl font-bold">{{ isEditMode() ? 'Editar Cupón' : 'Añadir Nuevo Cupón' }}</h1>
+    </div>
+  </header>
+  <div class="mt-8">
+    <app-coupon-form
+      [isSaving]="isSaving"
+      [couponToEdit]="couponToEdit()"
+      (save)="handleSaveCoupon($event)"
+      (cancel)="handleCancel()">
+    </app-coupon-form>
+  </div>
+</div>

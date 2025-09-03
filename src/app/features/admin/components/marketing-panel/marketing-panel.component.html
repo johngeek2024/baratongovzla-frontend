@@ -15,6 +15,10 @@
   <button (click)="selectTab('quick-cat')" [class.active]="activeTab() === 'quick-cat'" class="bg-transparent border-0 px-5 py-3 font-semibold text-text-secondary cursor-pointer transition-all duration-200 border-b-2 border-transparent -mb-px flex items-center gap-2 hover:text-white active:text-primary-accent active:border-primary-accent">
     <i class="fas fa-star"></i> Categorías Rápidas
   </button>
+  <button (click)="selectTab('coupons')" [class.active]="activeTab() === 'coupons'" class="bg-transparent border-0 px-5 py-3 font-semibold text-text-secondary cursor-pointer transition-all duration-200 border-b-2 border-transparent -mb-px flex items-center gap-2 hover:text-white active:text-primary-accent active:border-primary-accent">
+
+   <i class="fas fa-ticket-alt"></i> Cupones de Descuento
+  </button>
 </nav>
 
 <div class="animate-[fadeIn_0.5s_ease]">

@@ -1,3 +1,4 @@
+// src/app/core/services/data-store.service.ts
 import { Injectable, signal, inject, PLATFORM_ID, effect, computed } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -8,13 +9,16 @@ import { ProductStageContent, BundleContent } from '../models/site-content.model
 import { QuickCategory } from '../models/quick-category.model';
 import { tap } from 'rxjs/operators';
 import { z } from 'zod';
-
+// ✅ INICIO: ADICIONES QUIRÚRGICAS
+import { Coupon } from '../models/coupon.model';
 import {
   productsSchema,
   adminCategoriesSchema,
   heroBannersSchema,
-  quickCategoriesSchema
+  quickCategoriesSchema,
+  couponsSchema // Se añade el esquema de validación para cupones
 } from '../models/validation.schemas';
+// ✅ FIN: ADICIONES QUIRÚRGICAS
 
 // --- Interfaz para el contenido combinado del sitio ---
 interface SiteContent {
@@ -35,6 +39,9 @@ export class DataStoreService {
   private readonly BANNER_STORAGE_KEY = 'baratongo_banners';
   private readonly CONTENT_STORAGE_KEY = 'baratongo_site_content';
   private readonly QUICK_CATEGORIES_KEY = 'baratongo_quick_categories';
+  // ✅ INICIO: ADICIÓN QUIRÚRGICA
+  private readonly COUPON_STORAGE_KEY = 'baratongo_coupons';
+  // ✅ FIN: ADICIÓN QUIRÚRGICA
 
   // --- SEÑALES DE ESTADO ---
   public readonly products = signal<Product[]>([]);
@@ -43,6 +50,9 @@ export class DataStoreService {
   public readonly productStageContent = signal<ProductStageContent | null>(null);
   public readonly bundleContent = signal<BundleContent | null>(null);
   public readonly quickCategories = signal<QuickCategory[]>([]);
+  // ✅ INICIO: ADICIÓN QUIRÚRGICA
+  public readonly coupons = signal<Coupon[]>([]);
+  // ✅ FIN: ADICIÓN QUIRÚRGICA
 
   // --- SEÑALES COMPUTADAS ---
   public readonly activeBanners = computed(() => this.banners().filter(b => b.isActive));
@@ -71,6 +81,9 @@ export class DataStoreService {
     effect(() => this.saveToStorage(this.CATEGORY_STORAGE_KEY, this.rawCategories()));
     effect(() => this.saveToStorage(this.BANNER_STORAGE_KEY, this.banners()));
     effect(() => this.saveToStorage(this.QUICK_CATEGORIES_KEY, this.quickCategories()));
+    // ✅ INICIO: ADICIÓN QUIRÚRGICA
+    effect(() => this.saveToStorage(this.COUPON_STORAGE_KEY, this.coupons()));
+    // ✅ FIN: ADICIÓN QUIRÚRGICA
     effect(() => {
       const productStage = this.productStageContent();
       const bundle = this.bundleContent();
@@ -88,6 +101,9 @@ export class DataStoreService {
     this.loadAndSetSignal(this.CATEGORY_STORAGE_KEY, 'assets/data/categories.json', this.rawCategories, adminCategoriesSchema);
     this.loadAndSetSignal(this.BANNER_STORAGE_KEY, 'assets/data/banners.json', this.banners, heroBannersSchema);
     this.loadAndSetSignal(this.QUICK_CATEGORIES_KEY, 'assets/data/quick-categories.json', this.quickCategories, quickCategoriesSchema);
+    // ✅ INICIO: ADICIÓN QUIRÚRGICA
+    this.loadAndSetSignal(this.COUPON_STORAGE_KEY, 'assets/data/coupons.json', this.coupons, couponsSchema);
+    // ✅ FIN: ADICIÓN QUIRÚRGICA
 
 
     const storedContent = this.loadFromStorage<SiteContent | null>(this.CONTENT_STORAGE_KEY, null);
@@ -306,4 +322,22 @@ export class DataStoreService {
   updateQuickCategories(categories: QuickCategory[]): void {
     this.quickCategories.set(categories);
   }
+
+  // ✅ INICIO: ADICIÓN QUIRÚRGICA
+  // --- MÉTODOS CRUD PARA CUPONES ---
+  addCoupon(couponData: Omit<Coupon, 'id'>): void {
+    const newCoupon: Coupon = { ...couponData, id: `coupon-${Date.now()}` };
+    this.coupons.update(current => [newCoupon, ...current]);
+  }
+
+  updateCoupon(couponId: string, couponData: Omit<Coupon, 'id'>): void {
+    this.coupons.update(current =>
+      current.map(c => c.id === couponId ? { id: c.id, ...couponData } : c)
+    );
+  }
+
+  deleteCoupon(couponId: string): void {
+    this.coupons.update(current => current.filter(c => c.id !== couponId));
+  }
+  // ✅ FIN: ADICIÓN QUIRÚRGICA
 }

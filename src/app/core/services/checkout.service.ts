@@ -1,6 +1,11 @@
+// src/app/core/services/checkout.service.ts
 import { Injectable, signal, computed, inject } from '@angular/core';
-// ✅ Se importa la interfaz UserAddress para una arquitectura consistente
 import { UserAddress } from './user-data.service';
+// ✅ INICIO: ADICIONES QUIRÚRGICAS
+import { CartStore } from '../../features/cart/cart.store'; // 1. Importar el CartStore
+import { DataStoreService } from './data-store.service';
+import { Coupon } from '../models/coupon.model';
+// ✅ FIN: ADICIONES QUIRÚRGICAS
 
 // --- TIPOS ---
 export type DeliveryMethod = 'pickup' | 'delivery' | 'shipping' | null;
@@ -15,6 +20,10 @@ interface DeliveryFees { [key: string]: ZoneFees; moto: ZoneFees; carro: ZoneFee
   providedIn: 'root'
 })
 export class CheckoutService {
+  // ✅ INICIO: ADICIONES QUIRÚRGICAS
+  private dataStore = inject(DataStoreService);
+  private cartStore = inject(CartStore); // 2. Inyectar el CartStore
+  // ✅ FIN: ADICIONES QUIRÚRGICAS
 
   // --- ESTADO REACTIVO (SEÑALES) ---
   public deliveryMethod = signal<DeliveryMethod>(null);
@@ -22,21 +31,16 @@ export class CheckoutService {
   public selectedPickupPoint = signal<string | null>(null);
   public selectedDeliveryVehicle = signal<DeliveryVehicle>(null);
   public selectedDeliveryZone = signal<string | null>(null);
-
-  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
-  // La dirección de envío ahora es un objeto UserAddress completo, no un simple string.
-  // Esto asegura la integridad y consistencia del modelo de datos en toda la aplicación.
   public shippingAddress = signal<UserAddress>({
     name: 'Dirección Principal',
-    recipient: 'Usuario Actual', // En un futuro, se cargará del perfil del usuario
+    recipient: 'Usuario Actual',
     line1: 'Urb. Prebo, Calle 123, Edificio Tech',
     city: 'Valencia',
     state: 'Carabobo'
   });
-  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
-
   public paymentReference = signal<string>('');
   public customerPhone = signal<string>('');
+  public appliedCouponCode = signal<string>('');
 
   // --- REGLAS DE NEGOCIO Y CONSTANTES ---
   private readonly deliveryFees: DeliveryFees = {
@@ -45,6 +49,38 @@ export class CheckoutService {
   };
 
   // --- SEÑALES COMPUTADAS (ESTADO DERIVADO) ---
+
+  public appliedCoupon = computed<Coupon | null>(() => {
+    const code = this.appliedCouponCode().toUpperCase().trim();
+    if (!code) return null;
+    return this.dataStore.coupons().find(c => c.code === code) || null;
+  });
+
+  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
+  // 3. Se elimina el parámetro y se lee la señal del cartStore internamente.
+  public discountAmount = computed(() => {
+    const cartTotal = this.cartStore.totalPrice(); // Se lee la señal aquí
+    const coupon = this.appliedCoupon();
+
+    if (!coupon || !coupon.isActive) {
+      return { value: 0, message: 'Cupón no válido.' };
+    }
+
+    if (coupon.expiresAt && new Date(coupon.expiresAt) < new Date()) {
+      return { value: 0, message: 'El cupón ha expirado.' };
+    }
+
+    let discount = 0;
+    if (coupon.type === 'percentage') {
+      discount = (cartTotal * coupon.value) / 100;
+    } else { // fixed
+      discount = coupon.value;
+    }
+
+    return { value: Math.min(discount, cartTotal), message: '¡Cupón aplicado!' };
+  });
+  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
+
   public shippingCost = computed<number>(() => {
     const method = this.deliveryMethod();
     const vehicle = this.selectedDeliveryVehicle();
@@ -72,6 +108,28 @@ export class CheckoutService {
   });
 
   // --- MÉTODOS PÚBLICOS (ACCIONES) ---
+  public applyCoupon(code: string): { success: boolean, message: string } {
+    const normalizedCode = code.toUpperCase().trim();
+    const coupon = this.dataStore.coupons().find(c => c.code === normalizedCode);
+
+    if (!coupon) {
+      return { success: false, message: 'El código del cupón no existe.' };
+    }
+    if (!coupon.isActive) {
+      return { success: false, message: 'Este cupón ya no está activo.' };
+    }
+    if (coupon.expiresAt && new Date(coupon.expiresAt) < new Date()) {
+      return { success: false, message: 'El cupón ha expirado.' };
+    }
+
+    this.appliedCouponCode.set(normalizedCode);
+    return { success: true, message: '¡Cupón aplicado con éxito!' };
+  }
+
+  public removeCoupon(): void {
+    this.appliedCouponCode.set('');
+  }
+
   public selectDeliveryMethod(method: DeliveryMethod): void {
     this.deliveryMethod.set(method);
     this.resetSubOptions();
@@ -117,5 +175,6 @@ export class CheckoutService {
     this.selectedDeliveryVehicle.set(null);
     this.selectedDeliveryZone.set(null);
     this.paymentReference.set('');
+    this.removeCoupon();
   }
 }

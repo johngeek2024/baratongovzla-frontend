@@ -1,6 +1,7 @@
+// src/app/features/admin/components/marketing-panel/marketing-panel.component.ts
 import { Component, HostBinding, inject, OnInit, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router'; // Se añade Router
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalComponent } from '../../../../components/ui/modal/modal.component';
 import { DataStoreService } from '../../../../core/services/data-store.service';
@@ -18,6 +19,7 @@ export class MarketingPanelComponent implements OnInit {
   @HostBinding('class') class = 'content-panel active';
   private dataStore = inject(DataStoreService);
   private fb = inject(FormBuilder);
+  private router = inject(Router); // Se inyecta el Router
 
   banners = this.dataStore.banners;
 
@@ -25,7 +27,10 @@ export class MarketingPanelComponent implements OnInit {
   isSaving = signal(false);
   isDeleteModalOpen = signal(false);
   bannerToDelete = signal<HeroBanner | null>(null);
-  activeTab = signal<'banners' | 'stage' | 'bundle' | 'quick-cat'>('banners');
+  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
+  // Se añade 'coupons' a la definición de tipo de la señal.
+  activeTab = signal<'banners' | 'stage' | 'bundle' | 'quick-cat' | 'coupons'>('banners');
+  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
   productStageSaved = signal(false);
   bundleSaved = signal(false);
@@ -37,7 +42,7 @@ export class MarketingPanelComponent implements OnInit {
   quickCategoriesForm!: FormGroup;
 
   constructor() {
-    // ✅ CORRECCIÓN: Se añade una guarda para asegurar que el contenido exista antes de actualizar el formulario.
+    // ... (el constructor permanece sin cambios)
     effect(() => {
       const stageContent = this.dataStore.productStageContent();
       if (this.productStageForm && stageContent) {
@@ -45,7 +50,6 @@ export class MarketingPanelComponent implements OnInit {
       }
     });
 
-    // ✅ CORRECCIÓN: Se añade una guarda para asegurar que el contenido exista antes de actualizar el formulario.
     effect(() => {
       const bundleContent = this.dataStore.bundleContent();
       if (this.bundleForm && bundleContent) {
@@ -60,7 +64,6 @@ export class MarketingPanelComponent implements OnInit {
       }
     });
 
-    // Effect para sincronizar el formulario de Quick Categories
     effect(() => {
         const quickCategories = this.dataStore.quickCategories();
         if (this.quickCategoriesForm) {
@@ -71,8 +74,7 @@ export class MarketingPanelComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // ✅ CORRECCIÓN: Se inicializan los formularios con valores por defecto para evitar errores de nulidad.
-    // El 'effect' en el constructor se encargará de poblarlos cuando los datos estén listos.
+    // ... (ngOnInit permanece sin cambios)
     this.productStageForm = this.fb.group({
       backgroundUrl: ['', Validators.required],
       title: ['', Validators.required],
@@ -95,8 +97,20 @@ export class MarketingPanelComponent implements OnInit {
     });
   }
 
-  selectTab(tab: 'banners' | 'stage' | 'bundle' | 'quick-cat'): void {
+  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
+  // Se añade 'coupons' a la definición de tipo del parámetro.
+  selectTab(tab: 'banners' | 'stage' | 'bundle' | 'quick-cat' | 'coupons'): void {
+    if (tab === 'coupons') {
+      this.navigateToCoupons();
+      return;
+    }
     this.activeTab.set(tab);
+  }
+  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
+
+  // Se añade el método de navegación
+  navigateToCoupons(): void {
+    this.router.navigate(['/admin/marketing/coupons']);
   }
 
   // --- Getters y Métodos para Bundles/Hotspots ---

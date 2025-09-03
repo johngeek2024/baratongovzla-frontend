@@ -100,3 +100,16 @@ export const quickCategorySchema = z.object({
     link: z.string(),
 });
 export const quickCategoriesSchema = z.array(quickCategorySchema);
+
+export const couponSchema = z.object({
+  id: z.string(),
+  code: z.string().min(3, "El código debe tener al menos 3 caracteres."),
+  type: z.enum(['percentage', 'fixed']),
+  value: z.number().positive("El valor debe ser positivo."),
+  description: z.string(),
+  expiresAt: z.string().optional(),
+  isActive: z.boolean(),
+});
+
+// Esquema para un array de Cupones
+export const couponsSchema = z.array(couponSchema);

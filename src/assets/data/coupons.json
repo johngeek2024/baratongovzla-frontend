@@ -1,0 +1,27 @@
+[
+  {
+    "id": "coupon-1",
+    "code": "BIENVENIDO10",
+    "type": "percentage",
+    "value": 10,
+    "description": "10% de descuento para nuevos clientes.",
+    "isActive": true
+  },
+  {
+    "id": "coupon-2",
+    "code": "GAMERPRO",
+    "type": "fixed",
+    "value": 15,
+    "description": "$15 de descuento en compras superiores a $100.",
+    "isActive": true,
+    "expiresAt": "2025-12-31"
+  },
+  {
+    "id": "coupon-3",
+    "code": "INACTIVO",
+    "type": "percentage",
+    "value": 50,
+    "description": "Cupón de prueba inactivo.",
+    "isActive": false
+  }
+]

@@ -1,0 +1,74 @@
+<header class="flex justify-between items-center">
+  <h1 class="text-2xl sm:text-3xl font-bold">Gestión de Cupones</h1>
+  <a routerLink="/admin/marketing/coupons/new" class="bg-primary-accent text-dark-bg border-none px-6 py-2.5 rounded-lg font-bold cursor-pointer transition-all duration-200 inline-flex items-center gap-2 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary-accent/20">
+    <i class="fas fa-plus"></i> Añadir Cupón
+  </a>
+</header>
+
+<div class="bg-dark-bg-secondary border border-border-color rounded-xl overflow-x-auto mt-8">
+  <table class="w-full">
+    <thead>
+      <tr class="border-b border-border-color">
+        <th class="p-4 text-left text-sm font-semibold text-text-secondary uppercase">Código</th>
+        <th class="p-4 text-left text-sm font-semibold text-text-secondary uppercase">Tipo</th>
+        <th class="p-4 text-left text-sm font-semibold text-text-secondary uppercase">Valor</th>
+        <th class="p-4 text-left text-sm font-semibold text-text-secondary uppercase">Estado</th>
+        <th class="p-4 text-left text-sm font-semibold text-text-secondary uppercase">Expira</th>
+        <th class="p-4 text-left text-sm font-semibold text-text-secondary uppercase">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (coupon of coupons(); track coupon.id) {
+        <tr class="border-b border-border-color/50 last:border-none">
+          <td class="p-4 align-middle font-mono font-bold text-primary-accent">{{ coupon.code }}</td>
+          <td class="p-4 align-middle capitalize">{{ coupon.type }}</td>
+          <td class="p-4 align-middle font-semibold text-white">
+            {{ coupon.type === 'percentage' ? coupon.value + '%' : coupon.value | currency }}
+          </td>
+          <td class="p-4 align-middle">
+            <span class="px-3 py-1 rounded-full text-xs font-bold" [ngClass]="{
+              'bg-success/20 text-success': coupon.isActive,
+              'bg-danger/20 text-danger': !coupon.isActive
+            }">
+              {{ coupon.isActive ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+          <td class="p-4 align-middle">{{ coupon.expiresAt ? (coupon.expiresAt | date:'dd/MM/yyyy') : 'Nunca' }}</td>
+          <td class="p-4 align-middle">
+            <div class="flex items-center gap-2">
+              <a [routerLink]="['/admin/marketing/coupons/edit', coupon.id]" class="bg-transparent border-none text-text-secondary cursor-pointer text-lg p-2 rounded-md transition-colors duration-200 hover:text-primary-accent hover:bg-primary-accent/10" title="Editar Cupón">
+                <i class="fas fa-edit"></i>
+              </a>
+              <button (click)="openDeleteConfirmation(coupon)" class="bg-transparent border-none text-text-secondary cursor-pointer text-lg p-2 rounded-md transition-colors duration-200 hover:text-danger hover:bg-danger/10" title="Eliminar Cupón">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="6" class="text-center py-8 text-text-secondary">No se han creado cupones.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<app-modal [isOpen]="isDeleteModalOpen" title="Confirmar Eliminación" (close)="closeDeleteConfirmation()">
+  <p class="text-text-secondary">
+    ¿Estás seguro de que deseas eliminar el cupón
+    <strong class="text-white font-mono">{{ couponToDelete()?.code }}</strong>?
+    Esta acción no se puede deshacer.
+  </p>
+  <div modal-footer class="flex justify-end gap-4">
+    <button class="bg-border-color text-text-primary px-6 py-2.5 rounded-lg font-bold cursor-pointer" (click)="closeDeleteConfirmation()">Cancelar</button>
+    <button class="!bg-danger !text-white px-6 py-2.5 rounded-lg font-bold cursor-pointer" (click)="handleDeleteCoupon()" [disabled]="isSaving()">
+      @if (isSaving()) {
+        <i class="fas fa-spinner animate-spin mr-2"></i>
+        <span>Eliminando...</span>
+      } @else {
+        <span>Sí, Eliminar</span>
+      }
+    </button>
+  </div>
+</app-modal>
