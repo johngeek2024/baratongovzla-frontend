@@ -29,7 +29,7 @@
     </header>
 
     @if (isLoading()) {
-      <div class="grid gap-8"
+      <div class="grid items-start gap-8"
            [class.grid-cols-1]="viewMode() === 'list'"
            [class.sm:grid-cols-2]="viewMode() === 'grid'"
            [class.xl:grid-cols-3]="viewMode() === 'grid'">
