@@ -90,8 +90,15 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     }
 
     const orderId = `BTV-${Date.now()}`;
-    const address = this.checkoutService.shippingAddress();
-    const shippingAddressValue = address ? `${address.line1}, ${address.city}, ${address.state}` : 'Retiro en Punto Físico';
+
+    // ✅ INICIO: CIRUGÍA DE CÓDIGO
+    // Obtenemos el objeto de dirección y lo transformamos en una cadena de texto.
+    const addressObject = this.checkoutService.shippingAddress();
+    const deliveryMethod = this.checkoutService.deliveryMethod();
+    const shippingAddressValue = (deliveryMethod === 'delivery' || deliveryMethod === 'shipping') && addressObject
+        ? `${addressObject.line1}, ${addressObject.city}, ${addressObject.state}`
+        : 'Retiro en Punto Físico';
+    // ✅ FIN: CIRUGÍA DE CÓDIGO
 
     const userOrderPayload: UserOrder = {
         id: orderId,
@@ -119,7 +126,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       status: 'Procesando',
       customerName: currentUser.fullName,
       customerEmail: currentUser.email,
-      shippingAddress: shippingAddressValue,
+      shippingAddress: shippingAddressValue, // Ahora se asigna la cadena de texto correcta.
       items: this.cartStore.items().map(item => ({
         productId: item.product.id,
         name: item.product.name,
@@ -127,13 +134,21 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
         price: item.product.price,
         cost: item.product.cost ?? item.product.price * 0.7
       })),
+      // Se añaden los campos de logística al payload del admin también.
+      customerPhone: this.checkoutService.customerPhone(),
+      shippingCost: this.checkoutService.shippingCost(),
+      deliveryMethod: this.checkoutService.deliveryMethod(),
+      pickupPoint: this.checkoutService.selectedPickupPoint(),
+      deliveryVehicle: this.checkoutService.selectedDeliveryVehicle(),
+      deliveryZone: this.checkoutService.selectedDeliveryZone(),
+      paymentMethod: this.checkoutService.paymentMethod(),
+      paymentReference: this.checkoutService.paymentReference(),
     };
 
     this.orderAdminService.addOrder(adminOrderPayload).subscribe();
-    this.orderProcessingService.processNewOrder(adminOrderPayload);
+    this.orderProcessingService.processNewOrder(adminOrderPayload as any);
 
-    // La línea que causaba el error ha sido eliminada.
-    // this.userDataService.addNewOrder(userOrderPayload);
+    // this.userDataService.addNewOrder(userOrderPayload); // Esta línea sigue siendo redundante y no debe activarse.
 
     const missionData: MissionData = {
       orderNumber: orderId,
@@ -143,7 +158,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       total: this.totalPrice(),
       customerName: currentUser.fullName,
       customerPhone: this.checkoutService.customerPhone(),
-      shippingAddress: shippingAddressValue,
+      shippingAddress: shippingAddressValue, // Ahora se asigna la cadena de texto correcta.
       deliveryMethod: this.checkoutService.deliveryMethod(),
       paymentMethod: this.checkoutService.paymentMethod(),
       paymentReference: this.checkoutService.paymentReference(),
@@ -151,15 +166,13 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       deliveryVehicle: this.checkoutService.selectedDeliveryVehicle(),
       deliveryZone: this.checkoutService.selectedDeliveryZone(),
       items: this.cartStore.items().map(item => ({
-        product: { name: item.product.name, imageUrl: item.product.imageUrl },
+        product: { name: item.product.name, imageUrl: item.product.imageUrl, sku: item.product.sku, price: item.product.price },
         quantity: item.quantity
       })),
     };
 
-    // 1. Guardar los datos en sessionStorage para persistirlos a través de la recarga.
     sessionStorage.setItem('lastMissionData', JSON.stringify(missionData));
 
-    // 2. Navegar a la nueva URL, incluyendo el ID del pedido y pasando el estado para la carga inicial.
     this.router.navigate(['/order-confirmation', orderId], { state: { missionData } });
 
     this.cartStore.clearCart();
