@@ -1,4 +1,3 @@
-// src/app/core/services/user-data.service.ts
 import { Injectable, signal, inject, effect, computed } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Product } from '../models/product.model';
@@ -28,15 +27,12 @@ export interface UserOrder {
   guideNumber?: string;
   paymentMethod?: PaymentMethod;
   paymentReference?: string;
-  // ✅ INICIO: CIRUGÍA DE CÓDIGO
-  // Se añade la propiedad que faltaba para almacenar los detalles logísticos.
   deliveryDetails?: {
     service?: string;
     agent?: string;
     tracking?: string;
     point?: string;
   }
-  // ✅ FIN: CIRUGÍA DE CÓDIGO
 }
 
 export interface UserAddress {
@@ -77,8 +73,19 @@ export class UserDataService {
             shippingAddress: adminOrder.shippingAddress,
             customerName: adminOrder.customerName,
             customerEmail: adminOrder.customerEmail,
-            customerPhone: '',
-            shippingCost: 0,
+            // ✅ INICIO: CIRUGÍA DE CÓDIGO
+            // Se mapean los datos de logística desde el adminOrder al userOrder.
+            // Se asume que estos campos ahora existen en 'AdminOrderDetail'.
+            customerPhone: adminOrder.customerPhone || '',
+            shippingCost: adminOrder.shippingCost || 0,
+            deliveryMethod: adminOrder.deliveryMethod,
+            pickupPoint: adminOrder.pickupPoint,
+            deliveryVehicle: adminOrder.deliveryVehicle,
+            deliveryZone: adminOrder.deliveryZone,
+            paymentMethod: adminOrder.paymentMethod,
+            paymentReference: adminOrder.paymentReference,
+            deliveryDetails: adminOrder.deliveryDetails
+            // ✅ FIN: CIRUGÍA DE CÓDIGO
         };
         return userOrder;
       });

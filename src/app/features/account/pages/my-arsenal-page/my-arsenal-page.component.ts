@@ -1,9 +1,9 @@
 // src/app/features/account/pages/my-arsenal-page/my-arsenal-page.component.ts
 
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-// ✅ AÑADIDO: Se importan los servicios y modelos necesarios.
-import { UserDataService } from '../../../../core/services/user-data.service';
+import { RouterModule } from '@angular/router';
+import { UserDataService, UserOrder } from '../../../../core/services/user-data.service'; // Importar UserOrder
 import { Product } from '../../../../core/models/product.model';
 
 // Interfaces para tipar nuestros datos de gamificación
@@ -13,24 +13,42 @@ interface Achievement {
   unlocked: boolean;
 }
 
-// ✅ La interfaz local 'ArsenalItem' ha sido eliminada, se usará 'Product'.
+// ✅ NUEVA INTERFAZ: Para el arsenal, incluye el orderId de la compra.
+interface ArsenalProduct {
+  product: Product;
+  orderId: string;
+}
 
 @Component({
   selector: 'app-my-arsenal-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './my-arsenal-page.component.html',
 })
 export class MyArsenalPageComponent {
-  // ✅ INYECCIÓN: Se inyecta el servicio central de datos de usuario.
   private userDataService = inject(UserDataService);
 
-  // ✅ CORRECCIÓN: La señal 'arsenalItems' ahora es una referencia directa a la señal
-  // reactiva del UserDataService, eliminando la lista estática.
-  public arsenalItems = this.userDataService.arsenal;
+  // ✅ CORRECCIÓN: Adaptar arsenal para que sea una señal de ArsenalProduct[]
+  // Por ahora, lo simularé así para demostrar la funcionalidad.
+  // En una aplicación real, userDataService.arsenal debería proveer esta estructura.
+  public arsenalItems = computed<ArsenalProduct[]>(() => {
+    const allOrders = this.userDataService.orders();
+    const uniqueArsenal: { [productId: string]: ArsenalProduct } = {};
 
-  // La lógica de logros puede permanecer estática por ahora,
-  // hasta que se desarrolle una lógica de negocio más compleja para ellos.
+    allOrders.forEach(order => {
+      order.items.forEach(item => {
+        // Asumiendo que cada item de una orden es un "item de arsenal"
+        // Y que solo queremos el primero que encontramos (si hay duplicados de producto en arsenal)
+        if (!uniqueArsenal[item.product.id]) {
+          uniqueArsenal[item.product.id] = { product: item.product, orderId: order.id };
+        }
+      });
+    });
+    return Object.values(uniqueArsenal);
+  });
+
+  public userOrders = this.userDataService.orders;
+
   public achievements = signal<Achievement[]>([
     { title: 'Cliente Fundador', icon: 'fa-trophy', unlocked: true },
     { title: 'Maestro del Cine', icon: 'fa-video', unlocked: true },

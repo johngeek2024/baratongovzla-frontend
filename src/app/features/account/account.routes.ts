@@ -3,7 +3,6 @@ import { Routes } from '@angular/router';
 import { AccountPageComponent } from './pages/account-page/account-page.component';
 
 export const ACCOUNT_ROUTES: Routes = [
-  // ✅ CORRECCIÓN QUIRÚRGICA: Se define una ruta padre que usa AccountPageComponent como layout.
   {
     path: '',
     component: AccountPageComponent,
@@ -32,6 +31,12 @@ export const ACCOUNT_ROUTES: Routes = [
         loadComponent: () =>
           import('./pages/my-arsenal-page/my-arsenal-page.component').then(
             (c) => c.MyArsenalPageComponent
+          ),
+      },
+      {
+        path: 'invoice/:id', // La ruta ahora solo usa el ID de la orden.
+        loadComponent: () => import('./pages/invoice-page/invoice-page.component').then(
+            (c) => c.InvoicePageComponent
           ),
       },
       {
