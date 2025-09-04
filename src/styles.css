@@ -8,8 +8,8 @@
 
 :root {
   /* Paleta Principal Unificada */
-  --color-dark-bg: 231 60% 8%;               /* #0A0C1F */
-  --color-dark-bg-secondary: 222 47% 11%;    /* #121829 */
+  --color-dark-bg: 231 60% 8%;              /* #0A0C1F */
+  --color-dark-bg-secondary: 222 47% 11%;   /* #121829 */
   --color-dark-bg-tertiary: 222 22% 17%;
   --color-primary-accent: 206 100% 50%;      /* #00A9FF (Admin y default) */
   --color-primary-accent-darker: 206 100% 45%;
@@ -30,14 +30,14 @@
   --color-dark-surface-2: 222 24% 28%;      /* #1F2937 */
 
   /* Colores para Badges (Etiquetas de Producto) */
-  --color-badge-new: 200 100% 50%;        /* Azul Cian */
-  --color-badge-deal: 145 63% 49%;       /* Verde (success) */
-  --color-badge-soldout: 215 9% 65%;     /* Gris (text-secondary) */
+  --color-badge-new: 200 100% 50%;         /* Azul Cian */
+  --color-badge-deal: 145 63% 49%;         /* Verde (success) */
+  --color-badge-soldout: 215 9% 65%;       /* Gris (text-secondary) */
 }
 
 /* --- TEMA PARA PÁGINAS DE PRODUCTOS (PLP/PDP) --- */
 .products-theme {
-  --color-primary-accent: 200 100% 50%;      /* Azul Cian para productos */
+  --color-primary-accent: 200 100% 50%;       /* Azul Cian para productos */
   --color-primary-accent-darker: 200 100% 45%;
 }
 
@@ -88,5 +88,9 @@
     border-color: hsl(var(--color-primary-accent)) !important;
     box-shadow: 0 0 20px hsl(var(--color-primary-accent) / 0.4);
     background-color: hsl(var(--color-primary-accent) / 0.1);
+  }
+
+  .bg-dark-surface-1 {
+    background-color: hsl(var(--color-dark-surface-1));
   }
 }

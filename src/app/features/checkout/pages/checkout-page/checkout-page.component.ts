@@ -1,4 +1,3 @@
-// src/app/features/checkout/pages/checkout-page/checkout-page.component.ts
 import { Component, inject, computed, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -133,10 +132,8 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     this.orderAdminService.addOrder(adminOrderPayload).subscribe();
     this.orderProcessingService.processNewOrder(adminOrderPayload);
 
-    // ✅ INICIO: CIRUGÍA DE CÓDIGO
     // La línea que causaba el error ha sido eliminada.
     // this.userDataService.addNewOrder(userOrderPayload);
-    // ✅ FIN: CIRUGÍA DE CÓDIGO
 
     const missionData: MissionData = {
       orderNumber: orderId,
@@ -159,7 +156,14 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       })),
     };
 
-    this.router.navigate(['/order-confirmation', orderId]);
+    // ✅ INICIO: CORRECCIONES QUIRÚRGICAS AÑADIDAS
+    // 1. Persistir datos en sessionStorage como fallback robusto para recargas.
+    sessionStorage.setItem(`missionData_${orderId}`, JSON.stringify(missionData));
+
+    // 2. Navegar a la URL con ID, pasando el estado para carga optimista instantánea.
+    this.router.navigate(['/order-confirmation', orderId], { state: { missionData } });
+    // ✅ FIN: CORRECCIONES QUIRÚRGICAS AÑADIDAS
+
     this.cartStore.clearCart();
   }
 }

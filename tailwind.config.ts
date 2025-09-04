@@ -1,5 +1,3 @@
-// johngeek2024/baratongovzla-frontend/tailwind.config.ts
-
 import type { Config } from 'tailwindcss';
 import plugin from 'tailwindcss/plugin';
 
@@ -31,25 +29,7 @@ const config: Config = {
         'badge-new': '#0ea5e9',
         'badge-exclusive': '#8b5cf6',
         'badge-offer': '#ef4444',
-        'profit': 'hsl(var(--color-profit) / <alpha-value>)',
-        'dark-surface-1': 'hsl(var(--color-dark-surface-1) / <alpha-value>)',
-        // ✅ INICIO: COLORES DE ADMIN AJUSTADOS
-        // 'admin-gray' eliminado, se usará 'dark-bg' o 'dark-bg-secondary'
-        'admin-blue': {
-          '600': '#2563eb',
-          '500': '#3b82f6',
-          '400': '#60a5fa',
-        },
-        'admin-green': {
-          '400': '#4ade80',
-        },
-        'admin-yellow': {
-          '400': '#facc15',
-        },
-        'admin-orange': {
-          '400': '#fb923c',
-        }
-        // ✅ FIN: COLORES DE ADMIN AJUSTADOS
+        'brand-yellow': '#ffd724',
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
@@ -74,40 +54,26 @@ const config: Config = {
           '0%': { transform: 'scaleX(0)' },
           '100%': { transform: 'scaleX(1)' },
         },
-        // ✅ INICIO: CÓDIGO AÑADIDO
-        fadeInUp: {
-            '0%': { opacity: '0', transform: 'translateY(10px)' },
-            '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
-        glowBorder: {
+        'glow-border': {
             '0%, 100%': { 'box-shadow': '0 0 20px 5px var(--tw-shadow-color)' },
             '50%': { 'box-shadow': '0 0 40px 10px var(--tw-shadow-color)' },
         },
-         pulseButton: {
+        'pulse-button': {
             '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 10px rgba(0,169,255,0.5)' },
             '50%': { transform: 'scale(1.05)', boxShadow: '0 0 25px rgba(0,169,255,0.8)' }
         },
-        screenShake: {
-            '0%, 100%': { transform: 'translateX(0)' },
-            '20%, 60%': { transform: 'translateX(-3px)' },
-            '40%, 80%': { transform: 'translateX(3px)' },
-        }
-        // ✅ FIN: CÓDIGO AÑADIDO
       },
       animation: {
         'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
         pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'drive': 'drive 1.5s ease-in-out infinite',
         'button-close': 'button-close-effect 0.4s ease-in-out',
-        // ✅ INICIO: CÓDIGO AÑADIDO
-        'glow-border': 'glowBorder 4s linear infinite',
-        'pulse-button': 'pulseButton 2s infinite',
-        'screen-shake': 'screenShake 0.3s ease-out'
-        // ✅ FIN: CÓDIGO AÑADIDO
+        'glow-border': 'glow-border 4s linear infinite',
+        'pulse-button': 'pulse-button 2s infinite',
       },
       boxShadow: {
-        'neon-primary': '0 0 10px hsl(var(--color-primary-accent) / 0.7), 0 0 25px hsl(var(--color-primary-accent) / 0.5)',
-        'neon-secondary': '0 0 10px hsl(var(--color-secondary-accent) / 0.7), 0 0 25px hsl(var(--color-secondary-accent) / 0.5)',
+        'neon-primary': '0 0 8px hsl(var(--color-primary-accent)), 0 0 20px hsl(var(--color-primary-accent))',
+        'neon-secondary': '0 0 8px hsl(var(--color-secondary-accent)), 0 0 20px hsl(var(--color-secondary-accent))',
       },
       textShadow: {
         DEFAULT: '0 2px 4px rgba(0, 0, 0, 0.5)',
@@ -122,8 +88,6 @@ const config: Config = {
   plugins: [
     plugin(function ({ addVariant, matchUtilities, theme }) {
       addVariant('is-active', '&.is-active');
-      addVariant('open', '&.open');
-      addVariant('active', '&.active');
 
       matchUtilities(
         {
