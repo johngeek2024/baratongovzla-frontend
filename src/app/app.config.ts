@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideZonelessChangeDetection, isDevMode, LOCALE_ID, APP_INITIALIZER, inject } from '@angular/core';
+import { ApplicationConfig, provideZonelessChangeDetection, isDevMode, LOCALE_ID, APP_INITIALIZER } from '@angular/core';
 import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { routes } from './app.routes';
@@ -16,12 +16,10 @@ import { firstValueFrom } from 'rxjs';
 
 registerLocaleData(localeEsVE);
 
-// ✅ INICIO: CORRECCIÓN QUIRÚRGICA
 // Función factory para el APP_INITIALIZER.
 function initializeAuthFactory(authService: AuthService): () => Promise<any> {
   return () => firstValueFrom(authService.checkAuthStatus());
 }
-// ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -29,7 +27,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     { provide: LOCALE_ID, useValue: 'es-VE' },
 
-    // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
     // Se añade el proveedor que retrasa el arranque de la app
     // hasta que la autenticación inicial se resuelva.
     {
@@ -38,7 +35,6 @@ export const appConfig: ApplicationConfig = {
       deps: [AuthService],
       multi: true
     },
-    // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
     provideRouter(
       routes,

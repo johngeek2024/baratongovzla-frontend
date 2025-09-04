@@ -29,7 +29,10 @@ const config: Config = {
         'badge-new': '#0ea5e9',
         'badge-exclusive': '#8b5cf6',
         'badge-offer': '#ef4444',
+        // ✅ INICIO: MODIFICACIONES
+        'dark-surface': '#111827',
         'brand-yellow': '#ffd724',
+        // ✅ FIN: MODIFICACIONES
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
@@ -54,22 +57,26 @@ const config: Config = {
           '0%': { transform: 'scaleX(0)' },
           '100%': { transform: 'scaleX(1)' },
         },
-        'glow-border': {
-            '0%, 100%': { 'box-shadow': '0 0 20px 5px var(--tw-shadow-color)' },
-            '50%': { 'box-shadow': '0 0 40px 10px var(--tw-shadow-color)' },
+        // ✅ INICIO: MODIFICACIONES
+        glowBorder: {
+          '0%, 100%': { 'box-shadow': '0 0 20px 5px var(--tw-shadow-color)' },
+          '50%': { 'box-shadow': '0 0 40px 10px var(--tw-shadow-color)' },
         },
-        'pulse-button': {
-            '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 10px rgba(0,169,255,0.5)' },
-            '50%': { transform: 'scale(1.05)', boxShadow: '0 0 25px rgba(0,169,255,0.8)' }
-        },
+        pulseButton: {
+          '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 10px rgba(0,169,255,0.5)' },
+          '50%': { transform: 'scale(1.05)', boxShadow: '0 0 25px rgba(0,169,255,0.8)' }
+        }
+        // ✅ FIN: MODIFICACIONES
       },
       animation: {
         'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
         pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'drive': 'drive 1.5s ease-in-out infinite',
         'button-close': 'button-close-effect 0.4s ease-in-out',
-        'glow-border': 'glow-border 4s linear infinite',
-        'pulse-button': 'pulse-button 2s infinite',
+        // ✅ INICIO: MODIFICACIONES
+        'glow-border': 'glowBorder 4s linear infinite',
+        'pulse-button': 'pulseButton 2s infinite',
+        // ✅ FIN: MODIFICACIONES
       },
       boxShadow: {
         'neon-primary': '0 0 8px hsl(var(--color-primary-accent)), 0 0 20px hsl(var(--color-primary-accent))',

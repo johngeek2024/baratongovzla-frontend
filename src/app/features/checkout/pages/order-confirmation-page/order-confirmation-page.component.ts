@@ -1,11 +1,10 @@
-import { Component, OnInit, OnDestroy, signal, computed, inject, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
-import { CommonModule, CurrencyPipe, TitleCasePipe } from '@angular/common';
-import { Router, RouterModule, ActivatedRoute } from '@angular/router'; // Importar ActivatedRoute
-import { Product } from '../../../../core/models/product.model';
+import { Component, OnInit, OnDestroy, signal, computed, inject, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router'; // Se añade ActivatedRoute
 import Swiper from 'swiper';
 import { Navigation, Pagination, EffectCards } from 'swiper/modules';
+import * as Tone from 'tone';
 
-// La interfaz MissionData debe incluir los items
 interface MissionData {
   orderNumber: string;
   subtotal: number;
@@ -20,139 +19,154 @@ interface MissionData {
   pickupPoint: string | null;
   deliveryVehicle: 'moto' | 'carro' | null;
   deliveryZone: string | null;
-  items: { product: Product, quantity: number }[];
+  items: { product: { name: string, imageUrl: string }, quantity: number }[];
 }
 
 type OrderStatus = 'Confirmado' | 'Procesando' | 'En Ruta' | 'Entregado';
+type CargoBayStatus = 'locked' | 'unlocking' | 'opening' | 'open';
 
 @Component({
   selector: 'app-order-confirmation-page',
   standalone: true,
-  imports: [CommonModule, RouterModule, CurrencyPipe, TitleCasePipe],
+  imports: [CommonModule, RouterModule, CurrencyPipe, DatePipe],
   templateUrl: './order-confirmation-page.component.html',
 })
 export class OrderConfirmationPageComponent implements OnInit, OnDestroy, AfterViewInit {
   private router = inject(Router);
-  private route = inject(ActivatedRoute); // Inyectar ActivatedRoute
+  private cdr = inject(ChangeDetectorRef);
+  private route = inject(ActivatedRoute); // ✅ Se inyecta ActivatedRoute
 
-  @ViewChild('swiperContainer') swiperContainer!: ElementRef;
-  private swiper?: Swiper;
+  @ViewChild('cargoBay') cargoBayRef!: ElementRef<HTMLElement>;
+  @ViewChild('mainContainer') mainContainerRef!: ElementRef<HTMLElement>;
 
   missionData = signal<MissionData | null>(null);
   status = signal<OrderStatus>('Confirmado');
   private intervalId?: any;
   statusSteps: OrderStatus[] = ['Confirmado', 'Procesando', 'En Ruta', 'Entregado'];
+  progressWidth = computed(() => {
+    const currentIndex = this.statusSteps.indexOf(this.status());
+    if (currentIndex < 0) return '0%';
+    return `${(currentIndex / (this.statusSteps.length - 1)) * 100}%`;
+  });
 
-  acquisitionDate = signal('');
-  etaDate = signal('');
+  cargoBayStatus = signal<CargoBayStatus>('locked');
+  acquisitionDate = signal(new Date());
+  etaDate = computed(() => {
+    const tomorrow = new Date(this.acquisitionDate());
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow;
+  });
+
+  private swiper?: Swiper;
+  private unlockSynth?: Tone.MembraneSynth;
+  private openSynth?: Tone.MetalSynth;
+  private revealSynth?: Tone.Synth;
 
   constructor() {
-    // ✅ CORRECCIÓN: Intento optimista de obtener datos del estado de navegación
+    // ✅ INICIO: CORRECCIÓN QUIRÚRGICA PARA PERSISTENCIA
     const navigation = this.router.getCurrentNavigation();
-    const state = navigation?.extras.state as { missionData: MissionData };
-    if (state?.missionData) {
-      this.missionData.set(state.missionData);
-    }
-  }
+    let state = navigation?.extras.state as { missionData: MissionData };
 
-  ngOnInit(): void {
-    // ✅ CORRECCIÓN: Lógica de fallback para recarga de página
-    if (!this.missionData()) {
-      const orderId = this.route.snapshot.paramMap.get('id');
-      if (orderId) {
-        const storedData = sessionStorage.getItem(`missionData_${orderId}`);
-        if (storedData) {
-          this.missionData.set(JSON.parse(storedData));
+    // Si no hay estado (caso de recarga de página), intentar obtener de sessionStorage.
+    if (!state?.missionData) {
+      const storedData = sessionStorage.getItem('lastMissionData');
+      if (storedData) {
+        try {
+          const missionDataFromStorage = JSON.parse(storedData);
+          const orderIdFromUrl = this.route.snapshot.paramMap.get('id');
+
+          // Comprobar que los datos en sesión corresponden a la orden de la URL.
+          if (missionDataFromStorage.orderNumber === orderIdFromUrl) {
+            state = { missionData: missionDataFromStorage };
+          }
+        } catch (e) {
+          console.error("Error al parsear datos de sessionStorage", e);
         }
       }
     }
 
-    if (this.missionData()) {
-      this.startStatusSimulation();
-      this.calculateDates();
+    if (state?.missionData) {
+      this.missionData.set(state.missionData);
+    } else {
+      console.warn('No se encontraron datos de la misión en el estado ni en sessionStorage.');
     }
+    // ✅ FIN: CORRECCIÓN QUIRÚRGICA
   }
 
-  // ... (el resto de la lógica del componente: ngAfterViewInit, ngOnDestroy, etc., permanece igual)
-  // ...
-  ngAfterViewInit(): void {
-    if (this.missionData()) {
-      setTimeout(() => this.initSwiper(), 0);
-    }
-  }
-
-  ngOnDestroy(): void {
-    if (this.intervalId) clearInterval(this.intervalId);
-    this.swiper?.destroy();
-  }
-
-  private initSwiper(): void {
-    if (this.swiperContainer) {
-      this.swiper = new Swiper(this.swiperContainer.nativeElement, {
-        modules: [Navigation, Pagination, EffectCards],
-        effect: 'cards',
-        grabCursor: true,
-        navigation: {
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev',
-        },
-        pagination: {
-          el: '.swiper-pagination',
-          clickable: true,
-        },
-      });
-    }
-  }
-
-  private startStatusSimulation(): void {
+  ngOnInit(): void {
     this.intervalId = window.setInterval(() => {
       this.status.update(currentStatus => {
         const currentIndex = this.statusSteps.indexOf(currentStatus);
         if (currentIndex >= this.statusSteps.length - 1) {
           if (this.intervalId) clearInterval(this.intervalId);
-          return 'Entregado';
+          return currentStatus;
         }
         return this.statusSteps[currentIndex + 1];
       });
-    }, 4000);
+    }, 3000);
   }
 
-  private calculateDates(): void {
-    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    const today = new Date();
-    this.acquisitionDate.set(today.toLocaleDateString('es-ES', options));
-
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    this.etaDate.set(tomorrow.toLocaleDateString('es-ES', { month: 'long', day: 'numeric' }));
+  ngAfterViewInit(): void {
+    this.initAudio();
+    this.initSwiper();
   }
 
-  revealCrate(event: MouseEvent): void {
-      const cargoBay = (event.currentTarget as HTMLElement).closest('#cargo-bay');
-      if (cargoBay) {
-          cargoBay.classList.add('is-unlocking');
-          setTimeout(() => {
-              cargoBay.classList.remove('is-unlocking');
-              cargoBay.classList.add('is-opening');
-              setTimeout(() => {
-                  cargoBay.classList.add('is-open');
-              }, 500);
-          }, 800);
-      }
+  ngOnDestroy(): void {
+    if (this.intervalId) clearInterval(this.intervalId);
+    this.swiper?.destroy();
+    if (Tone.context.state !== 'closed') {
+      Tone.context.dispose();
+    }
+  }
+
+  private initAudio(): void {
+    this.unlockSynth = new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 6, oscillator: { type: "sine" }, envelope: { attack: 0.001, decay: 0.2, sustain: 0.01, release: 0.2 } }).toDestination();
+    this.openSynth = new Tone.MetalSynth({ envelope: { attack: 0.001, decay: 0.4, release: 0.2 }, harmonicity: 5.1, modulationIndex: 32, resonance: 4000, octaves: 1.5 }).toDestination();
+    this.openSynth.frequency.value = 50;
+    this.revealSynth = new Tone.Synth({ oscillator: { type: 'fatsawtooth', count: 3, spread: 30 }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.5 } }).toDestination();
+  }
+
+  private initSwiper(): void {
+    this.swiper = new Swiper('.swiper', {
+      modules: [Navigation, Pagination, EffectCards],
+      effect: 'cards',
+      grabCursor: true,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+    });
+  }
+
+  revealCargoBay(button: HTMLButtonElement): void {
+    if (this.cargoBayStatus() !== 'locked') return;
+
+    button.disabled = true;
+    this.cargoBayStatus.set('unlocking');
+    this.unlockSynth?.triggerAttackRelease("C2", "16n", Tone.now());
+    this.unlockSynth?.triggerAttackRelease("C2", "16n", Tone.now() + 0.2);
+    this.unlockSynth?.triggerAttackRelease("C2", "16n", Tone.now() + 0.4);
+
+    setTimeout(() => {
+      this.cargoBayStatus.set('opening');
+      this.openSynth?.triggerAttackRelease("C2", "8n");
+      const mainEl = this.mainContainerRef.nativeElement;
+      mainEl.style.animation = 'screenShake 0.3s ease-out';
+      mainEl.addEventListener('animationend', () => mainEl.style.animation = '', { once: true });
+
+      setTimeout(() => {
+        this.cargoBayStatus.set('open');
+        this.revealSynth?.triggerAttackRelease("C4", "2n", Tone.now());
+        this.cdr.detectChanges();
+      }, 500);
+    }, 800);
   }
 
   isStepActive(step: OrderStatus): boolean {
     return this.statusSteps.indexOf(this.status()) >= this.statusSteps.indexOf(step);
-  }
-
-  getIconForStep(step: OrderStatus): string {
-    const icons: { [key in OrderStatus]: string } = {
-      'Confirmado': 'fas fa-receipt',
-      'Procesando': 'fas fa-cogs',
-      'En Ruta': 'fas fa-truck',
-      'Entregado': 'far fa-check-circle'
-    };
-    if (this.statusSteps.indexOf(step) === 1) return 'fas fa-credit-card';
-    return icons[step];
   }
 }

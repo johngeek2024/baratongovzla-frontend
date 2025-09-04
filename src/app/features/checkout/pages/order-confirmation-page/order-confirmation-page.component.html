@@ -1,206 +1,203 @@
-@if (missionData(); as data) {
-<div class="min-h-screen flex flex-col items-center justify-center pt-32 pb-16 px-4 animate-fade-in-up">
+<body class="font-inter text-gray-300 antialiased overflow-x-hidden">
+    <div id="particle-bg"></div>
 
-    <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
-        <div class="bg-gradient-to-r from-primary-accent to-purple-500 text-white font-bold py-2 px-6 rounded-full inline-flex items-center gap-2 mb-6">
-            <i class="fas fa-trophy"></i><span>¡Logro Desbloqueado!</span>
-        </div>
-    </div>
+    <main #mainContainer class="min-h-screen flex flex-col items-center justify-center pt-32 pb-16 px-4">
+        @if(missionData(); as data) {
+            <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
+                <div class="bg-gradient-to-r from-primary-accent to-purple-500 text-white font-bold py-2 px-6 rounded-full inline-flex items-center gap-2 mb-6">
+                    <i class="fas fa-trophy"></i><span>¡Logro Desbloqueado!</span>
+                </div>
+            </div>
 
-    <h1 class="font-headings text-4xl md:text-5xl font-extrabold text-white text-center mb-8 animate-fade-in-up" style="animation-delay: 0.4s;">
-        Cargamento Registrado en tu Arsenal
-    </h1>
+            <h1 class="font-sora text-4xl md:text-5xl font-extrabold text-white text-center mb-8 animate-fade-in-up" style="animation-delay: 0.4s;">
+                Cargamento Registrado en tu Arsenal
+            </h1>
 
-    <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-start animate-fade-in-up" style="animation-delay: 0.6s;">
+            <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-start animate-fade-in-up" style="animation-delay: 0.6s;">
 
-        <div id="cargo-bay" class="relative group h-[450px] flex items-center justify-center p-4" style="perspective: 1000px;">
-            <div class="loot-carousel-container w-full h-full">
-                <div #swiperContainer class="swiper h-full">
-                    <div class="swiper-wrapper">
-                        @for (item of data.items; track item.product.id) {
-                            <div class="swiper-slide">
-                                <div class="loot-card">
-                                    <img [src]="item.product.imageUrl" [alt]="item.product.name" class="absolute inset-0 w-full h-full object-contain p-8 drop-shadow-2xl">
-                                    <div class="relative w-full h-full flex flex-col justify-end p-6 bg-gradient-to-t from-dark-bg-secondary via-dark-bg-secondary/80 to-transparent">
-                                        <h2 class="font-headings text-2xl font-bold text-white text-center">{{ item.product.name }}</h2>
-                                        <p class="text-primary-accent font-semibold mt-2 text-center">{{ item.quantity }} Unidad(es)</p>
+                <div #cargoBay id="cargo-bay" class="relative group h-[450px] flex items-center justify-center p-4"
+                     [class.is-unlocking]="cargoBayStatus() === 'unlocking'"
+                     [class.is-opening]="cargoBayStatus() === 'opening'"
+                     [class.is-open]="cargoBayStatus() === 'open'"
+                     style="perspective: 1000px;">
+                    <div class="loot-carousel-container w-full h-full">
+                        <div class="swiper h-full">
+                            <div class="swiper-wrapper">
+                                @for(item of data.items; track $index) {
+                                    <div class="swiper-slide">
+                                        <div class="loot-card">
+                                            <img [src]="item.product.imageUrl" [alt]="'[Imagen de ' + item.product.name + ']'" class="absolute inset-0 w-full h-full object-contain p-8 drop-shadow-2xl">
+                                            <div class="relative w-full h-full flex flex-col justify-end p-6 bg-gradient-to-t from-dark-surface via-dark-surface/80 to-transparent">
+                                                <h2 class="font-sora text-2xl font-bold text-white text-center">{{ item.product.name }}</h2>
+                                                <p class="text-primary-accent font-semibold mt-2 text-center">{{ item.quantity }} Unidad(es)</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <div class="swiper-pagination"></div>
+                            <div class="swiper-button-prev"></div>
+                            <div class="swiper-button-next"></div>
+                        </div>
+                    </div>
+
+                    <div class="crate-door crate-door-left"><div class="door-panel"><div class="panel-light"></div><div class="panel-light"></div></div></div>
+                    <div class="crate-door crate-door-right"><div class="door-panel"><div class="panel-light ml-auto"></div><div class="panel-light ml-auto"></div></div></div>
+
+                    @if(cargoBayStatus() === 'locked') {
+                      <button #revealButton (click)="revealCargoBay(revealButton)" class="animate-pulse-button absolute inset-0 m-auto w-60 h-16 bg-primary-accent/80 text-white font-bold rounded-lg flex items-center justify-center gap-3 backdrop-blur-sm border border-white/20 hover:bg-primary-accent transition-all duration-300 text-lg z-30">
+                          <i class="fas fa-lock-open"></i> Despresurizar
+                      </button>
+                    }
+                </div>
+
+                <div class="bg-dark-surface/50 border border-white/10 rounded-2xl p-8 backdrop-blur-md">
+                    <h3 class="font-sora text-xl font-bold text-white mb-4">Manifiesto del Cargamento</h3>
+                    <ul class="space-y-3 text-sm mb-6 border-b border-white/10 pb-6">
+                       @for(item of data.items; track $index) {
+                            <li class="flex justify-between items-center">
+                                <span class="text-gray-300">{{ item.product.name }}</span>
+                                <span class="font-semibold text-gray-300">x{{ item.quantity }}</span>
+                            </li>
+                       }
+                    </ul>
+                    <div class="space-y-3 text-sm mb-6">
+                        <div class="flex justify-between items-center"><span class="text-gray-400">ID de Misión:</span><span class="font-semibold text-primary-accent font-mono">{{ data.orderNumber }}</span></div>
+                        <div class="flex justify-between items-center"><span class="text-gray-400">Inversión Total:</span><span class="font-semibold text-brand-yellow">{{ data.total | currency:'USD' }}</span></div>
+                    </div>
+
+                    <div id="logistics-panel" class="mt-6">
+                        @switch(data.deliveryMethod) {
+                            @case('delivery') {
+                                <div class="logistics-card">
+                                    <div class="flex items-center gap-4 mb-3">
+                                        <i class="fas fa-motorcycle text-primary-accent text-xl"></i>
+                                        <h3 class="font-sora text-xl font-bold text-white">Logística de la Misión</h3>
+                                    </div>
+                                    <div class="bg-dark-surface p-4 rounded-lg space-y-2 text-sm">
+                                        <div class="flex justify-between"><span class="text-gray-400">Método:</span> <strong class="font-mono">Delivery Local</strong></div>
+                                        <div class="flex justify-between"><span class="text-gray-400">Servicio:</span> <strong>Yummy Rides</strong></div>
+                                        <div class="flex justify-between"><span class="text-gray-400">Agente:</span> <strong>Carlos R.</strong></div>
+                                        <div class="flex justify-between"><span class="text-gray-400">Estado:</span> <strong class="text-green-400">En Ruta</strong></div>
                                     </div>
                                 </div>
-                            </div>
+                            }
+                            @case('shipping') {
+                                <div class="logistics-card">
+                                    <div class="flex items-center gap-4 mb-3">
+                                        <i class="fas fa-truck-fast text-primary-accent text-xl"></i>
+                                        <h3 class="font-sora text-xl font-bold text-white">Logística de la Misión</h3>
+                                    </div>
+                                    <div class="bg-dark-surface p-4 rounded-lg space-y-2 text-sm">
+                                        <div class="flex justify-between"><span class="text-gray-400">Método:</span> <strong class="font-mono">Envío Nacional</strong></div>
+                                        <div class="flex justify-between"><span class="text-gray-400">Operador:</span> <strong>MRW</strong></div>
+                                        <div class="flex justify-between items-center"><span class="text-gray-400">N° Guía:</span> <a href="#" class="font-mono text-primary-accent hover:underline">1234567890</a></div>
+                                        <div class="flex justify-between"><span class="text-gray-400">Estado:</span> <strong class="text-yellow-400">En Tránsito</strong></div>
+                                    </div>
+                                </div>
+                            }
+                             @case('pickup') {
+                                <div class="logistics-card">
+                                    <div class="flex items-center gap-4 mb-3">
+                                        <i class="fas fa-store text-primary-accent text-xl"></i>
+                                        <h3 class="font-sora text-xl font-bold text-white">Logística de la Misión</h3>
+                                    </div>
+                                    <div class="bg-dark-surface p-4 rounded-lg space-y-2 text-sm">
+                                        <div class="flex justify-between"><span class="text-gray-400">Método:</span> <strong class="font-mono">Retiro Personal</strong></div>
+                                        <div class="flex justify-between"><span class="text-gray-400">Punto:</span> <strong>{{ data.pickupPoint }}</strong></div>
+                                        <div class="flex justify-between"><span class="text-gray-400">Procesado por:</span> <strong>Agente Aura</strong></div>
+                                        <div class="flex justify-between"><span class="text-gray-400">Estado:</span> <strong class="text-green-400">Listo para Retirar</strong></div>
+                                    </div>
+                                </div>
+                            }
                         }
                     </div>
-                    <div class="swiper-pagination"></div>
-                    <div class="swiper-button-prev"></div>
-                    <div class="swiper-button-next"></div>
                 </div>
             </div>
 
-            <div class="crate-door crate-door-left"><div class="door-panel"><div class="panel-light"></div><div class="panel-light"></div></div></div>
-            <div class="crate-door crate-door-right"><div class="door-panel"><div class="panel-light ml-auto"></div><div class="panel-light ml-auto"></div></div></div>
-
-            <button id="reveal-button" (click)="revealCrate($event)" class="animate-pulse-button absolute inset-0 m-auto w-60 h-16 bg-primary-accent/80 text-white font-bold rounded-lg flex items-center justify-center gap-3 backdrop-blur-sm border border-white/20 hover:bg-primary-accent transition-all duration-300 text-lg z-30">
-                <i class="fas fa-lock-open"></i> Despresurizar
-            </button>
-        </div>
-
-        <div class="bg-dark-bg-secondary/50 border border-white/10 rounded-2xl p-8 backdrop-blur-md">
-            <h3 class="font-headings text-xl font-bold text-white mb-4">Manifiesto del Cargamento</h3>
-            <ul class="space-y-3 text-sm mb-6 border-b border-white/10 pb-6">
-                @for (item of data.items; track item.product.id) {
-                  <li class="flex justify-between items-center"><span class="text-gray-300">{{ item.product.name }}</span><span class="font-semibold text-gray-300">x{{ item.quantity }}</span></li>
-                }
-            </ul>
-            <div class="space-y-3 text-sm mb-6">
-                <div class="flex justify-between items-center"><span class="text-gray-400">ID de Misión:</span><span class="font-semibold text-primary-accent font-mono">{{ data.orderNumber }}</span></div>
-                <div class="flex justify-between items-center"><span class="text-gray-400">Inversión Total:</span><span class="font-semibold text-brand-yellow">{{ data.total | currency:'USD' }}</span></div>
-            </div>
-
-            <div id="logistics-panel" class="mt-6">
-                @switch (data.deliveryMethod) {
-                    @case ('delivery') {
-                    <div class="logistics-card">
-                        <div class="flex items-center gap-4 mb-3">
-                            <i class="fas fa-motorcycle text-primary-accent text-xl"></i>
-                            <h3 class="font-headings text-xl font-bold text-white">Logística de la Misión</h3>
-                        </div>
-                        <div class="bg-dark-bg-tertiary p-4 rounded-lg space-y-2 text-sm">
-                            <div class="flex justify-between"><span class="text-gray-400">Método:</span> <strong class="font-mono">Delivery Local</strong></div>
-                            <div class="flex justify-between"><span class="text-gray-400">Vehículo:</span> <strong>{{ data.deliveryVehicle | titlecase }}</strong></div>
-                            <div class="flex justify-between"><span class="text-gray-400">Zona:</span> <strong>{{ data.deliveryZone }}</strong></div>
-                            <div class="flex justify-between"><span class="text-gray-400">Estado:</span> <strong class="text-green-400">En Ruta</strong></div>
+            <div class="w-full max-w-5xl mt-12 animate-fade-in-up" style="animation-delay: 0.8s;">
+                 <div class="bg-dark-surface/50 border border-white/10 rounded-2xl p-6 backdrop-blur-md flex flex-col sm:flex-row items-center gap-6">
+                    <div class="flex-shrink-0">
+                        <div class="w-24 h-24 rounded-full bg-dark-surface border-2 border-primary-accent flex items-center justify-center">
+                            <i class="fas fa-clone text-5xl text-primary-accent"></i>
                         </div>
                     </div>
-                    }
-                    @case ('shipping') {
-                      <div class="logistics-card">
-                        <div class="flex items-center gap-4 mb-3">
-                            <i class="fas fa-truck-fast text-primary-accent text-xl"></i>
-                            <h3 class="font-headings text-xl font-bold text-white">Logística de la Misión</h3>
-                        </div>
-                        <div class="bg-dark-bg-tertiary p-4 rounded-lg space-y-2 text-sm">
-                            <div class="flex justify-between"><span class="text-gray-400">Método:</span> <strong class="font-mono">Envío Nacional</strong></div>
-                            <div class="flex justify-between"><span class="text-gray-400">Operador:</span> <strong>MRW / Zoom / Tealca</strong></div>
-                            <div class="flex justify-between"><span class="text-gray-400">Estado:</span> <strong class="text-yellow-400">En Tránsito</strong></div>
-                        </div>
+                    <div class="flex-grow text-center sm:text-left">
+                         <h3 class="font-sora text-xl font-bold text-white">Dossiers de Adquisición</h3>
+                         <p class="text-gray-400">{{ data.items.length }} nuevos equipos han sido añadidos a tu Arsenal.</p>
+                         <p class="text-sm text-gray-500 mt-1">Adquiridos el: {{ acquisitionDate() | date:'longDate' }}</p>
                     </div>
-                    }
-                    @case ('pickup') {
-                      <div class="logistics-card">
-                          <div class="flex items-center gap-4 mb-3">
-                              <i class="fas fa-store text-primary-accent text-xl"></i>
-                              <h3 class="font-headings text-xl font-bold text-white">Logística de la Misión</h3>
-                          </div>
-                          <div class="bg-dark-bg-tertiary p-4 rounded-lg space-y-2 text-sm">
-                              <div class="flex justify-between"><span class="text-gray-400">Método:</span> <strong class="font-mono">Retiro Personal</strong></div>
-                              <div class="flex justify-between"><span class="text-gray-400">Punto:</span> <strong>{{ data.pickupPoint }}</strong></div>
-                              <div class="flex justify-between"><span class="text-gray-400">Estado:</span> <strong class="text-green-400">Listo para Retirar</strong></div>
-                          </div>
-                      </div>
-                    }
-                }
-            </div>
-        </div>
-    </div>
-
-    <div class="w-full max-w-5xl mt-12 animate-fade-in-up" style="animation-delay: 0.8s;">
-         <div class="bg-dark-bg-secondary/50 border border-white/10 rounded-2xl p-6 backdrop-blur-md flex flex-col sm:flex-row items-center gap-6">
-            <div class="flex-shrink-0">
-                <div class="w-24 h-24 rounded-full bg-dark-bg-tertiary border-2 border-primary-accent flex items-center justify-center">
-                    <i class="fas fa-clone text-5xl text-primary-accent"></i>
-                </div>
-            </div>
-            <div class="flex-grow text-center sm:text-left">
-                 <h3 class="font-headings text-xl font-bold text-white">Dossiers de Adquisición</h3>
-                 <p class="text-gray-400">{{ data.items.length }} nuevos equipos han sido añadidos a tu Arsenal.</p>
-                 <p class="text-sm text-gray-500 mt-1">Adquiridos el: <span>{{ acquisitionDate() }}</span></p>
-            </div>
-            <div class="flex-shrink-0">
-                <a routerLink="/account/arsenal" class="bg-gray-700 text-gray-200 font-bold py-3 px-6 rounded-lg transition-all duration-300 hover:bg-gray-600 hover:text-white flex items-center gap-2">
-                    <i class="fas fa-download"></i> Inspeccionar Arsenal
-                </a>
-            </div>
-         </div>
-    </div>
-
-    <div class="w-full max-w-5xl mt-12 animate-fade-in-up" style="animation-delay: 1s;">
-        <h2 class="font-headings text-2xl font-bold text-center text-white mb-6">
-            Tracking de la Misión <span class="text-base font-normal text-gray-400">(ETA: <span>{{ etaDate() }}</span>)</span>
-        </h2>
-        <div class="bg-dark-bg-secondary/50 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
-            <div class="flex items-center justify-between w-full">
-                @for (step of statusSteps; track step; let i = $index) {
-                    <div class="status-step-item text-center w-1/5">
-                        <div class="relative mx-auto w-10 h-10 flex items-center justify-center rounded-full" [ngClass]="{
-                            'bg-success': isStepActive(step),
-                            'bg-primary-accent shadow-lg shadow-primary-accent/50': status() === step && !isStepActive('Entregado'),
-                            'bg-dark-bg-tertiary border-2 border-gray-700': !isStepActive(step) && status() !== step
-                        }">
-                          <i [class]="getIconForStep(step)" [ngClass]="{
-                            'text-dark-bg font-bold': isStepActive(step),
-                            'text-white': status() === step,
-                            'text-gray-500': !isStepActive(step)
-                          }"></i>
-                        </div>
-                        <p class="mt-2 text-xs font-semibold" [ngClass]="{
-                            'text-white': isStepActive(step),
-                            'text-primary-accent': status() === step,
-                            'text-gray-500': !isStepActive(step)
-                        }">{{ step }}</p>
+                    <div class="flex-shrink-0">
+                        <a routerLink="/account/arsenal" class="bg-gray-700 text-gray-200 font-bold py-3 px-6 rounded-lg transition-all duration-300 hover:bg-gray-600 hover:text-white flex items-center gap-2">
+                            <i class="fas fa-download"></i> Inspeccionar Arsenal
+                        </a>
                     </div>
-                    @if (i < statusSteps.length - 1) {
-                      <div class="flex-1 h-0.5 mx-2" [ngClass]="isStepActive(statusSteps[i+1]) ? 'bg-success' : 'bg-gray-700'"></div>
-                    }
-                }
+                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="w-full max-w-5xl mt-12 animate-fade-in-up" style="animation-delay: 1.2s;">
-         <h2 class="font-headings text-2xl font-bold text-center text-white mb-6">¿Cuál es tu próxima misión?</h2>
-         <p class="text-center text-gray-400 mb-6 max-w-2xl mx-auto">Basado en tu adquisición, te recomendamos el siguiente equipamiento para completar tu arsenal:</p>
-         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-            <a href="#" class="bg-dark-bg-secondary/50 border border-white/10 rounded-2xl p-6 backdrop-blur-md group hover:border-primary-accent transition-colors duration-300"><img src="https://placehold.co/200x150/111827/FFFFFF?text=Cable+Premium" class="mx-auto h-24 mb-4" alt="[Imagen de Cable Premium]"><h4 class="font-headings font-semibold text-white">Cable HDMI 8K</h4><p class="text-sm text-gray-400 group-hover:text-primary-accent">Equipo Recomendado</p></a>
-            <a href="#" class="bg-dark-bg-secondary/50 border border-white/10 rounded-2xl p-6 backdrop-blur-md group hover:border-primary-accent transition-colors duration-300"><img src="https://placehold.co/200x150/111827/FFFFFF?text=Soporte+Pared" class="mx-auto h-24 mb-4" alt="[Imagen de Soporte de Pared]"><h4 class="font-headings font-semibold text-white">Soporte de Pared Universal</h4><p class="text-sm text-gray-400 group-hover:text-primary-accent">Mejora de Arsenal</p></a>
-            <div class="bg-dark-bg-secondary/50 border border-white/10 rounded-2xl p-6 backdrop-blur-md flex flex-col justify-center items-center"><h4 class="font-headings font-semibold text-white mb-4">¡Comparte tu Botín!</h4><div class="flex items-center space-x-4"><a href="#" class="w-10 h-10 rounded-full bg-gray-700 hover:bg-primary-accent text-white flex items-center justify-center transition-colors"><i class="fab fa-twitter"></i></a><a href="#" class="w-10 h-10 rounded-full bg-gray-700 hover:bg-primary-accent text-white flex items-center justify-center transition-colors"><i class="fab fa-facebook-f"></i></a><a href="#" class="w-10 h-10 rounded-full bg-gray-700 hover:bg-primary-accent text-white flex items-center justify-center transition-colors"><i class="fab fa-instagram"></i></a></div></div>
-         </div>
-    </div>
-</div>
-} @else {
-    <div class="h-screen flex flex-col items-center justify-center text-center px-4">
-        <i class="fas fa-satellite-dish text-6xl text-primary-accent mb-4"></i>
-        <h1 class="text-4xl font-headings font-bold">Señal Perdida</h1>
-        <p class="text-lg text-text-secondary mt-2">No pudimos encontrar los datos de tu pedido.</p>
-        <a routerLink="/" class="mt-8 bg-primary-accent text-dark-bg font-bold py-3 px-6 rounded-lg transition-transform hover:-translate-y-1">Volver al Inicio</a>
-    </div>
-}
+            <div class="w-full max-w-5xl mt-12 animate-fade-in-up" style="animation-delay: 1s;">
+                 <h2 class="font-sora text-2xl font-bold text-center text-white mb-6">
+                     Tracking de la Misión <span class="text-base font-normal text-gray-400">(ETA: {{ etaDate() | date:'d MMMM' }})</span>
+                 </h2>
+                 <div class="bg-dark-surface/50 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
+                     <div class="flex items-center justify-between w-full">
+                        @for(step of statusSteps; track step; let i = $index) {
+                            <div class="status-step-item text-center w-1/5">
+                                <div class="relative mx-auto w-10 h-10 flex items-center justify-center rounded-full"
+                                    [ngClass]="{
+                                        'bg-success': i < statusSteps.indexOf(status()),
+                                        'bg-primary-accent shadow-lg shadow-primary-accent/50': i === statusSteps.indexOf(status()),
+                                        'bg-dark-surface border-2 border-gray-700': i > statusSteps.indexOf(status())
+                                    }">
+                                    @switch(step) {
+                                        @case('Confirmado') { <i class="fas fa-receipt" [ngClass]="{'text-dark-bg': i <= statusSteps.indexOf(status()), 'text-gray-500': i > statusSteps.indexOf(status())}"></i> }
+                                        @case('Procesando') { <i class="fas fa-cogs" [ngClass]="{'text-white': i === statusSteps.indexOf(status()), 'text-dark-bg': i < statusSteps.indexOf(status()), 'text-gray-500': i > statusSteps.indexOf(status())}"></i> }
+                                        @case('En Ruta') { <i class="fas fa-truck" [ngClass]="{'text-white': i === statusSteps.indexOf(status()), 'text-dark-bg': i < statusSteps.indexOf(status()), 'text-gray-500': i > statusSteps.indexOf(status())}"></i> }
+                                        @case('Entregado') { <i class="far fa-check-circle" [ngClass]="{'text-white': i === statusSteps.indexOf(status()), 'text-dark-bg': i < statusSteps.indexOf(status()), 'text-gray-500': i > statusSteps.indexOf(status())}"></i> }
+                                    }
+                                </div>
+                                <p class="mt-2 text-xs font-semibold"
+                                   [ngClass]="{
+                                       'text-white': i < statusSteps.indexOf(status()),
+                                       'text-primary-accent': i === statusSteps.indexOf(status()),
+                                       'text-gray-500': i > statusSteps.indexOf(status())
+                                   }">
+                                   {{ step }}
+                                </p>
+                            </div>
+                            @if(!$last) {
+                                <div class="flex-1 h-0.5 mx-2" [ngClass]="{'bg-success': i < statusSteps.indexOf(status()), 'bg-gray-700': i >= statusSteps.indexOf(status())}"></div>
+                            }
+                        }
+                     </div>
+                 </div>
+            </div>
+
+            <div class="w-full max-w-5xl mt-12 animate-fade-in-up" style="animation-delay: 1.2s;">
+                 <h2 class="font-sora text-2xl font-bold text-center text-white mb-6">¿Cuál es tu próxima misión?</h2>
+                 <p class="text-center text-gray-400 mb-6 max-w-2xl mx-auto">Basado en tu adquisición, te recomendamos el siguiente equipamiento para completar tu arsenal:</p>
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <a href="#" class="bg-dark-surface/50 border border-white/10 rounded-2xl p-6 backdrop-blur-md group hover:border-primary-accent transition-colors duration-300"><img src="https://placehold.co/200x150/111827/FFFFFF?text=Cable+Premium" class="mx-auto h-24 mb-4" alt="[Imagen de Cable Premium]"><h4 class="font-sora font-semibold text-white">Cable HDMI 8K</h4><p class="text-sm text-gray-400 group-hover:text-primary-accent">Equipo Recomendado</p></a>
+                    <a href="#" class="bg-dark-surface/50 border border-white/10 rounded-2xl p-6 backdrop-blur-md group hover:border-primary-accent transition-colors duration-300"><img src="https://placehold.co/200x150/111827/FFFFFF?text=Soporte+Pared" class="mx-auto h-24 mb-4" alt="[Imagen de Soporte de Pared]"><h4 class="font-sora font-semibold text-white">Soporte de Pared Universal</h4><p class="text-sm text-gray-400 group-hover:text-primary-accent">Mejora de Arsenal</p></a>
+                    <div class="bg-dark-surface/50 border border-white/10 rounded-2xl p-6 backdrop-blur-md flex flex-col justify-center items-center"><h4 class="font-sora font-semibold text-white mb-4">¡Comparte tu Botín!</h4><div class="flex items-center space-x-4"><a href="#" class="w-10 h-10 rounded-full bg-gray-700 hover:bg-primary-accent text-white flex items-center justify-center transition-colors"><i class="fab fa-twitter"></i></a><a href="#" class="w-10 h-10 rounded-full bg-gray-700 hover:bg-primary-accent text-white flex items-center justify-center transition-colors"><i class="fab fa-facebook-f"></i></a><a href="#" class="w-10 h-10 rounded-full bg-gray-700 hover:bg-primary-accent text-white flex items-center justify-center transition-colors"><i class="fab fa-instagram"></i></a></div></div>
+                 </div>
+            </div>
+        } @else {
+            <div class="h-screen flex flex-col items-center justify-center text-center px-4">
+                <i class="fas fa-satellite-dish text-6xl text-primary-accent mb-4"></i>
+                <h1 class="text-4xl font-headings font-bold">Señal Perdida</h1>
+                <p class="text-lg text-text-secondary mt-2">No pudimos encontrar los datos de tu pedido.</p>
+                <a routerLink="/" class="mt-8 bg-primary-accent text-dark-bg font-bold py-3 px-6 rounded-lg transition-transform hover:-translate-y-1">Volver al Inicio</a>
+            </div>
+        }
+    </main>
 
 <style>
-    :host {
-      --color-dark-bg-secondary: #111827; /* dark-surface */
-      --color-dark-bg-tertiary: #1a2233;
-      --color-brand-yellow: #ffd724;
-    }
-
-    /* ✅ INICIO: CORRECCIÓN QUIRÚRGICA #2 */
-    @keyframes fadeInUp {
-        0% { opacity: 0; transform: translateY(10px); }
-        100% { opacity: 1; transform: translateY(0); }
-    }
-    /* ✅ FIN: CORRECCIÓN QUIRÚRGICA #2 */
-
-    .animate-fade-in-up {
-      animation: fadeInUp 1.2s ease-out forwards;
-    }
-
-    /* ✅ INICIO: CORRECCIÓN QUIRÚRGICA #2 */
-    @keyframes pulseButton {
-        0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(0,169,255,0.5); }
-        50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(0,169,255,0.8); }
-    }
-    /* ✅ FIN: CORRECCIÓN QUIRÚRGICA #2 */
-
-    .animate-pulse-button {
-      animation: pulseButton 2s infinite;
+    #particle-bg {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+        background-color: #0A0C10;
+        background-image: radial-gradient(circle at 20% 20%, rgba(0, 169, 255, 0.1) 0%, transparent 30%),
+                          radial-gradient(circle at 80% 70%, rgba(128, 0, 255, 0.1) 0%, transparent 30%);
     }
 
     .loot-carousel-container {
@@ -211,10 +208,6 @@
     #cargo-bay.is-open .loot-carousel-container {
         transform: scale(1) translateZ(0);
         opacity: 1;
-    }
-    #cargo-bay.is-open #reveal-button {
-        opacity: 0;
-        pointer-events: none;
     }
 
     .crate-door {
@@ -232,7 +225,7 @@
     .door-panel {
         position: absolute;
         inset: 2px;
-        background-color: var(--color-dark-bg-tertiary);
+        background-color: #1a2233;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -260,8 +253,8 @@
         transition: all 0.5s;
     }
     #cargo-bay.is-unlocking .panel-light {
-        background-color: hsl(var(--color-success));
-        box-shadow: 0 0 15px hsl(var(--color-success));
+        background-color: #22c55e;
+        box-shadow: 0 0 15px #22c55e;
         animation: blink-light 0.5s 3;
     }
     @keyframes blink-light { 50% { opacity: 0.5; } }
@@ -284,16 +277,23 @@
 
     .swiper { width: 100%; height: 100%; }
     .swiper-slide { display: flex; justify-content: center; align-items: center; }
-    .swiper-button-next, .swiper-button-prev { color: hsl(var(--color-primary-accent)); }
-    .swiper-pagination-bullet-active { background-color: hsl(var(--color-primary-accent)); }
+    :host ::ng-deep .swiper-button-next, :host ::ng-deep .swiper-button-prev { color: hsl(var(--color-primary-accent)); }
+    :host ::ng-deep .swiper-pagination-bullet-active { background-color: hsl(var(--color-primary-accent)); }
 
     .loot-card {
         width: 100%;
         height: 90%;
-        background-color: var(--color-dark-bg-secondary);
+        background-color: hsl(var(--color-dark-surface));
         border-radius: 1rem;
         border: 1px solid rgb(255 255 255 / 0.1);
         position: relative;
         overflow: hidden;
     }
+
+    @keyframes screenShake {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-3px); }
+        40%, 80% { transform: translateX(3px); }
+    }
 </style>
+</body>
