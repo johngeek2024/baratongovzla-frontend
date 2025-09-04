@@ -1,4 +1,3 @@
-// src/app/core/services/user-data.service.ts
 import { Injectable, signal, inject, effect, computed } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Product } from '../models/product.model';
@@ -77,8 +76,9 @@ export class UserDataService {
             shippingAddress: adminOrder.shippingAddress,
             customerName: adminOrder.customerName,
             customerEmail: adminOrder.customerEmail,
-            customerPhone: '',
-            shippingCost: 0,
+            customerPhone: '', // Este dato deberá venir del objeto adminOrder en el futuro
+            shippingCost: 0, // Este dato deberá venir del objeto adminOrder en el futuro
+            // Se pueden mapear aquí el resto de las propiedades si vienen de adminOrder
         };
         return userOrder;
       });

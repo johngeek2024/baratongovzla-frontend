@@ -156,13 +156,11 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       })),
     };
 
-    // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
     // 1. Guardar los datos en sessionStorage para persistirlos a través de la recarga.
     sessionStorage.setItem('lastMissionData', JSON.stringify(missionData));
 
     // 2. Navegar a la nueva URL, incluyendo el ID del pedido y pasando el estado para la carga inicial.
     this.router.navigate(['/order-confirmation', orderId], { state: { missionData } });
-    // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
     this.cartStore.clearCart();
   }
