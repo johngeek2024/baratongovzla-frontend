@@ -1,18 +1,19 @@
+// src/app/core/services/user-data.service.ts
 import { Injectable, signal, inject, effect, computed } from '@angular/core';
 import { AuthService } from './auth.service';
 import { Product } from '../models/product.model';
 import { DataStoreService } from './data-store.service';
 import { DeliveryMethod, DeliveryVehicle, PaymentMethod } from './checkout.service';
 import { OrderAdminService } from '../../features/admin/services/order-admin.service';
-import { AdminOrderDetail } from '../../features/admin/models/order.model';
+import { OrderStatus } from '../../features/admin/models/order.model';
 
-export type UserOrderStatus = 'Pedido Realizado' | 'Pago Confirmado' | 'Procesando' | 'Enviado' | 'Entregado' | 'Cancelado';
+export type { OrderStatus as UserOrderStatus };
 
 export interface UserOrder {
   id: string;
   date: string;
   total: number;
-  status: UserOrderStatus;
+  status: OrderStatus;
   items: { product: Product, quantity: number }[];
   shippingAddress: string;
   customerName: string;
@@ -27,6 +28,15 @@ export interface UserOrder {
   guideNumber?: string;
   paymentMethod?: PaymentMethod;
   paymentReference?: string;
+  // ✅ INICIO: CIRUGÍA DE CÓDIGO
+  // Se añade la propiedad que faltaba para almacenar los detalles logísticos.
+  deliveryDetails?: {
+    service?: string;
+    agent?: string;
+    tracking?: string;
+    point?: string;
+  }
+  // ✅ FIN: CIRUGÍA DE CÓDIGO
 }
 
 export interface UserAddress {
@@ -58,11 +68,19 @@ export class UserDataService {
           return { product: product!, quantity: item.quantity };
         }).filter(item => item.product);
 
-        return {
-          ...adminOrder,
-          id: adminOrder.id.replace('#', ''),
-          items: userOrderItems,
-        } as UserOrder;
+        const userOrder: UserOrder = {
+            id: adminOrder.id.replace('#', ''),
+            date: adminOrder.date,
+            total: adminOrder.total,
+            status: adminOrder.status as OrderStatus,
+            items: userOrderItems,
+            shippingAddress: adminOrder.shippingAddress,
+            customerName: adminOrder.customerName,
+            customerEmail: adminOrder.customerEmail,
+            customerPhone: '',
+            shippingCost: 0,
+        };
+        return userOrder;
       });
   });
 

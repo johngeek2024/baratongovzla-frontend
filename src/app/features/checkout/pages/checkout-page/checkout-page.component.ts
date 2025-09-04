@@ -1,3 +1,4 @@
+// src/app/features/checkout/pages/checkout-page/checkout-page.component.ts
 import { Component, inject, computed, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -6,8 +7,10 @@ import { UiService } from '../../../../core/services/ui.service';
 import { OrderProcessingService } from '../../../../core/services/order-processing.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CheckoutService } from '../../../../core/services/checkout.service';
+import { MissionData } from '../../models/mission-data.model';
 import { AdminOrderDetail } from '../../../admin/models/order.model';
-import { UserOrderStatus } from '../../../../core/services/user-data.service';
+import { OrderAdminService } from '../../../admin/services/order-admin.service';
+import { UserDataService, UserOrder } from '../../../../core/services/user-data.service';
 
 @Component({
   selector: 'app-checkout-page',
@@ -20,8 +23,10 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
   public uiService = inject(UiService);
   public checkoutService = inject(CheckoutService);
   private router = inject(Router);
+  private userDataService = inject(UserDataService);
   private orderProcessingService = inject(OrderProcessingService);
   private authService = inject(AuthService);
+  private orderAdminService = inject(OrderAdminService);
 
   public totalPrice = computed(() => this.cartStore.totalPrice() + this.checkoutService.shippingCost());
 
@@ -76,6 +81,7 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     this.checkoutService.updatePaymentReference(ref);
   }
 
+
   confirmOrder(): void {
     if (!this.isContactStepComplete() || !this.isPaymentStepComplete()) return;
     const currentUser = this.authService.currentUser();
@@ -85,16 +91,33 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
     }
 
     const orderId = `BTV-${Date.now()}`;
-    const newOrderDate = new Date().toISOString();
-    const newOrderStatus: UserOrderStatus = 'Procesando';
-    const shippingAddress = this.checkoutService.shippingAddress();
-    const shippingAddressValue = `${shippingAddress.line1}, ${shippingAddress.city}, ${shippingAddress.state}`;
+    const address = this.checkoutService.shippingAddress();
+    const shippingAddressValue = address ? `${address.line1}, ${address.city}, ${address.state}` : 'Retiro en Punto Físico';
+
+    const userOrderPayload: UserOrder = {
+        id: orderId,
+        date: new Date().toISOString(),
+        total: this.totalPrice(),
+        status: 'Procesando',
+        items: this.cartStore.items(),
+        shippingAddress: shippingAddressValue,
+        shippingCost: this.checkoutService.shippingCost(),
+        customerName: currentUser.fullName,
+        customerEmail: currentUser.email,
+        customerPhone: this.checkoutService.customerPhone(),
+        deliveryMethod: this.checkoutService.deliveryMethod(),
+        paymentMethod: this.checkoutService.paymentMethod(),
+        paymentReference: this.checkoutService.paymentReference(),
+        pickupPoint: this.checkoutService.selectedPickupPoint(),
+        deliveryVehicle: this.checkoutService.selectedDeliveryVehicle(),
+        deliveryZone: this.checkoutService.selectedDeliveryZone(),
+      };
 
     const adminOrderPayload: AdminOrderDetail = {
       id: `#${orderId}`,
-      date: newOrderDate,
-      total: this.totalPrice(),
-      status: newOrderStatus,
+      date: userOrderPayload.date,
+      total: userOrderPayload.total,
+      status: 'Procesando',
       customerName: currentUser.fullName,
       customerEmail: currentUser.email,
       shippingAddress: shippingAddressValue,
@@ -107,10 +130,17 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       })),
     };
 
+    this.orderAdminService.addOrder(adminOrderPayload).subscribe();
     this.orderProcessingService.processNewOrder(adminOrderPayload);
 
-    const missionData = {
+    // ✅ INICIO: CIRUGÍA DE CÓDIGO
+    // La línea que causaba el error ha sido eliminada.
+    // this.userDataService.addNewOrder(userOrderPayload);
+    // ✅ FIN: CIRUGÍA DE CÓDIGO
+
+    const missionData: MissionData = {
       orderNumber: orderId,
+      date: adminOrderPayload.date,
       subtotal: this.cartStore.totalPrice(),
       shippingCost: this.checkoutService.shippingCost(),
       total: this.totalPrice(),
@@ -123,9 +153,13 @@ export class CheckoutPageComponent implements OnInit, OnDestroy {
       pickupPoint: this.checkoutService.selectedPickupPoint(),
       deliveryVehicle: this.checkoutService.selectedDeliveryVehicle(),
       deliveryZone: this.checkoutService.selectedDeliveryZone(),
+      items: this.cartStore.items().map(item => ({
+        product: { name: item.product.name, imageUrl: item.product.imageUrl },
+        quantity: item.quantity
+      })),
     };
 
-    this.router.navigate(['/order-confirmation'], { state: { missionData } });
+    this.router.navigate(['/order-confirmation', orderId]);
     this.cartStore.clearCart();
   }
 }

@@ -1,6 +1,7 @@
+// src/app/features/admin/services/order-admin.service.ts
 import { Injectable, signal, effect, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Observable, of } from 'rxjs';
+import { Observable, of, delay } from 'rxjs'; // ✅ CORRECCIÓN: Se importa 'delay'
 import { AdminOrderDetail, OrderStatus } from '../models/order.model';
 
 @Injectable({
@@ -36,7 +37,8 @@ export class OrderAdminService {
   }
 
   getOrders(): Observable<AdminOrderDetail[]> {
-    return of(this.orders());
+    // Se añade un delay para simular una llamada de red real
+    return of(this.orders()).pipe(delay(500));
   }
 
   getAllOrdersSignal() {
@@ -45,14 +47,20 @@ export class OrderAdminService {
 
   getOrderById(orderId: string): Observable<AdminOrderDetail | undefined> {
     const order = this.orders().find(o => o.id === orderId);
-    return of(order);
+    return of(order).pipe(delay(300));
   }
 
-  addOrder(order: AdminOrderDetail): void {
+  // ✅ INICIO: CIRUGÍA DE CÓDIGO
+  // Se modifica el método para que devuelva un Observable<void>,
+  // cumpliendo con el contrato esperado por el componente que lo llama.
+  addOrder(order: AdminOrderDetail): Observable<void> {
     if (!this.orders().some(o => o.id === order.id)) {
       this.orders.update(currentOrders => [order, ...currentOrders]);
     }
+    // Se devuelve un observable que se completa inmediatamente.
+    return of(undefined).pipe(delay(200));
   }
+  // ✅ FIN: CIRUGÍA DE CÓDIGO
 
   updateOrderStatus(orderId: string, status: OrderStatus): Observable<{ success: boolean }> {
     let success = false;
@@ -66,6 +74,6 @@ export class OrderAdminService {
       });
       return newOrders;
     });
-    return of({ success });
+    return of({ success }).pipe(delay(400));
   }
 }

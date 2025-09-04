@@ -9,16 +9,14 @@ export interface AdminOrder {
   status: OrderStatus;
 }
 
-// Interfaz para los artículos dentro de un pedido
 export interface OrderItem {
   productId: string;
   name: string;
   quantity: number;
   price: number;
-  cost: number;
+  cost?: number;
 }
 
-// Interfaz completa para el detalle del pedido
 export interface AdminOrderDetail extends AdminOrder {
   items: OrderItem[];
   shippingAddress: string;

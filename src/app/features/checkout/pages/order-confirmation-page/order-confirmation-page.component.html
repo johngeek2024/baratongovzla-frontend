@@ -1,203 +1,138 @@
-<div class="products-theme text-text-primary">
-  @if (missionData(); as data) {
-    <div class="max-w-4xl mx-auto px-4 md:px-8 pt-28 pb-16 text-center">
-      <header>
-        <div class="text-6xl text-green-500 mb-6 animate-pulse">
-          <i class="fas fa-check-circle"></i>
-        </div>
-        <h1 class="text-5xl font-headings font-bold">Misión Aceptada</h1>
-        <p class="text-lg text-text-secondary mt-2 max-w-xl mx-auto">
-          Hemos recibido tu pedido en <strong>BaratongoVzla</strong> y nuestro equipo ya está preparando tu paquete para el despliegue.
-        </p>
-        <div class="inline-block bg-dark-bg-secondary border border-border-color px-4 py-2 rounded-lg font-semibold mt-4">
-          Número de Pedido: <strong class="text-primary-accent">{{ data.orderNumber }}</strong>
-        </div>
-      </header>
+@if (order(); as data) {
+<div #mainContainer class="min-h-screen flex flex-col items-center justify-center pt-32 pb-16 px-4 bg-dark-bg bg-[radial-gradient(circle_at_20%_20%,rgba(0,169,255,0.1)_0%,transparent_30%),radial-gradient(circle_at_80%_70%,rgba(128,0,255,0.1)_0%,transparent_30%)]">
+  <div class="animate-fade-in-up" style="animation-delay: 0.2s;">
+    <div class="bg-gradient-to-r from-primary-accent to-purple-500 text-white font-bold py-2 px-6 rounded-full inline-flex items-center gap-2 mb-6">
+      <i class="fas fa-trophy"></i><span>¡Logro Desbloqueado!</span>
+    </div>
+  </div>
 
-      <div class="my-20 relative h-20">
-        <div class="absolute top-1/2 left-0 w-full h-1 -translate-y-1/2">
-          <div class="progress-bar absolute top-0 left-0 h-full rounded-full" [style.width]="progressWidth()"></div>
-        </div>
-        <div class="relative flex justify-between items-center w-full">
-          @for(step of statusSteps; track step) {
-            <div class="flex flex-col items-center">
-              <div class="w-10 h-10 rounded-full bg-dark-bg border-2 flex items-center justify-center transition-all duration-500"
-                   [ngClass]="{ 'active-step': isStepActive(step), 'border-border-color': !isStepActive(step), 'delivered-animation': isStepActive(step) && step === 'Entregado' }">
-                @switch (step) {
-                  @case ('Confirmado') { <i class="fas fa-check" [ngClass]="isStepActive(step) ? 'text-dark-bg' : 'text-text-secondary'"></i> }
-                  @case ('Procesando') { <i class="fas fa-cogs" [ngClass]="isStepActive(step) ? 'text-dark-bg' : 'text-text-secondary'"></i> }
-                  @case ('En Ruta') { <i class="fas fa-shipping-fast" [ngClass]="isStepActive(step) ? 'text-dark-bg' : 'text-text-secondary'"></i> }
-                  @case ('Entregado') { <i class="fas fa-gift" [ngClass]="isStepActive(step) ? 'text-dark-bg' : 'text-text-secondary'"></i> }
-                }
+  <h1 class="font-sora text-4xl md:text-5xl font-extrabold text-white text-center mb-8 animate-fade-in-up" style="animation-delay: 0.4s;">
+    Cargamento Registrado en tu Arsenal
+  </h1>
+
+  <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-start animate-fade-in-up" style="animation-delay: 0.6s;">
+    <div #cargoBay id="cargo-bay" class="relative group h-[450px] flex items-center justify-center p-4 [perspective:1000px]">
+      <div class="w-full h-full transition-transform duration-500 ease-out opacity-0 [transform:scale(0.95)_translateZ(-50px)] data-[is-open=true]:opacity-100 data-[is-open=true]:[transform:scale(1)_translateZ(0)]" [attr.data-is-open]="isCargoBayOpen()">
+        <div class="swiper h-full">
+          <div class="swiper-wrapper">
+            @for (item of data.items; track item.product.id) {
+              <div class="swiper-slide !flex !items-center !justify-center">
+                <div class="relative w-full h-[90%] bg-dark-surface rounded-2xl border border-white/10 overflow-hidden">
+                  <img [src]="item.product.imageUrl" [alt]="item.product.name" class="absolute inset-0 w-full h-full object-contain p-8 drop-shadow-2xl">
+                  <div class="relative w-full h-full flex flex-col justify-end p-6 bg-gradient-to-t from-dark-surface via-dark-surface/80 to-transparent">
+                    <h2 class="font-sora text-2xl font-bold text-white text-center">{{ item.product.name }}</h2>
+                    <p class="text-primary-accent font-semibold mt-2 text-center">{{ item.quantity }} Unidad(es)</p>
+                  </div>
+                </div>
               </div>
-              <span class="mt-4 font-semibold transition-colors duration-300 w-24 absolute top-full" [ngClass]="isStepActive(step) ? 'text-text-primary' : 'text-text-secondary'">
-                {{ step }}
-              </span>
+            }
+          </div>
+          <div class="swiper-pagination"></div>
+          <div class="swiper-button-prev !text-primary-accent"></div>
+          <div class="swiper-button-next !text-primary-accent"></div>
+        </div>
+      </div>
+      <div class="absolute top-0 left-0 w-1/2 h-full bg-[#0d121c] border-r-2 border-gray-700 rounded-l-2xl z-20 transition-transform duration-1000 [transform-style:preserve-3d] ease-[cubic-bezier(0.86,0,0.07,1)] data-[is-open=true]:[-webkit-transform:translateX(-105%)_rotateY(45deg)] data-[is-open=true]:[transform:translateX(-105%)_rotateY(45deg)]" [attr.data-is-open]="isCargoBayOpen()"></div>
+      <div class="absolute top-0 right-0 w-1/2 h-full bg-[#0d121c] border-l-2 border-gray-700 rounded-r-2xl z-20 transition-transform duration-1000 [transform-style:preserve-3d] ease-[cubic-bezier(0.86,0,0.07,1)] data-[is-open=true]:[-webkit-transform:translateX(105%)_rotateY(-45deg)] data-[is-open=true]:[transform:translateX(105%)_rotateY(-45deg)]" [attr.data-is-open]="isCargoBayOpen()"></div>
+      @if (!isCargoBayOpen()) {
+        <button #revealButton (click)="revealCargo(revealButton)" class="animate-pulse-button absolute inset-0 m-auto w-60 h-16 bg-primary-accent/80 text-white font-bold rounded-lg flex items-center justify-center gap-3 backdrop-blur-sm border border-white/20 hover:bg-primary-accent transition-all duration-300 text-lg z-30">
+          <i class="fas fa-lock-open"></i> Despresurizar
+        </button>
+      }
+    </div>
+    <div class="bg-dark-surface/50 border border-white/10 rounded-2xl p-8 backdrop-blur-md">
+        <h3 class="font-sora text-xl font-bold text-white mb-4">Manifiesto del Cargamento</h3>
+        <ul class="space-y-3 text-sm mb-6 border-b border-white/10 pb-6">
+            @for (item of data.items; track item.product.id) {
+              <li class="flex justify-between items-center">
+                  <span class="text-gray-300">{{ item.product.name }}</span>
+                  <span class="font-semibold text-gray-300">x{{ item.quantity }}</span>
+              </li>
+            }
+        </ul>
+        <div class="space-y-3 text-sm mb-6">
+            <div class="flex justify-between items-center"><span class="text-gray-400">ID de Misión:</span><span class="font-semibold text-primary-accent font-mono">{{ data.id }}</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-400">Inversión Total:</span><span class="font-semibold text-brand-yellow">{{ data.total | currency:'USD' }}</span></div>
+        </div>
+
+        <div id="logistics-panel" class="mt-6">
+            <div id="logistics-delivery" class="logistics-card" [class.hidden]="activeLogisticsPanel() !== 'delivery'">
+                <div class="flex items-center gap-4 mb-3"><i class="fas fa-motorcycle text-primary-accent text-xl"></i><h3 class="font-sora text-xl font-bold text-white">Logística de la Misión</h3></div>
+                <div class="bg-dark-surface p-4 rounded-lg space-y-2 text-sm">
+                    <div class="flex justify-between"><span class="text-gray-400">Método:</span> <strong class="font-mono">Delivery Local</strong></div>
+                    <div class="flex justify-between"><span class="text-gray-400">Servicio:</span> <strong>{{ data.deliveryDetails?.service }}</strong></div>
+                    <div class="flex justify-between"><span class="text-gray-400">Agente:</span> <strong>{{ data.deliveryDetails?.agent }}</strong></div>
+                    <div class="flex justify-between"><span class="text-gray-400">Estado:</span> <strong class="text-green-400">{{ data.deliveryDetails?.tracking }}</strong></div>
+                </div>
             </div>
+            <div id="logistics-envio" class="logistics-card" [class.hidden]="activeLogisticsPanel() !== 'envio'">
+                <div class="flex items-center gap-4 mb-3"><i class="fas fa-truck-fast text-primary-accent text-xl"></i><h3 class="font-sora text-xl font-bold text-white">Logística de la Misión</h3></div>
+                <div class="bg-dark-surface p-4 rounded-lg space-y-2 text-sm">
+                    <div class="flex justify-between"><span class="text-gray-400">Método:</span> <strong class="font-mono">Envío Nacional</strong></div>
+                    <div class="flex justify-between"><span class="text-gray-400">Operador:</span> <strong>{{ data.deliveryDetails?.service }}</strong></div>
+                    <div class="flex justify-between items-center"><span class="text-gray-400">N° Guía:</span> <a href="#" class="font-mono text-primary-accent hover:underline">{{ data.deliveryDetails?.tracking }}</a></div>
+                    <div class="flex justify-between"><span class="text-gray-400">Estado:</span> <strong class="text-yellow-400">En Tránsito</strong></div>
+                </div>
+            </div>
+            <div id="logistics-retiro" class="logistics-card" [class.hidden]="activeLogisticsPanel() !== 'retiro'">
+                <div class="flex items-center gap-4 mb-3"><i class="fas fa-store text-primary-accent text-xl"></i><h3 class="font-sora text-xl font-bold text-white">Logística de la Misión</h3></div>
+                <div class="bg-dark-surface p-4 rounded-lg space-y-2 text-sm">
+                    <div class="flex justify-between"><span class="text-gray-400">Método:</span> <strong class="font-mono">Retiro Personal</strong></div>
+                    <div class="flex justify-between"><span class="text-gray-400">Punto:</span> <strong>{{ data.deliveryDetails?.point }}</strong></div>
+                    <div class="flex justify-between"><span class="text-gray-400">Procesado por:</span> <strong>{{ data.deliveryDetails?.agent }}</strong></div>
+                    <div class="flex justify-between"><span class="text-gray-400">Estado:</span> <strong class="text-green-400">{{ data.deliveryDetails?.tracking }}</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="w-full max-w-5xl mt-12 animate-fade-in-up" style="animation-delay: 0.8s;">
+    <div class="bg-dark-surface/50 border border-white/10 rounded-2xl p-6 backdrop-blur-md flex flex-col sm:flex-row items-center gap-6">
+      <div class="flex-shrink-0"><div class="w-24 h-24 rounded-full bg-dark-surface border-2 border-primary-accent flex items-center justify-center"><i class="fas fa-clone text-5xl text-primary-accent"></i></div></div>
+      <div class="flex-grow text-center sm:text-left">
+        <h3 class="font-sora text-xl font-bold text-white">Dossiers de Adquisición</h3>
+        <p class="text-gray-400">{{ data.items.length }} nuevos equipos han sido añadidos a tu Arsenal.</p>
+        <p class="text-sm text-gray-500 mt-1">Adquiridos el: <span>{{ data.date | date:'longDate' }}</span></p>
+      </div>
+      <div class="flex-shrink-0">
+        <a routerLink="/account/arsenal" class="bg-gray-700 text-gray-200 font-bold py-3 px-6 rounded-lg transition-all duration-300 hover:bg-gray-600 hover:text-white flex items-center gap-2">
+          <i class="fas fa-download"></i> Inspeccionar Arsenal
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="w-full max-w-5xl mt-12 animate-fade-in-up" style="animation-delay: 1s;">
+    <h2 class="font-sora text-2xl font-bold text-center text-white mb-6">Tracking de la Misión</h2>
+    <div class="bg-dark-surface/50 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
+      <div class="flex items-center justify-between w-full">
+        @for (step of statusSteps; track step; let i = $index) {
+          <div class="text-center w-1/5">
+            <div class="relative mx-auto w-10 h-10 flex items-center justify-center rounded-full" [ngClass]="getStatusStepClass(step, i)">
+              @switch (step) {
+                @case('Pedido Realizado') { <i class="fas fa-receipt text-dark-bg font-bold"></i> }
+                @case('Pago Confirmado') { <i class="fas fa-credit-card text-dark-bg font-bold"></i> }
+                @case('Procesando') { <i class="fas fa-cogs text-white"></i> }
+                @case('Enviado') { <i class="fas fa-truck text-gray-500"></i> }
+                @case('Entregado') { <i class="far fa-check-circle text-gray-500"></i> }
+              }
+            </div>
+            <p class="mt-2 text-xs font-semibold" [class.text-white]="i < statusSteps.indexOf(currentStatus)" [class.text-primary-accent]="step === currentStatus" [class.text-gray-500]="i > statusSteps.indexOf(currentStatus)">{{ step }}</p>
+          </div>
+          @if (!$last) {
+            <div class="flex-1 h-0.5 mx-2" [ngClass]="getProgressBarClass(i)"></div>
           }
-        </div>
-      </div>
-
-      <div class="text-left bg-dark-bg-secondary border border-border-color rounded-2xl p-6 md:p-8 grid grid-cols-1 md:grid-cols-[1.5fr_1fr] gap-8">
-        <div class="bg-dark-bg rounded-lg p-4 h-full min-h-[300px] flex items-center justify-center">
-          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full" overflow="visible">
-            <path d="M10 180 L40 160 L80 190 L150 140 L220 170 L260 130 L290 150 V 195 H 10 Z" fill="#111827" />
-            <path id="route-path" d="M50 150 C 100 50, 200 50, 250 150" stroke="#374151" stroke-width="2" fill="none" class="route-line"/>
-            <circle cx="50" cy="150" r="6" fill="#00A9FF" class="pulse-point-origin" />
-            <circle cx="250" cy="150" r="6" fill="#22c55e" class="pulse-point-destination" />
-            <circle id="package-dot" r="5" fill="#ffd724" class="travel-dot-glow"/>
-          </svg>
-        </div>
-
-        <div class="flex flex-col">
-          <h3 class="text-xl font-headings font-bold mb-4">Manifiesto de Misión</h3>
-          <div class="space-y-2">
-            <div class="flex justify-between"><span>Subtotal:</span><span class="font-semibold">{{ data.subtotal | currency:'USD' }}</span></div>
-            <div class="flex justify-between"><span>Envío:</span><span class="font-semibold">{{ data.shippingCost | currency:'USD' }}</span></div>
-          </div>
-          <div class="flex justify-between text-xl font-bold mt-4 pt-4 border-t border-border-color">
-            <span>Total:</span><span>{{ data.total | currency:'USD' }}</span>
-          </div>
-
-          <hr class="border-border-color my-6">
-
-          <div class="space-y-4 text-sm">
-            <h4 class="text-base font-headings font-bold">Resumen Logístico</h4>
-            <div class="flex items-start gap-3">
-              <i class="fab fa-whatsapp w-5 text-center text-green-400 mt-1"></i>
-              <div class="flex-grow">
-                <span class="text-text-secondary">Contacto (WhatsApp):</span>
-                <strong class="block text-text-primary">{{ data.customerPhone }}</strong>
-              </div>
-            </div>
-            <div class="flex items-start gap-3">
-              <i class="fas fa-wallet w-5 text-center text-primary-accent mt-1"></i>
-              <div class="flex-grow">
-                <span class="text-text-secondary">Método de Pago:</span>
-                @switch (data.paymentMethod) {
-                  @case('pago_movil') { <strong class="block">Pago Móvil</strong> }
-                  @case('binance') { <strong class="block">Binance Pay</strong> }
-                  @case('cash') { <strong class="block">Efectivo</strong> }
-                  @default { <strong class="block">No especificado</strong> }
-                }
-              </div>
-            </div>
-             @if(data.paymentReference) {
-              <div class="flex items-start gap-3">
-                @if(data.paymentMethod === 'binance') {
-                  <i class="fas fa-receipt w-5 text-center text-primary-accent mt-1"></i>
-                } @else {
-                  <i class="fas fa-hashtag w-5 text-center text-primary-accent mt-1"></i>
-                }
-                <div class="flex-grow">
-                  <span class="text-text-secondary">
-                    {{ data.paymentMethod === 'binance' ? 'ID de Transacción:' : 'Referencia:' }}
-                  </span>
-                  <strong class="block break-all">{{ data.paymentReference }}</strong>
-                </div>
-              </div>
-            }
-            <div class="flex items-start gap-3">
-              <i class="fas fa-dolly-flatbed w-5 text-center text-primary-accent mt-1"></i>
-              <div class="flex-grow">
-                <span class="text-text-secondary">Método de Entrega:</span>
-                @switch (data.deliveryMethod) {
-                  @case ('pickup') { <strong class="block">Retiro en Punto Gratuito</strong> <span class="text-xs text-text-secondary">Punto: {{ data.pickupPoint }}</span> }
-                  @case ('delivery') { <strong class="block">Delivery Local ({{ data.deliveryVehicle }})</strong> <span class="text-xs text-text-secondary">Zona: {{ data.deliveryZone }}</span> }
-                  @case ('shipping') { <strong class="block">Envío Nacional</strong> <span class="text-xs text-text-secondary">Agencia especificada.</span> }
-                }
-              </div>
-            </div>
-            @if (data.deliveryMethod === 'delivery' || data.deliveryMethod === 'shipping') {
-              <div class="flex items-start gap-3">
-                <i class="fas fa-map-marker-alt w-5 text-center text-primary-accent mt-1"></i>
-                <div class="flex-grow">
-                  <span class="text-text-secondary">Destino del Paquete:</span>
-                  <strong class="block text-text-primary">{{ data.customerName }}</strong>
-                  <p class="font-normal text-text-primary leading-tight m-0">{{ data.shippingAddress }}</p>
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-12 flex justify-center gap-4">
-        <a routerLink="/account" class="bg-primary-accent text-dark-bg font-bold py-3 px-6 rounded-lg transition-transform hover:-translate-y-1">Ir a Mi Cuenta</a>
-        <a routerLink="/" class="bg-border-color text-text-primary font-bold py-3 px-6 rounded-lg transition-transform hover:-translate-y-1">Seguir Explorando</a>
+        }
       </div>
     </div>
-  } @else {
-    <div class="h-screen flex flex-col items-center justify-center text-center px-4">
-        <i class="fas fa-satellite-dish text-6xl text-primary-accent mb-4"></i>
-        <h1 class="text-4xl font-headings font-bold">Señal Perdida</h1>
-        <p class="text-lg text-text-secondary mt-2">No pudimos encontrar los datos de tu pedido.</p>
-        <a routerLink="/" class="mt-8 bg-primary-accent text-dark-bg font-bold py-3 px-6 rounded-lg transition-transform hover:-translate-y-1">Volver al Inicio</a>
-    </div>
-  }
+  </div>
 </div>
-
-<style>
-  .progress-bar {
-    background: linear-gradient(90deg, #16a34a, #22c55e);
-    transition: width 1.2s cubic-bezier(0.65, 0, 0.35, 1);
-    position: relative;
-    overflow: hidden;
-  }
-  .progress-bar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 50%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    animation: shine 2.5s infinite linear;
-  }
-  .active-step {
-    background-color: #22c55e;
-    border-color: #22c55e;
-    transform: scale(1.1);
-    box-shadow: 0 0 15px rgba(34, 197, 94, 0.7);
-  }
-  .delivered-animation {
-    animation: delivered-pulse 1.5s infinite;
-  }
-  @keyframes shine {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(200%); }
-  }
-  @keyframes delivered-pulse {
-    0% { transform: scale(1.1); box-shadow: 0 0 15px rgba(34, 197, 94, 0.7); }
-    50% { transform: scale(1.2); box-shadow: 0 0 25px rgba(34, 197, 94, 1); }
-    100% { transform: scale(1.1); box-shadow: 0 0 15px rgba(34, 197, 94, 0.7); }
-  }
-  .route-line {
-    stroke-dasharray: 1000;
-    stroke-dashoffset: 1000;
-    animation: draw-line 2s 0.5s ease-out forwards;
-  }
-  .travel-dot-glow {
-    offset-path: path("M50 150 C 100 50, 200 50, 250 150");
-    animation: move-along-path 4s 1.5s ease-in-out infinite;
-    filter: drop-shadow(0 0 4px #ffd724);
-  }
-  .pulse-point-origin, .pulse-point-destination {
-    animation: pulse-point 2.5s infinite ease-in-out;
-  }
-  .pulse-point-destination {
-    animation-delay: 0.5s;
-  }
-  @keyframes draw-line { to { stroke-dashoffset: 0; } }
-  @keyframes move-along-path {
-    0% { offset-distance: 0%; opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { offset-distance: 100%; opacity: 0; }
-  }
-  @keyframes pulse-point {
-    0% { r: 6; }
-    50% { r: 9; }
-    100% { r: 6; }
-  }
-</style>
+} @else {
+  <div class="h-screen flex flex-col items-center justify-center text-center px-4">
+    <i class="fas fa-satellite-dish text-6xl text-primary-accent mb-4"></i>
+    <h1 class="text-4xl font-headings font-bold">Señal Perdida</h1>
+    <p class="text-lg text-text-secondary mt-2">No pudimos encontrar los datos de tu pedido.</p>
+    <a routerLink="/" class="mt-8 bg-primary-accent text-dark-bg font-bold py-3 px-6 rounded-lg transition-transform hover:-translate-y-1">Volver al Inicio</a>
+  </div>
+}

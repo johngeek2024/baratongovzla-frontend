@@ -1,4 +1,4 @@
-// src/app.routes.server.ts
+// src/app/app.routes.server.ts
 
 import { RenderMode, ServerRoute } from '@angular/ssr';
 
@@ -18,7 +18,11 @@ export const serverRoutes: ServerRoute[] = [
   // Rutas que requieren autenticación - SSR
   { path: 'cart', renderMode: RenderMode.Server },
   { path: 'checkout', renderMode: RenderMode.Server },
-  { path: 'order-confirmation', renderMode: RenderMode.Server },
+
+  // ✅ INICIO: CIRUGÍA DE CÓDIGO
+  // Se alinea la ruta del servidor con la ruta de la aplicación, añadiendo el parámetro `:id`.
+  { path: 'order-confirmation/:id', renderMode: RenderMode.Server },
+  // ✅ FIN: CIRUGÍA DE CÓDIGO
 
   // Rutas de autenticación - SSR
   { path: 'auth/**', renderMode: RenderMode.Server },
