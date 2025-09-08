@@ -8,6 +8,10 @@ const config: Config = {
     './src/**/*.html',
     './src/**/*.ts',
   ],
+  safelist: [
+    'swiper-pagination-bullet',
+    'swiper-pagination-bullet-active'
+  ],
   theme: {
     extend: {
       aspectRatio: {
