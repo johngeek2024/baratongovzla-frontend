@@ -1,53 +1,25 @@
-// src/app/features/account/pages/my-arsenal-page/my-arsenal-page.component.ts
-
 import { Component, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { UserDataService, UserOrder } from '../../../../core/services/user-data.service'; // Importar UserOrder
+import { Router } from '@angular/router';
+import { UserDataService } from '../../../../core/services/user-data.service';
 import { Product } from '../../../../core/models/product.model';
+import { ArsenalCardComponent, ArsenalItem } from '../../components/arsenal-card/arsenal-card.component';
 
-// Interfaces para tipar nuestros datos de gamificación
 interface Achievement {
   title: string;
   icon: string;
   unlocked: boolean;
 }
 
-// ✅ NUEVA INTERFAZ: Para el arsenal, incluye el orderId de la compra.
-interface ArsenalProduct {
-  product: Product;
-  orderId: string;
-}
-
 @Component({
   selector: 'app-my-arsenal-page',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, ArsenalCardComponent],
   templateUrl: './my-arsenal-page.component.html',
 })
 export class MyArsenalPageComponent {
   private userDataService = inject(UserDataService);
-
-  // ✅ CORRECCIÓN: Adaptar arsenal para que sea una señal de ArsenalProduct[]
-  // Por ahora, lo simularé así para demostrar la funcionalidad.
-  // En una aplicación real, userDataService.arsenal debería proveer esta estructura.
-  public arsenalItems = computed<ArsenalProduct[]>(() => {
-    const allOrders = this.userDataService.orders();
-    const uniqueArsenal: { [productId: string]: ArsenalProduct } = {};
-
-    allOrders.forEach(order => {
-      order.items.forEach(item => {
-        // Asumiendo que cada item de una orden es un "item de arsenal"
-        // Y que solo queremos el primero que encontramos (si hay duplicados de producto en arsenal)
-        if (!uniqueArsenal[item.product.id]) {
-          uniqueArsenal[item.product.id] = { product: item.product, orderId: order.id };
-        }
-      });
-    });
-    return Object.values(uniqueArsenal);
-  });
-
-  public userOrders = this.userDataService.orders;
+  private router = inject(Router);
 
   public achievements = signal<Achievement[]>([
     { title: 'Cliente Fundador', icon: 'fa-trophy', unlocked: true },
@@ -55,4 +27,30 @@ export class MyArsenalPageComponent {
     { title: 'As del Gaming', icon: 'fa-gamepad', unlocked: false },
     { title: 'Cliente Leal', icon: 'fa-star', unlocked: false },
   ]);
+
+  public arsenalItems = computed<ArsenalItem[]>(() => {
+    return this.userDataService.orders()
+      .filter(order => order.status === 'Entregado')
+      .flatMap(order =>
+        order.items.map(item => ({
+          product: item.product,
+          orderId: order.id,
+          purchaseDate: order.date,
+        }))
+      );
+  });
+
+  /**
+   * Navega a la página del manifiesto para una compra específica.
+   * @param orderId El ID completo de la orden (ej: 'BTV-1757285385290').
+   */
+  viewManifest(orderId: string): void {
+    // ✅ INICIO: CIRUGÍA DE CÓDIGO
+    // 1. Extraemos la parte numérica del ID para usarla en la URL.
+    const numericId = orderId.replace('BTV-', '');
+
+    // 2. Navegamos a la ruta completa y correcta: /account/invoice/:id
+    this.router.navigate(['/account/invoice', numericId]);
+    // ✅ FIN: CIRUGÍA DE CÓDIGO
+  }
 }

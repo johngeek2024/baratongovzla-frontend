@@ -1,4 +1,4 @@
-import { Component, inject, HostBinding } from '@angular/core';
+import { Component, inject, HostBinding } from '@angular/core'; // ✅ IMPORTAR HostBinding
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { UiService } from '../../../../core/services/ui.service';
@@ -12,17 +12,18 @@ import { AuthService } from '../../../../core/services/auth.service';
 })
 export class DashboardSidebarComponent {
   public uiService = inject(UiService);
-  // La propiedad 'authService' es pública para permitir el acceso a 'currentUser' desde la plantilla.
   public authService = inject(AuthService);
 
+  // ✅ INICIO: CIRUGÍA DE CÓDIGO
+  // Vincula la clase 'open' del host a la señal 'isMobileSidebarOpen' del servicio.
+  // Cuando la señal sea 'true', el panel tendrá la clase 'open'.
   @HostBinding('class.open')
   get isOpen(): boolean {
     return this.uiService.isMobileSidebarOpen();
   }
+  // ✅ FIN: CIRUGÍA DE CÓDIGO
 
   handleLogout(): void {
-    // Se invoca el método de logout del servicio.
-    // La redirección y limpieza de estado se manejan dentro del propio servicio.
     this.authService.logout().subscribe();
   }
 }

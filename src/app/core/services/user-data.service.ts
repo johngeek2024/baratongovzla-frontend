@@ -51,6 +51,11 @@ export class UserDataService {
   private dataStore = inject(DataStoreService);
   private orderAdminService = inject(OrderAdminService);
 
+  // ✅ INICIO: CIRUGÍA DE CÓDIGO
+  // Se añade la señal pública 'isLoading'. Este es el campo que tu componente no encuentra.
+  public isLoading = signal(true);
+  // ✅ FIN: CIRUGÍA DE CÓDIGO
+
   public orders = computed<UserOrder[]>(() => {
     const adminOrders = this.orderAdminService.getAllOrdersSignal()();
     const currentUser = this.authService.currentUser();
@@ -73,9 +78,6 @@ export class UserDataService {
             shippingAddress: adminOrder.shippingAddress,
             customerName: adminOrder.customerName,
             customerEmail: adminOrder.customerEmail,
-            // ✅ INICIO: CIRUGÍA DE CÓDIGO
-            // Se mapean los datos de logística desde el adminOrder al userOrder.
-            // Se asume que estos campos ahora existen en 'AdminOrderDetail'.
             customerPhone: adminOrder.customerPhone || '',
             shippingCost: adminOrder.shippingCost || 0,
             deliveryMethod: adminOrder.deliveryMethod,
@@ -85,7 +87,6 @@ export class UserDataService {
             paymentMethod: adminOrder.paymentMethod,
             paymentReference: adminOrder.paymentReference,
             deliveryDetails: adminOrder.deliveryDetails
-            // ✅ FIN: CIRUGÍA DE CÓDIGO
         };
         return userOrder;
       });
@@ -107,6 +108,9 @@ export class UserDataService {
   }
 
   private loadUserData(userId: string, userEmail: string): void {
+    // ✅ Se activa el estado de carga al iniciar.
+    this.isLoading.set(true);
+
     console.log(`Cargando datos para el usuario: ${userId}`);
     if (userEmail === 'cliente@baratongo.com') {
       this.addresses.set([{ name: 'Oficina', recipient: 'Cliente de Prueba', line1: 'Torre Empresarial, Piso 10', city: 'Valencia', state: 'Carabobo' }]);
@@ -117,6 +121,9 @@ export class UserDataService {
       this.wishlist.set([]);
       this.arsenal.set([]);
     }
+
+    // ✅ Se desactiva el estado de carga al finalizar (simulando asincronía).
+    setTimeout(() => this.isLoading.set(false), 300);
   }
 
   public getOrderById(orderId: string): UserOrder | undefined {
@@ -127,6 +134,8 @@ export class UserDataService {
     this.addresses.set([]);
     this.wishlist.set([]);
     this.arsenal.set([]);
+    // ✅ Se desactiva el estado de carga al cerrar sesión.
+    this.isLoading.set(false);
   }
 
   public addProductsToArsenal(productsToAdd: Product[]): void {

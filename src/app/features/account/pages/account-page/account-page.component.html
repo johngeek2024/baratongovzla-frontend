@@ -3,19 +3,33 @@
     <div
       (click)="uiService.closeMobileSidebar()"
       [class.open]="uiService.isMobileSidebarOpen()"
-      class="fixed inset-0 bg-dark-bg/70 z-[100] transition-opacity md:hidden opacity-0 invisible open:opacity-100 open:visible"
+      class="sidebar-overlay"
     ></div>
+
     <div class="md:flex md:gap-x-8 lg:gap-x-12">
-      <app-dashboard-sidebar
-        class="fixed top-0 left-0 h-screen w-72 max-w-[80vw] z-[110] transition-transform duration-300 ease-in-out -translate-x-full open:translate-x-0
-               md:static md:h-auto md:w-64 md:flex-shrink-0 md:transform-none lg:w-72"
-      ></app-dashboard-sidebar>
+      <app-dashboard-sidebar></app-dashboard-sidebar>
+
       <main class="flex-1 w-full">
-        <button (click)="uiService.openMobileSidebar()" class="md:hidden inline-flex items-center gap-2 bg-dark-bg-secondary border border-border-color text-text-primary px-4 py-2 rounded-lg mb-6">
+        <button (click)="uiService.openMobileSidebar()" class="mobile-menu-toggle">
           <i class="fas fa-bars mr-2"></i> Menú
         </button>
         <router-outlet></router-outlet>
       </main>
     </div>
-  </div>
+    </div>
 </div>
+
+<style>
+  .mobile-menu-toggle {
+    @apply md:hidden inline-flex items-center gap-2 bg-dark-bg-secondary border border-border-color text-text-primary px-4 py-2 rounded-lg mb-6;
+  }
+  .sidebar-overlay {
+    @apply fixed inset-0 bg-dark-bg/70 z-40 transition-opacity md:hidden;
+    opacity: 0;
+    visibility: hidden;
+  }
+  .sidebar-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+</style>

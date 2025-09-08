@@ -1,58 +1,91 @@
-<aside class="bg-dark-bg-secondary border border-border-color md:rounded-2xl p-6 h-full flex flex-col">
-  @if (authService.currentUser(); as user) {
-    <div class="flex items-center gap-4 mb-8">
-      @if (user.avatarUrl) {
-        <img [src]="user.avatarUrl" alt="Avatar de {{ user.fullName }}" class="w-12 h-12 rounded-full border-2 border-primary-accent bg-dark-bg object-cover">
-      } @else {
-        <div class="flex items-center justify-center w-12 h-12 rounded-full border-2 border-primary-accent bg-dark-bg text-primary-accent font-bold text-lg">
-          {{ user.fullName.charAt(0).toUpperCase() }}
-        </div>
-      }
+<aside class="dashboard-sidebar hidden md:flex">
+@if (authService.currentUser(); as user) {
+    <div class="profile-summary">
+      <div class="flex items-center justify-center w-12 h-12 rounded-full border-2 border-primary-accent bg-dark-bg text-primary-accent font-bold text-lg">
+        {{ user.fullName.charAt(0).toUpperCase() }}
+      </div>
       <div>
         <h3 class="font-headings font-semibold text-lg text-text-primary">{{ user.fullName }}</h3>
         <p class="text-sm text-text-secondary">{{ user.email }}</p>
       </div>
     </div>
   }
-
   <nav class="flex flex-col gap-2 flex-grow">
-    <a routerLink="orders" routerLinkActive="active" (click)="uiService.closeMobileSidebar()"
-       class="flex items-center gap-3 px-4 py-3 rounded-lg text-text-secondary font-medium transition-colors duration-200 hover:bg-primary-accent hover:text-white active:bg-primary-accent active:text-white">
+    <a routerLink="orders" routerLinkActive="active" class="dashboard-nav-link" (click)="uiService.closeMobileSidebar()">
       <i class="fas fa-box w-5 text-center text-lg"></i>
       <span>Mis Pedidos</span>
     </a>
-    <a routerLink="arsenal" routerLinkActive="active" (click)="uiService.closeMobileSidebar()"
-       class="flex items-center gap-3 px-4 py-3 rounded-lg text-text-secondary font-medium transition-colors duration-200 hover:bg-primary-accent hover:text-white active:bg-primary-accent active:text-white">
+    <a routerLink="arsenal" routerLinkActive="active" class="dashboard-nav-link" (click)="uiService.closeMobileSidebar()">
       <i class="fas fa-archive w-5 text-center text-lg"></i>
       <span>Mi Arsenal</span>
     </a>
-    <a routerLink="oracle" routerLinkActive="active" (click)="uiService.closeMobileSidebar()"
-       class="flex items-center gap-3 px-4 py-3 rounded-lg text-text-secondary font-medium transition-colors duration-200 hover:bg-primary-accent hover:text-white active:bg-primary-accent active:text-white">
+    <a routerLink="oracle" routerLinkActive="active" class="dashboard-nav-link" (click)="uiService.closeMobileSidebar()">
       <i class="fas fa-robot w-5 text-center text-lg"></i>
       <span>El Oráculo</span>
     </a>
-    <a routerLink="wishlist" routerLinkActive="active" (click)="uiService.closeMobileSidebar()"
-       class="flex items-center gap-3 px-4 py-3 rounded-lg text-text-secondary font-medium transition-colors duration-200 hover:bg-primary-accent hover:text-white active:bg-primary-accent active:text-white">
+    <a routerLink="wishlist" routerLinkActive="active" class="dashboard-nav-link" (click)="uiService.closeMobileSidebar()">
       <i class="fas fa-heart w-5 text-center text-lg"></i>
       <span>Lista de Deseos</span>
     </a>
-    <a routerLink="addresses" routerLinkActive="active" (click)="uiService.closeMobileSidebar()"
-       class="flex items-center gap-3 px-4 py-3 rounded-lg text-text-secondary font-medium transition-colors duration-200 hover:bg-primary-accent hover:text-white active:bg-primary-accent active:text-white">
+    <a routerLink="addresses" routerLinkActive="active" class="dashboard-nav-link" (click)="uiService.closeMobileSidebar()">
       <i class="fas fa-map-marker-alt w-5 text-center text-lg"></i>
       <span>Direcciones</span>
     </a>
-    <a routerLink="details" routerLinkActive="active" (click)="uiService.closeMobileSidebar()"
-       class="flex items-center gap-3 px-4 py-3 rounded-lg text-text-secondary font-medium transition-colors duration-200 hover:bg-primary-accent hover:text-white active:bg-primary-accent active:text-white">
+    <a routerLink="details" routerLinkActive="active" class="dashboard-nav-link" (click)="uiService.closeMobileSidebar()">
       <i class="fas fa-user-cog w-5 text-center text-lg"></i>
       <span>Detalles de la Cuenta</span>
     </a>
   </nav>
 
   <div class="mt-6 pt-6 border-t border-border-color">
-    <a (click)="handleLogout()" role="button"
-       class="flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors duration-200 text-red-400/80 hover:bg-red-500/10 hover:text-red-400">
+    <a (click)="handleLogout()" role="button" class="dashboard-nav-link logout">
       <i class="fas fa-sign-out-alt w-5 text-center text-lg"></i>
       <span>Cerrar Sesión</span>
     </a>
   </div>
 </aside>
+
+<style>
+  /* :host se refiere al propio elemento <app-dashboard-sidebar> */
+  :host {
+    /* ✅ INICIO: CIRUGÍA DE CÓDIGO */
+    /* Se aumenta el z-index de z-50 a z-[100] para asegurar que el menú
+       tenga una prioridad de capa superior al resto del contenido de la página. */
+    @apply fixed top-0 left-0 h-screen w-72 max-w-[80vw] z-[100];
+    /* ✅ FIN: CIRUGÍA DE CÓDIGO */
+    @apply transition-transform duration-300 ease-in-out;
+    transform: translateX(-100%);
+  }
+
+  /* Cuando el host tiene la clase 'open', se desliza a la vista */
+  :host(.open) {
+    transform: translateX(0);
+  }
+
+  /* En pantallas de escritorio (md y superiores)... */
+  @screen md {
+    :host {
+      /* ...vuelve a ser parte del flujo normal del layout y no necesita z-index. */
+      @apply static h-auto w-64 flex-shrink-0 transform-none z-0;
+    }
+  }
+  @screen lg {
+    :host {
+      @apply w-72;
+    }
+  }
+
+  /* El resto de los estilos internos permanecen igual */
+  .dashboard-sidebar {
+    @apply bg-dark-bg-secondary border border-border-color md:rounded-2xl p-6 h-full flex flex-col;
+  }
+  .profile-summary {
+    @apply flex items-center gap-4 mb-8;
+  }
+  .dashboard-nav-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-text-secondary font-medium transition-colors duration-200;
+    @apply hover:bg-primary-accent/10 hover:text-primary-accent;
+  }
+  .dashboard-nav-link.active { @apply bg-primary-accent/10 text-primary-accent; }
+  .dashboard-nav-link.logout { @apply text-red-400/80 hover:bg-red-500/10 hover:text-red-400; }
+</style>

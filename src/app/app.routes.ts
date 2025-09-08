@@ -24,6 +24,15 @@ export const routes: Routes = [
     loadComponent: () => import('./features/checkout/pages/order-confirmation-page/order-confirmation-page.component').then(c => c.OrderConfirmationPageComponent),
     canActivate: [authGuard]
   },
+  // ✅ INICIO: CIRUGÍA DE CÓDIGO
+  // Se corrige la ruta de importación para que apunte a la carpeta 'account'
+  // donde reside tu componente, solucionando el error "Cannot find module".
+  {
+    path: 'invoice/:orderId',
+    loadComponent: () => import('./features/account/pages/invoice-page/invoice-page.component').then(c => c.InvoicePageComponent),
+    canActivate: [authGuard]
+  },
+  // ✅ FIN: CIRUGÍA DE CÓDIGO
   {
     path: 'products',
     loadComponent: () => import('./features/products/pages/product-list/product-list.component').then(c => c.ProductListComponent)

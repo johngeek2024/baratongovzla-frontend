@@ -4,9 +4,10 @@ import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import Swiper from 'swiper';
 import { Navigation, Pagination, EffectCards } from 'swiper/modules';
 import * as Tone from 'tone';
-import { InvoiceService } from '../../../../core/services/invoice.service'; // ✅ INYECCIÓN DE SERVICIO
+import { InvoiceService } from '../../../../core/services/invoice.service';
+import { SafeHtml } from '@angular/platform-browser'; // Importar SafeHtml
 
-// ... (El resto de las interfaces permanecen igual)
+// Interfaces
 interface MissionData {
   orderNumber: string;
   subtotal: number;
@@ -27,7 +28,6 @@ interface MissionData {
 type OrderStatus = 'Confirmado' | 'Procesando' | 'En Ruta' | 'Entregado';
 type CargoBayStatus = 'locked' | 'unlocking' | 'opening' | 'open';
 
-
 @Component({
   selector: 'app-order-confirmation-page',
   standalone: true,
@@ -38,9 +38,8 @@ export class OrderConfirmationPageComponent implements OnInit, OnDestroy, AfterV
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
-  private invoiceService = inject(InvoiceService); // ✅ INYECCIÓN DE SERVICIO
+  private invoiceService = inject(InvoiceService);
 
-  // ... (El resto de las propiedades y el constructor permanecen igual)
   @ViewChild('cargoBay') cargoBayRef!: ElementRef<HTMLElement>;
   @ViewChild('mainContainer') mainContainerRef!: ElementRef<HTMLElement>;
   missionData = signal<MissionData | null>(null);
@@ -88,7 +87,6 @@ export class OrderConfirmationPageComponent implements OnInit, OnDestroy, AfterV
     }
   }
 
-  // ... (ngOnInit, ngAfterViewInit, ngOnDestroy y otros métodos permanecen igual)
   ngOnInit(): void {
     this.intervalId = window.setInterval(() => {
       this.status.update(currentStatus => {
@@ -101,10 +99,12 @@ export class OrderConfirmationPageComponent implements OnInit, OnDestroy, AfterV
       });
     }, 3000);
   }
+
   ngAfterViewInit(): void {
     this.initAudio();
     this.initSwiper();
   }
+
   ngOnDestroy(): void {
     if (this.intervalId) clearInterval(this.intervalId);
     this.swiper?.destroy();
@@ -112,12 +112,14 @@ export class OrderConfirmationPageComponent implements OnInit, OnDestroy, AfterV
       Tone.context.dispose();
     }
   }
+
   private initAudio(): void {
     this.unlockSynth = new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 6, oscillator: { type: "sine" }, envelope: { attack: 0.001, decay: 0.2, sustain: 0.01, release: 0.2 } }).toDestination();
     this.openSynth = new Tone.MetalSynth({ envelope: { attack: 0.001, decay: 0.4, release: 0.2 }, harmonicity: 5.1, modulationIndex: 32, resonance: 4000, octaves: 1.5 }).toDestination();
     this.openSynth.frequency.value = 50;
     this.revealSynth = new Tone.Synth({ oscillator: { type: 'fatsawtooth', count: 3, spread: 30 }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.5 } }).toDestination();
   }
+
   private initSwiper(): void {
     this.swiper = new Swiper('.swiper', {
       modules: [Navigation, Pagination, EffectCards],
@@ -133,6 +135,7 @@ export class OrderConfirmationPageComponent implements OnInit, OnDestroy, AfterV
       },
     });
   }
+
   revealCargoBay(button: HTMLButtonElement): void {
     if (this.cargoBayStatus() !== 'locked') return;
     button.disabled = true;
@@ -153,17 +156,24 @@ export class OrderConfirmationPageComponent implements OnInit, OnDestroy, AfterV
       }, 500);
     }, 800);
   }
+
   isStepActive(step: OrderStatus): boolean {
     return this.statusSteps.indexOf(this.status()) >= this.statusSteps.indexOf(step);
   }
 
-  // ✅ INICIO: NUEVO MÉTODO PARA DESCARGAR LA FACTURA
   downloadInvoice(): void {
     const data = this.missionData();
     if (!data) return;
 
-    const htmlContent = this.invoiceService.getInvoiceHTML(data.orderNumber);
-    if (htmlContent) {
+    const safeHtmlContent: SafeHtml | null = this.invoiceService.getInvoiceHTML(data.orderNumber);
+
+    // ✅ INICIO: CIRUGÍA DE CÓDIGO
+    if (safeHtmlContent) {
+      // 1. Extraemos el valor de texto plano del objeto SafeHtml.
+      // La propiedad interna que contiene el string es 'changingThisBreaksApplicationSecurity'.
+      const htmlContent: string = (safeHtmlContent as any).changingThisBreaksApplicationSecurity;
+
+      // 2. Ahora creamos el Blob usando la cadena de texto, lo cual es correcto.
       const blob = new Blob([htmlContent], { type: 'text/html' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -174,6 +184,6 @@ export class OrderConfirmationPageComponent implements OnInit, OnDestroy, AfterV
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     }
+    // ✅ FIN: CIRUGÍA DE CÓDIGO
   }
-  // ✅ FIN: NUEVO MÉTODO
 }

@@ -6,6 +6,8 @@ export const ACCOUNT_ROUTES: Routes = [
   {
     path: '',
     component: AccountPageComponent,
+    // ✅ CORRECCIÓN: Se elimina el array 'providers' que es incorrecto.
+    // La configuración correcta se aplica globalmente en app.config.ts.
     children: [
       {
         path: '',
@@ -34,7 +36,7 @@ export const ACCOUNT_ROUTES: Routes = [
           ),
       },
       {
-        path: 'invoice/:id', // La ruta ahora solo usa el ID de la orden.
+        path: 'invoice/:id',
         loadComponent: () => import('./pages/invoice-page/invoice-page.component').then(
             (c) => c.InvoicePageComponent
           ),
@@ -52,8 +54,8 @@ export const ACCOUNT_ROUTES: Routes = [
           import('./pages/wishlist-page/wishlist-page.component').then(
             (c) => c.WishlistPageComponent
           ),
-      },
-        {
+        },
+          {
         path: 'addresses',
         loadComponent: () =>
           import('./pages/addresses-page/addresses-page.component').then(

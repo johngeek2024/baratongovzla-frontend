@@ -1,49 +1,50 @@
 <div class="content-panel active">
   <div class="content-header">
-    <h2 class="text-3xl font-bold mb-6 text-white font-sora">Mi Arsenal</h2>
+    <h2 class="text-3xl font-bold mb-6">Mi Arsenal</h2>
   </div>
 
-  <h3 class="text-xl font-bold mb-4 text-white font-sora">Inventario Actual</h3>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-    @for (item of arsenalItems(); track item.product.id) {
-      <figure class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6 text-center transition-all duration-300 hover:border-primary-accent hover:shadow-[0_0_25px_theme(colors.primary-accent/20)] hover:-translate-y-2 flex flex-col justify-between">
-        <div>
-          <img [src]="item.product.imageUrl" [alt]="item.product.name" class="h-40 object-contain mx-auto mb-4">
-          <figcaption class="font-semibold text-text-primary">{{ item.product.name }}</figcaption>
-        </div>
+  <h3 class="text-xl font-bold mb-4">Inventario Actual</h3>
 
-        <a [routerLink]="['/account/invoice', item.orderId]"
-           class="mt-4 inline-flex items-center justify-center bg-gray-700 text-gray-200 font-bold py-2 px-4 rounded-lg transition-all duration-300 hover:bg-gray-600 hover:text-white text-sm">
-          <i class="fas fa-file-invoice mr-2"></i> Ver Manifiesto
-        </a>
-        </figure>
+  <div class="arsenal-grid">
+    @for (item of arsenalItems(); track item.orderId + item.product.id) {
+      <app-arsenal-card
+        [item]="item"
+        (viewManifest)="viewManifest($event)"
+      ></app-arsenal-card>
     } @empty {
-      <div class="col-span-full text-center py-10 bg-dark-bg-secondary border border-border-color rounded-2xl">
-        <i class="fas fa-cube text-4xl text-text-secondary mb-4"></i>
-        <p class="text-text-secondary">Tu arsenal está vacío. ¡Es hora de una nueva misión!</p>
-        <a routerLink="/products" class="mt-4 inline-flex items-center bg-primary-accent text-dark-bg font-bold py-2 px-4 rounded-lg hover:opacity-90 transition-opacity">
-          Explorar Productos <i class="fas fa-arrow-right ml-2"></i>
-        </a>
+      <div class="col-span-full text-center py-12 bg-dark-bg-secondary rounded-2xl border border-border-color">
+        <i class="fas fa-box-open text-5xl text-text-secondary"></i>
+        <h3 class="text-xl font-bold mt-4">Tu arsenal está vacío</h3>
+        <p class="text-text-secondary mt-2">Los productos de tus misiones completadas aparecerán aquí.</p>
       </div>
     }
   </div>
-
-  <div class="bg-dark-bg-secondary border border-border-color rounded-2xl p-6">
-    <h3 class="text-xl font-bold mb-6 text-white font-sora">Logros Desbloqueados</h3>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  <div class="achievements-section">
+    <h3 class="text-xl font-bold mb-6">Logros Desbloqueados</h3>
+    <div class="achievements-grid">
       @for (achievement of achievements(); track achievement.title) {
-        <div class="bg-dark-bg border border-border-color p-4 rounded-lg flex items-center gap-4 text-text-secondary opacity-50 transition-all"
-             [class.bg-secondary-accent/5]="achievement.unlocked"
-             [class.border-secondary-accent/30]="achievement.unlocked"
-             [class.text-secondary-accent]="achievement.unlocked"
-             [class.opacity-100]="achievement.unlocked"
-             [class.hover:shadow-[0_0_15px_theme(colors.secondary-accent/20)]]="achievement.unlocked">
-          <i class="fas {{ achievement.icon }} text-2xl w-8 text-center"></i>
-          <div class="font-semibold">
-            <span class="text-text-primary" [class.text-secondary-accent]="achievement.unlocked">{{ achievement.title }}</span>
+        <div class="achievement-badge" [class.unlocked]="achievement.unlocked">
+          <i class="fas {{ achievement.icon }}"></i>
+          <div class="badge-info">
+            <span class="badge-title">{{ achievement.title }}</span>
           </div>
         </div>
       }
     </div>
   </div>
 </div>
+
+<style>
+  .arsenal-grid { @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6; }
+  .achievements-section { @apply mt-12 bg-dark-bg-secondary border border-border-color rounded-2xl p-6; }
+  .achievements-grid { @apply grid grid-cols-1 sm:grid-cols-2 gap-4; }
+  .achievement-badge { @apply bg-dark-bg border border-border-color p-4 rounded-lg flex items-center gap-4 text-text-secondary opacity-50 transition-all; }
+  .achievement-badge.unlocked {
+    @apply bg-secondary-accent/5 border-secondary-accent/30 text-secondary-accent opacity-100;
+    @apply hover:shadow-[0_0_15px_theme(colors.secondary-accent/20)];
+  }
+  .achievement-badge i { @apply text-2xl w-8 text-center; }
+  .badge-info { @apply font-semibold; }
+  .badge-title { @apply text-text-primary; }
+  .achievement-badge.unlocked .badge-title { @apply text-secondary-accent; }
+</style>
