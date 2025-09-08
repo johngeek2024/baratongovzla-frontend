@@ -1,5 +1,3 @@
-// src/app/features/home/components/hero-carousel/hero-carousel.component.ts
-
 import { Component, AfterViewInit, ElementRef, ViewChild, PLATFORM_ID, Inject, inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -12,6 +10,7 @@ import { DataStoreService } from '../../../../core/services/data-store.service';
   standalone: true,
   imports: [CommonModule, NgOptimizedImage, RouterModule],
   templateUrl: './hero-carousel.component.html'
+
 })
 export class HeroCarouselComponent implements AfterViewInit {
   @ViewChild('swiperContainer') swiperContainer!: ElementRef;
@@ -31,19 +30,19 @@ export class HeroCarouselComponent implements AfterViewInit {
   }
 
   private initSwiper(): void {
-    // ✅ CORRECCIÓN: La opción 'loop' ahora es condicional al número de banners activos.
-    const isLoopingEnabled = this.activeBanners().length > 1;
-
     this.swiper = new Swiper(this.swiperContainer.nativeElement, {
       modules: [Pagination, Autoplay],
-      loop: isLoopingEnabled, // Aplicación de la lógica condicional
-      autoplay: {
-        delay: 5000,
-        disableOnInteraction: false
-      },
+      loop: true,
+      autoplay: { delay: 5000, disableOnInteraction: false },
       pagination: {
         el: '.swiper-pagination',
-        clickable: true
+        clickable: true,
+        // ✅ SOLUCIÓN DEFINITIVA: Se genera el HTML del bullet con clases de Tailwind base.
+        // El compilador JIT leerá esta cadena y generará el CSS necesario.
+        renderBullet: function (index, className) {
+          // 'className' es 'swiper-pagination-bullet', requerido por Swiper para funcionar.
+          return `<span class="${className} bg-white/50 w-2 h-2 opacity-100 transition-all rounded-full"></span>`;
+        },
       },
     });
   }

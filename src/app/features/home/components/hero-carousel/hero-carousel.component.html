@@ -7,7 +7,7 @@
           <div class="relative h-full w-full flex flex-col justify-end items-center text-center text-white p-6 md:p-8 pb-24">
             <img
               [ngSrc]="banner.imageUrl"
-              [alt]="'[Banner de ' + banner.title + ']'"
+              [alt]="'Banner publicitario de ' + banner.title"
               fill
               [priority]="i === 0"
               class="absolute inset-0 w-full h-full object-cover -z-10"
@@ -35,5 +35,5 @@
                 [&_.swiper-pagination-bullet-active]:w-6
                 [&_.swiper-pagination-bullet-active]:rounded-md
     "></div>
-    </div>
+  </div>
 </section>
