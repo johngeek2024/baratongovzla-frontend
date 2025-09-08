@@ -33,19 +33,21 @@
             <td class="p-4 text-left border-b border-border-color">
               <div class="relative inline-block">
                 <select class="appearance-none cursor-pointer rounded-full font-bold text-xs bg-transparent py-1 pl-3 pr-8 focus:outline-none border"
-                        [value]="order.status"
+                        [ngModel]="order.status"
                         (change)="onStatusChange($event, order)"
                         [ngClass]="{
+                          'text-blue-400 border-blue-400 bg-blue-400/20': order.status === 'Pedido Realizado' || order.status === 'Pago Confirmado',
                           'text-warning border-warning bg-warning/20': order.status === 'Procesando',
                           'text-primary-accent border-primary-accent bg-primary-accent/20': order.status === 'Enviado',
                           'text-success border-success bg-success/20': order.status === 'Entregado',
                           'text-danger border-danger bg-danger/20': order.status === 'Cancelado'
                         }">
                   @for (status of statusOptions; track status) {
-                    <option class="bg-dark-bg-secondary text-text-primary" [value]="status">{{ status }}</option>
+                    <option class="bg-dark-bg-secondary text-text-primary" [value]="status">{{ statusDisplayMap[status] }}</option>
                   }
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2" [ngClass]="{
+                    'text-blue-400': order.status === 'Pedido Realizado' || order.status === 'Pago Confirmado',
                     'text-warning': order.status === 'Procesando',
                     'text-primary-accent': order.status === 'Enviado',
                     'text-success': order.status === 'Entregado',
@@ -53,7 +55,7 @@
                   }">
                   <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                 </div>
-              </div>
+                </div>
             </td>
             <td class="p-4 text-left border-b border-border-color">
               <a [routerLink]="['/admin/orders', order.id.replace('#BTV-', '')]" class="bg-transparent border-none text-text-secondary cursor-pointer text-lg p-2 transition-colors hover:text-primary-accent" title="Ver Detalles del Pedido">
