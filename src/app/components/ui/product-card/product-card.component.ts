@@ -16,7 +16,6 @@ import { IconComponent } from '../icon/icon.component';
 })
 export class ProductCardComponent {
   product = input.required<Product>();
-  // ✅ CORRECCIÓN: Se añade el input para soportar el modo de vista.
   viewMode = input<'grid' | 'list'>('grid');
 
   private uiService = inject(UiService);
@@ -26,6 +25,7 @@ export class ProductCardComponent {
     this.uiService.compareList().some(p => p.id === this.product().id)
   );
 
+  public isDealOfTheDay = computed(() => this.product().isDealOfTheDay === true);
   public isBestseller = computed(() => this.product().isBestseller === true);
   public isNew = computed(() => this.product().isNew === true);
   public isExclusive = computed(() => this.product().isExclusive === true);

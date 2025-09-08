@@ -7,7 +7,11 @@
     }">
 
     <div class="relative isolate flex h-56 items-center justify-center overflow-hidden bg-black">
-      @if (isBestseller()) {
+      @if (isDealOfTheDay()) {
+        <span class="absolute left-3 top-3 z-10 flex items-center gap-1.5 rounded-full bg-secondary-accent px-3 py-1 text-xs font-bold uppercase tracking-wide text-dark-bg shadow-lg shadow-secondary-accent/50">
+          <i class="fas fa-bolt"></i> Baratongazo
+        </span>
+      } @else if (isBestseller()) {
         <span class="absolute left-3 top-3 z-10 rounded-full bg-secondary-accent px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-dark-bg shadow-lg shadow-secondary-accent/50">Más Vendido</span>
       } @else if (isNew()) {
         <span class="absolute left-3 top-3 z-10 rounded-full bg-badge-new px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-dark-bg shadow-lg shadow-badge-new/50">Nuevo</span>
