@@ -12,7 +12,6 @@ import { OrderAdminService } from '../../features/admin/services/order-admin.ser
 import { MissionData } from '../../features/checkout/models/mission-data.model';
 import { AuthService } from './auth.service';
 
-
 // --- TIPOS ---
 export type DeliveryMethod = 'pickup' | 'delivery' | 'shipping' | null;
 export type PaymentMethod = 'pago_movil' | 'binance' | 'cash' | null;
@@ -171,7 +170,8 @@ export class CheckoutService {
     this.paymentReference.set(ref);
   }
 
-  async placeOrder(missionData: MissionData): Promise<string> {
+  // ✅ INICIO: CIRUGÍA DE CÓDIGO APLICADA AL MÉTODO placeOrder
+  async placeOrder(missionDataFromForm: Omit<MissionData, 'items' | 'orderNumber' | 'subtotal' | 'shippingCost' | 'total' | 'customerName'>): Promise<string> {
     const user = this.authService.currentUser();
     const cartItems = this.cartStore.items();
     const cartTotals = {
@@ -185,7 +185,20 @@ export class CheckoutService {
       throw new Error('Usuario no autenticado o carrito vacío.');
     }
 
-    const { newOrderId, userOrderPayload, adminOrderPayload } =
+    const newOrderId = `BTV-${Date.now()}`;
+
+    // Construcción del objeto `missionData` completo, incluyendo los items.
+    const missionData: MissionData = {
+      ...missionDataFromForm,
+      orderNumber: newOrderId,
+      customerName: user.fullName,
+      items: cartItems.map(item => ({ product: item.product, quantity: item.quantity })),
+      subtotal: cartTotals.subtotal,
+      shippingCost: cartTotals.shipping,
+      total: cartTotals.total,
+    };
+
+    const { userOrderPayload, adminOrderPayload } =
       this.orderProcessingService.createOrderPayloads(user, missionData, cartItems, cartTotals);
 
     // 1. Guardar la orden para el administrador (simulación backend)
@@ -195,20 +208,20 @@ export class CheckoutService {
     this.orderProcessingService.processNewOrder(adminOrderPayload as any);
 
     // 3. Guardar la orden en el historial del usuario
-    // ✅ CORRECCIÓN APLICADA: El método se llama 'addUserOrder'
     this.userDataService.addUserOrder(userOrderPayload);
 
     // 4. Limpiar el carrito de compras
     this.cartStore.clearCart();
 
-    // 5. Guardar datos de la misión en sessionStorage para la página de confirmación
-    sessionStorage.setItem('lastMissionData', JSON.stringify(missionData));
+    // 5. Guardar datos de la misión en localStorage para la página de confirmación
+    localStorage.setItem('lastMissionData', JSON.stringify(missionData));
 
     // 6. Navegar a la página de confirmación
     this.router.navigate(['/order-confirmation', newOrderId], { state: { missionData } });
 
     return newOrderId;
   }
+  // ✅ FIN: CIRUGÍA DE CÓDIGO
 
   public resetCheckoutState(): void {
     this.deliveryMethod.set(null);

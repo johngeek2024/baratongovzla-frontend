@@ -1,13 +1,14 @@
 import { Component, OnInit, OnDestroy, signal, computed, inject, AfterViewInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
+// Se inyecta ActivatedRoute para leer los parámetros de la URL
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import Swiper from 'swiper';
 import { Navigation, Pagination, EffectCards } from 'swiper/modules';
 import * as Tone from 'tone';
 import { InvoiceService } from '../../../../core/services/invoice.service';
-import { SafeHtml } from '@angular/platform-browser'; // Importar SafeHtml
+import { SafeHtml } from '@angular/platform-browser';
 
-// Interfaces
+// Interfaces (sin cambios)
 interface MissionData {
   orderNumber: string;
   subtotal: number;
@@ -37,11 +38,12 @@ type CargoBayStatus = 'locked' | 'unlocking' | 'opening' | 'open';
 export class OrderConfirmationPageComponent implements OnInit, OnDestroy, AfterViewInit {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
-  private route = inject(ActivatedRoute);
+  private route = inject(ActivatedRoute); // Inyección de ActivatedRoute
   private invoiceService = inject(InvoiceService);
 
   @ViewChild('cargoBay') cargoBayRef!: ElementRef<HTMLElement>;
   @ViewChild('mainContainer') mainContainerRef!: ElementRef<HTMLElement>;
+
   missionData = signal<MissionData | null>(null);
   status = signal<OrderStatus>('Confirmado');
   private intervalId?: any;
@@ -66,28 +68,33 @@ export class OrderConfirmationPageComponent implements OnInit, OnDestroy, AfterV
   constructor() {
     const navigation = this.router.getCurrentNavigation();
     let state = navigation?.extras.state as { missionData: MissionData };
+
     if (!state?.missionData) {
-      const storedData = sessionStorage.getItem('lastMissionData');
+      const storedData = localStorage.getItem('lastMissionData');
       if (storedData) {
         try {
           const missionDataFromStorage = JSON.parse(storedData);
           const orderIdFromUrl = this.route.snapshot.paramMap.get('id');
+
           if (missionDataFromStorage.orderNumber === orderIdFromUrl) {
             state = { missionData: missionDataFromStorage };
           }
         } catch (e) {
-          console.error("Error al parsear datos de sessionStorage", e);
+          console.error("Error al parsear datos de localStorage", e);
         }
       }
     }
+
     if (state?.missionData) {
       this.missionData.set(state.missionData);
     } else {
+      // Si después de todo no hay datos, lo advertimos. El @if en el template previene el error.
       console.warn('No se encontraron datos de la misión en el estado ni en sessionStorage.');
     }
   }
 
   ngOnInit(): void {
+    // La simulación de progreso no se modifica.
     this.intervalId = window.setInterval(() => {
       this.status.update(currentStatus => {
         const currentIndex = this.statusSteps.indexOf(currentStatus);
@@ -167,13 +174,8 @@ export class OrderConfirmationPageComponent implements OnInit, OnDestroy, AfterV
 
     const safeHtmlContent: SafeHtml | null = this.invoiceService.getInvoiceHTML(data.orderNumber);
 
-    // ✅ INICIO: CIRUGÍA DE CÓDIGO
     if (safeHtmlContent) {
-      // 1. Extraemos el valor de texto plano del objeto SafeHtml.
-      // La propiedad interna que contiene el string es 'changingThisBreaksApplicationSecurity'.
       const htmlContent: string = (safeHtmlContent as any).changingThisBreaksApplicationSecurity;
-
-      // 2. Ahora creamos el Blob usando la cadena de texto, lo cual es correcto.
       const blob = new Blob([htmlContent], { type: 'text/html' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -184,6 +186,5 @@ export class OrderConfirmationPageComponent implements OnInit, OnDestroy, AfterV
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     }
-    // ✅ FIN: CIRUGÍA DE CÓDIGO
   }
 }
