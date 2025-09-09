@@ -12,12 +12,8 @@ export class UiService {
   isFilterSidebarOpen = signal(false);
   isAddressModalOpen = signal(false);
   isMobileSidebarOpen = signal(false);
-
-  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
-  // Se añade el estado para la nueva modal de Misión Completada.
   isMissionCompleteModalOpen = signal(false);
   missionCompleteOrderId = signal<string | null>(null);
-  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
   // --- ACCIONES PARA CONTROLAR LOS PANELES ---
   openMenuPanel() { this.closeAllPanels(); this.isMenuPanelOpen.set(true); }
@@ -27,10 +23,8 @@ export class UiService {
   openAddressModal() { this.closeAllPanels(); this.isAddressModalOpen.set(true); }
   openMobileSidebar() { this.closeAllPanels(); this.isMobileSidebarOpen.set(true); }
 
-  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
-  // Métodos para controlar la nueva modal.
   openMissionCompleteModal(orderId: string): void {
-    this.closeAllPanels(); // Asegura que solo una modal esté abierta
+    this.closeAllPanels();
     this.missionCompleteOrderId.set(orderId);
     this.isMissionCompleteModalOpen.set(true);
   }
@@ -39,7 +33,6 @@ export class UiService {
     this.isMissionCompleteModalOpen.set(false);
     this.missionCompleteOrderId.set(null);
   }
-  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
   closeMobileSidebar(): void {
     this.isMobileSidebarOpen.set(false);
@@ -52,10 +45,25 @@ export class UiService {
     this.isFilterSidebarOpen.set(false);
     this.isAddressModalOpen.set(false);
     this.isMobileSidebarOpen.set(false);
-    this.isMissionCompleteModalOpen.set(false); // ✅ Se añade al cierre global
+    this.isMissionCompleteModalOpen.set(false);
   }
 
-  // --- El resto del servicio permanece sin cambios ---
+  // --- LÓGICA DE NOTIFICACIONES TOAST GENÉRICAS ---
+  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
+  // Se añade el estado y la lógica para un sistema de toast genérico.
+  public toastMessage = signal<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  private toastTimer: any;
+
+  /**
+   * Muestra una notificación toast genérica.
+   * @param toast Objeto con el mensaje y el tipo de notificación.
+   */
+  showToast(toast: { message: string; type: 'success' | 'error' | 'info' }) {
+    if (this.toastTimer) clearTimeout(this.toastTimer);
+    this.toastMessage.set(toast);
+    this.toastTimer = setTimeout(() => { this.toastMessage.set(null); }, 4000);
+  }
+  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
   // --- LÓGICA DE NOTIFICACIONES DE LOGROS ---
   public achievementMessage = signal<string | null>(null);
@@ -71,10 +79,12 @@ export class UiService {
   public cartToastMessage = signal<string | null>(null);
   private cartToastTimer: any;
 
+  /**
+   * Muestra una notificación específica para acciones del carrito.
+   * ✅ MODIFICACIÓN: Ahora utiliza el sistema de toast genérico para consistencia.
+   */
   showCartToast(message: string) {
-    if (this.cartToastTimer) clearTimeout(this.cartToastTimer);
-    this.cartToastMessage.set(message);
-    this.cartToastTimer = setTimeout(() => { this.cartToastMessage.set(null); }, 3000);
+    this.showToast({ message, type: 'success' });
   }
 
   // --- LÓGICA DE COMPARACIÓN DE PRODUCTOS ---

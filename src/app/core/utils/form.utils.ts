@@ -16,5 +16,7 @@ export function generateSlug(text: string): string {
     .trim()
     .replace(/\s+/g, '-') // Reemplaza espacios con guiones
     .replace(/[^\w-]+/g, '') // Elimina caracteres no alfanuméricos (excepto guiones)
-    .replace(/--+/g, '-'); // Reemplaza múltiples guiones por uno solo
+    .replace(/--+/g, '-') // Reemplaza múltiples guiones por uno solo
+    // ✅ CORRECCIÓN QUIRÚRGICA: Se elimina cualquier guion al principio o al final.
+    .replace(/^-+|-+$/g, ''); // Elimina guiones al inicio o al final del slug
 }

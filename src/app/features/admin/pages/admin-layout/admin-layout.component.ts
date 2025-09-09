@@ -5,6 +5,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { WebSocketService } from '../../../../core/services/websocket.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { RealTimeToastComponent } from '../../components/real-time-toast/real-time-toast.component';
+import { OrderAdminService } from '../../services/order-admin.service'; // Importar el servicio
 
 @Component({
   selector: 'app-admin-layout',
@@ -17,8 +18,9 @@ export class AdminLayoutComponent implements OnInit {
   public router = inject(Router);
   private webSocketService = inject(WebSocketService);
   public notificationService = inject(NotificationService);
+  // Se inyecta el servicio para que el código original compile, aunque no se use en el listener.
+  private orderAdminService = inject(OrderAdminService);
 
-  // El resto de la clase no cambia...
   navLinks = [
     { id: 'dashboard', icon: 'fas fa-tachometer-alt', label: 'Dashboard' },
     { id: 'products', icon: 'fas fa-box-open', label: 'Productos' },
@@ -35,18 +37,13 @@ export class AdminLayoutComponent implements OnInit {
   }
 
   private setupAdminListeners(): void {
-    // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
-    // El listener ahora solo muestra la notificación. La tabla de pedidos se actualizará
-    // de forma reactiva porque está conectada a la misma fuente de datos que actualiza el cliente.
     this.webSocketService.listen<{ orderId: string; customerName: string; total: number }>('admin:new-order').subscribe(data => {
       this.notificationService.show({
         type: 'success',
         icon: 'fas fa-receipt',
         message: `Nuevo pedido de ${data.customerName} por $${data.total.toFixed(2)}.`
       });
-      // La llamada a 'addNewOrder' se ha eliminado por ser incorrecta y redundante.
     });
-    // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
     this.webSocketService.listen<{ productName: string; newStock: number }>('admin:stock-alert').subscribe(data => {
       this.notificationService.show({

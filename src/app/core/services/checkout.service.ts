@@ -1,11 +1,17 @@
 // src/app/core/services/checkout.service.ts
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { UserAddress } from './user-data.service';
-// ✅ INICIO: ADICIONES QUIRÚRGICAS
-import { CartStore } from '../../features/cart/cart.store'; // 1. Importar el CartStore
+import { UserAddress, UserDataService, UserOrder } from './user-data.service';
+import { CartStore } from '../../features/cart/cart.store';
 import { DataStoreService } from './data-store.service';
 import { Coupon } from '../models/coupon.model';
-// ✅ FIN: ADICIONES QUIRÚRGICAS
+
+// ADICIONES QUIRÚRGICAS PARA EL NUEVO MÉTODO
+import { Router } from '@angular/router';
+import { OrderProcessingService } from './order-processing.service';
+import { OrderAdminService } from '../../features/admin/services/order-admin.service';
+import { MissionData } from '../../features/checkout/models/mission-data.model';
+import { AuthService } from './auth.service';
+
 
 // --- TIPOS ---
 export type DeliveryMethod = 'pickup' | 'delivery' | 'shipping' | null;
@@ -20,10 +26,14 @@ interface DeliveryFees { [key: string]: ZoneFees; moto: ZoneFees; carro: ZoneFee
   providedIn: 'root'
 })
 export class CheckoutService {
-  // ✅ INICIO: ADICIONES QUIRÚRGICAS
+  // --- INYECCIONES DE SERVICIOS ---
   private dataStore = inject(DataStoreService);
-  private cartStore = inject(CartStore); // 2. Inyectar el CartStore
-  // ✅ FIN: ADICIONES QUIRÚRGICAS
+  private cartStore = inject(CartStore);
+  private router = inject(Router);
+  private userDataService = inject(UserDataService);
+  private orderProcessingService = inject(OrderProcessingService);
+  private orderAdminService = inject(OrderAdminService);
+  private authService = inject(AuthService);
 
   // --- ESTADO REACTIVO (SEÑALES) ---
   public deliveryMethod = signal<DeliveryMethod>(null);
@@ -56,10 +66,8 @@ export class CheckoutService {
     return this.dataStore.coupons().find(c => c.code === code) || null;
   });
 
-  // ✅ INICIO: CORRECCIÓN QUIRÚRGICA
-  // 3. Se elimina el parámetro y se lee la señal del cartStore internamente.
   public discountAmount = computed(() => {
-    const cartTotal = this.cartStore.totalPrice(); // Se lee la señal aquí
+    const cartTotal = this.cartStore.totalPrice();
     const coupon = this.appliedCoupon();
 
     if (!coupon || !coupon.isActive) {
@@ -79,7 +87,6 @@ export class CheckoutService {
 
     return { value: Math.min(discount, cartTotal), message: '¡Cupón aplicado!' };
   });
-  // ✅ FIN: CORRECCIÓN QUIRÚRGICA
 
   public shippingCost = computed<number>(() => {
     const method = this.deliveryMethod();
@@ -162,6 +169,45 @@ export class CheckoutService {
 
   public updatePaymentReference(ref: string): void {
     this.paymentReference.set(ref);
+  }
+
+  async placeOrder(missionData: MissionData): Promise<string> {
+    const user = this.authService.currentUser();
+    const cartItems = this.cartStore.items();
+    const cartTotals = {
+        subtotal: this.cartStore.totalPrice(),
+        shipping: this.shippingCost(),
+        discount: this.discountAmount().value,
+        total: this.cartStore.totalPrice() + this.shippingCost() - this.discountAmount().value,
+    };
+
+    if (!user || cartItems.length === 0) {
+      throw new Error('Usuario no autenticado o carrito vacío.');
+    }
+
+    const { newOrderId, userOrderPayload, adminOrderPayload } =
+      this.orderProcessingService.createOrderPayloads(user, missionData, cartItems, cartTotals);
+
+    // 1. Guardar la orden para el administrador (simulación backend)
+    await this.orderAdminService.addOrder(adminOrderPayload);
+
+    // 2. Notificar a otros admins en tiempo real (simulación)
+    this.orderProcessingService.processNewOrder(adminOrderPayload as any);
+
+    // 3. Guardar la orden en el historial del usuario
+    // ✅ CORRECCIÓN APLICADA: El método se llama 'addUserOrder'
+    this.userDataService.addUserOrder(userOrderPayload);
+
+    // 4. Limpiar el carrito de compras
+    this.cartStore.clearCart();
+
+    // 5. Guardar datos de la misión en sessionStorage para la página de confirmación
+    sessionStorage.setItem('lastMissionData', JSON.stringify(missionData));
+
+    // 6. Navegar a la página de confirmación
+    this.router.navigate(['/order-confirmation', newOrderId], { state: { missionData } });
+
+    return newOrderId;
   }
 
   public resetCheckoutState(): void {

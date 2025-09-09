@@ -4,9 +4,17 @@ import { Product } from '../models/product.model';
 import { DataStoreService } from './data-store.service';
 import { DeliveryMethod, DeliveryVehicle, PaymentMethod } from './checkout.service';
 import { OrderAdminService } from '../../features/admin/services/order-admin.service';
-import { OrderStatus } from '../../features/admin/models/order.model';
+import { AdminOrderDetail, OrderStatus } from '../../features/admin/models/order.model';
 
+// ✅ CORRECCIÓN: Se añade 'export' a los tipos e interfaces para que sean visibles globalmente.
 export type { OrderStatus as UserOrderStatus };
+
+export interface User {
+  id: string;
+  fullName: string;
+  email: string;
+  // ... resto de propiedades de User si las hay
+}
 
 export interface UserOrder {
   id: string;
@@ -51,18 +59,29 @@ export class UserDataService {
   private dataStore = inject(DataStoreService);
   private orderAdminService = inject(OrderAdminService);
 
-  // ✅ INICIO: CIRUGÍA DE CÓDIGO
-  // Se añade la señal pública 'isLoading'. Este es el campo que tu componente no encuentra.
   public isLoading = signal(true);
-  // ✅ FIN: CIRUGÍA DE CÓDIGO
+  public orders = signal<UserOrder[]>([]);
+  public addresses = signal<UserAddress[]>([]);
+  public wishlist = signal<Product[]>([]);
+  public arsenal = signal<Product[]>([]);
 
-  public orders = computed<UserOrder[]>(() => {
-    const adminOrders = this.orderAdminService.getAllOrdersSignal()();
-    const currentUser = this.authService.currentUser();
-    if (!currentUser) return [];
+  constructor() {
+    effect(() => {
+      const user = this.authService.currentUser();
+      const adminOrders = this.orderAdminService.getAllOrdersSignal()();
 
-    return adminOrders
-      .filter(order => order.customerEmail === currentUser.email)
+      if (user) {
+        this.loadUserData(user.id, user.email);
+        this.updateUserOrders(user.email, adminOrders);
+      } else {
+        this.clearUserData();
+      }
+    });
+  }
+
+  private updateUserOrders(userEmail: string, adminOrders: AdminOrderDetail[]): void {
+    const userOrders = adminOrders
+      .filter(order => order.customerEmail === userEmail)
       .map(adminOrder => {
         const userOrderItems = adminOrder.items.map(item => {
           const product = this.dataStore.getProductById(item.productId);
@@ -90,28 +109,14 @@ export class UserDataService {
         };
         return userOrder;
       });
-  });
 
-  public addresses = signal<UserAddress[]>([]);
-  public wishlist = signal<Product[]>([]);
-  public arsenal = signal<Product[]>([]);
-
-  constructor() {
-    effect(() => {
-      const user = this.authService.currentUser();
-      if (user) {
-        this.loadUserData(user.id, user.email);
-      } else {
-        this.clearUserData();
-      }
-    });
+    this.orders.set(userOrders);
   }
 
   private loadUserData(userId: string, userEmail: string): void {
-    // ✅ Se activa el estado de carga al iniciar.
     this.isLoading.set(true);
-
     console.log(`Cargando datos para el usuario: ${userId}`);
+
     if (userEmail === 'cliente@baratongo.com') {
       this.addresses.set([{ name: 'Oficina', recipient: 'Cliente de Prueba', line1: 'Torre Empresarial, Piso 10', city: 'Valencia', state: 'Carabobo' }]);
       this.wishlist.set([this.dataStore.products()[2]]);
@@ -122,7 +127,6 @@ export class UserDataService {
       this.arsenal.set([]);
     }
 
-    // ✅ Se desactiva el estado de carga al finalizar (simulando asincronía).
     setTimeout(() => this.isLoading.set(false), 300);
   }
 
@@ -131,10 +135,10 @@ export class UserDataService {
   }
 
   private clearUserData(): void {
+    this.orders.set([]);
     this.addresses.set([]);
     this.wishlist.set([]);
     this.arsenal.set([]);
-    // ✅ Se desactiva el estado de carga al cerrar sesión.
     this.isLoading.set(false);
   }
 
@@ -144,5 +148,9 @@ export class UserDataService {
       const newProducts = productsToAdd.filter(p => !currentArsenalIds.has(p.id));
       return [...currentArsenal, ...newProducts];
     });
+  }
+
+  public addUserOrder(order: UserOrder): void {
+    this.orders.update(currentOrders => [order, ...currentOrders]);
   }
 }
